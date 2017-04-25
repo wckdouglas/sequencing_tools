@@ -34,7 +34,7 @@ setup(
     license='MIT',
     packages=['tgirt_seq_tools'],
     zip_safe=False,
-    scripts = ['bin/reduce_multi_reads.py','bin/split_uniq_bam.py'],
+    scripts = ['bin/reduce_multi_reads.py','bin/split_uniq_bam.py','bin/filterSoftClip.py'],
     ext_modules = ext_modules,
     install_requires=[
           'cython',

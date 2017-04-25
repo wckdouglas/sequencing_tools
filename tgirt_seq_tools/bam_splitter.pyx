@@ -56,8 +56,8 @@ cdef bool check_aln(AlignedSegment aln, float single_end_thresh,
     both_pass =  abs(total_clipped) < bet
     return single_pass and both_pass and not aln.is_unmapped
 
-cpdef int filter_bam(str in_bam, str out_bam, float single_end_thresh,
-                    float both_end_thresh, bool inverse):
+def filter_bam(in_bam, out_bam, single_end_thresh,
+                    both_end_thresh, inverse):
     '''
     This function filter softclipped sequence by tresholds regarding to the sequence length
     '''
