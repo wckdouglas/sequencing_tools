@@ -3,21 +3,16 @@ from cpython cimport bool
 import sys
 from pysam.calignmentfile cimport AlignedSegment
 import numpy as np
+from itertools import izip
 
 
 class read_pairs:
-    def __init__(self, alignment):
+    def __init__(self):
         self.read1 = []
         self.read2 = []
         self.out_read1 = ''
         self.out_read2 = ''
         self.read_id = alignment.query_name
-
-        if alignment.is_read2:
-            self.read2.append(alignment)
-        else:
-            self.read1.append(alignment)
-
 
     def put_in_group(self, alignment):
         if alignment.is_read2:
@@ -34,7 +29,7 @@ class read_pairs:
         isizes = []
         read1_group = []
         read2_group = []
-        for r1, r2 in zip(self.read1, self.read2):
+        for r1, r2 in izip(self.read1, self.read2):
             if r1.reference_name == r2.reference_name and abs(r1.isize) == abs(r2.isize):
                 read1_group.append(r1)
                 read2_group.append(r2)
@@ -72,8 +67,9 @@ regular_chroms = range(1,23)
 regular_chroms.extend(list('XY'))
 regular_chroms.append('MT')
 regular_chroms = map(str, regular_chroms)
+
 def is_regular_chrom(chroms):
-    return np.array([True if chrom in regular_chroms else False for chrom in chroms])
+    return np.in1d(chroms, regular_chroms)
 
 def is_ribo_chrom(chroms):
     return np.array([True if 'gi' in chrom else False for chrom in chroms])
@@ -96,7 +92,8 @@ def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
             for read_count, alignment in enumerate(in_sam):
                 if read_group_count == 0:
                     # initial group for first alignment
-                    read_group = read_pairs(alignment)
+                    read_group = read_pairs()
+                    read_group.put_in_group(alignment)
                     read_group_count = 1
 
                 else:
@@ -106,7 +103,8 @@ def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                         out_sam.write(read1_aln)
                         out_sam.write(read2_aln)
                         out_read_count += 1
-                        read_group = read_pairs(alignment)
+                        read_group = read_pairs()
+                        read_group.put_in_group(alignment)
                     else:
                         read_group.put_in_group(alignment)
             #After all reading whole file, clean out memory and output last alignment group
