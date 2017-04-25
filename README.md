@@ -3,6 +3,12 @@
 This repo stores different utils for tgirt-seq pipeline
 
 
+### Installation ###
+
+```
+pip install git+https://github.com/wckdouglas/tgirt_seq_tools.git
+```
+
 
 ## Split unique bam ##
 
