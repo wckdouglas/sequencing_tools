@@ -9,6 +9,16 @@ This repo stores different utils for tgirt-seq pipeline
 pip install git+https://github.com/wckdouglas/tgirt_seq_tools.git
 ```
 
+Prerequisits:
+pysam=0.9.0
+numpy
+cython
+
+```
+pip install pysam==0.9.0
+pip install numpy
+pip install cython
+```
 
 ## Split unique bam ##
 
