@@ -1,5 +1,5 @@
-import pysam
 from pysam.calignmentfile cimport AlignmentFile, AlignedSegment
+import pysam
 import re
 import numpy as np
 from numpy cimport ndarray
@@ -18,31 +18,6 @@ cdef bool qualify_aln(AlignedSegment aln):
     qualify = (flag == 99) or (flag == 147) or (flag == 163) or (flag == 83)
     return qualify
 
-
-cpdef int split_bam(str in_bam, str outputprefix):
-
-    cdef:
-        AlignmentFile inbam, out_bam_1, out_bam_2
-        AlignedSegment aln
-        int count_R1 = 0, count_R2 = 0
-
-    r1_out_bam_file = outputprefix + '_R1.bam'
-    r2_out_bam_file = outputprefix + '_R2.bam'
-    with pysam.AlignmentFile(in_bam,'rb') as inbam:
-        with pysam.Samfile(r1_out_bam_file,'wb',template = inbam) as out_bam_1,\
-                pysam.Samfile(r2_out_bam_file,'wb',template = inbam) as out_bam_2:
-            for aln in inbam:
-                if not aln.is_unmapped:
-                    if aln.is_read1:
-                        out_bam_1.write(aln)
-                        count_R1 += 1
-                    if aln.is_read2:
-                        out_bam_2.write(aln)
-                        count_R2 += 1
-    print 'Done splitting'
-    print 'Read 1: %i' %(count_R1)
-    print 'Read 2: %i' %(count_R2)
-    return 0
 
 cdef ndarray split_cigar(cigar_string):
     '''
@@ -95,7 +70,7 @@ cpdef int filter_bam(str in_bam, str out_bam, float single_end_thresh,
         bool flag_qualify_ok, soft_clipped, clipped_size_right
         bool inverse_ok, non_inverse_ok
 
-    with pysam.AlignmentFile(in_bam,'rb') as inbam:
+    with pysam.Samfile(in_bam,'rb') as inbam:
         with pysam.Samfile(out_bam,'wb',template = inbam) as outbam:
             for aln_count, aln in enumerate(inbam):
                 flag_qualify_ok = qualify_aln(aln)
