@@ -12,7 +12,11 @@ class read_pairs:
         self.read2 = []
         self.out_read1 = ''
         self.out_read2 = ''
+        self.read_id = ''
+
+    def initiate_group(self, alignment):
         self.read_id = alignment.query_name
+        self.put_in_group(alignment)
 
     def put_in_group(self, alignment):
         if alignment.is_read2:
@@ -93,9 +97,8 @@ def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                 if read_group_count == 0:
                     # initial group for first alignment
                     read_group = read_pairs()
-                    read_group.put_in_group(alignment)
+                    read_group.initiate_group(alignment)
                     read_group_count = 1
-
                 else:
                     if alignment.query_name != read_group.read_id:
                         read_group.generate_filter_alingments()
@@ -104,7 +107,7 @@ def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                         out_sam.write(read2_aln)
                         out_read_count += 1
                         read_group = read_pairs()
-                        read_group.put_in_group(alignment)
+                        read_group.initiate_group(alignment)
                     else:
                         read_group.put_in_group(alignment)
             #After all reading whole file, clean out memory and output last alignment group
