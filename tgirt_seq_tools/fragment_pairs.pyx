@@ -8,17 +8,26 @@ from pysam.calignmentfile cimport AlignmentFile, AlignedSegment
 import sys
 
 cdef bool qualify_pairs(AlignedSegment read1, AlignedSegment read2):
+    '''
+    Only extract concordant proper pairs
+    '''
     cdef:
         bool reverse_fragment = read1.flag == 83 and read2.flag == 163
         bool forward_fragment = read1.flag == 99 and read2.flag == 147
     return reverse_fragment or forward_fragment
 
 def read_ends(AlignedSegment read):
+    '''
+    get read end positions
+    '''
     positions = read.get_reference_positions()
     start, end = itemgetter(0,-1)(positions)
     return start, end
 
 def fragment_ends(AlignedSegment read1, AlignedSegment read2):
+    '''
+    get outer ends of the fragments
+    '''
     cdef:
         long start1, end1, start2, end2
         long start, end
@@ -31,6 +40,11 @@ def fragment_ends(AlignedSegment read1, AlignedSegment read2):
 
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size):
+    '''
+    Read two alignments at a time,
+    assume they are pairs,
+    make paired- fragments as bed line
+    '''
     cdef:
         AlignmentFile in_bam
         AlignedSegment read_1, read_2
