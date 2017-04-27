@@ -35,7 +35,7 @@ def fragment_ends(AlignedSegment read1, AlignedSegment read2):
     start1, end1 = read_ends(read1)
     start2, end2 = read_ends(read2)
     start = min(start1, start2)
-    end = max(end1, end2)
+    end = max(end1, end2) + 1
     return start, end
 
 
