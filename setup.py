@@ -40,7 +40,7 @@ setup(
     install_requires=[
           'cython',
           'numpy',
-          'pysam'
+          'pysam>0.11.0'
       ],
     cmdclass = {'build_ext': build_ext}
 )
