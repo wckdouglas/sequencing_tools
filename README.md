@@ -3,7 +3,7 @@
 This repo stores different utils for tgirt-seq pipeline
 
 
-### Installation ###
+## Installation ##
 
 ```
 pip install git+https://github.com/wckdouglas/tgirt_seq_tools.git
@@ -19,6 +19,7 @@ pip install pysam==0.9.0
 pip install numpy
 pip install cython
 ```
+---
 
 ## Split unique bam ##
 
@@ -42,6 +43,7 @@ optional arguments:
                         $OUTPUTPREFIX.multi.bam)
 ```
 
+---
 
 ## Reduce multi reads ##
 
@@ -63,4 +65,26 @@ optional arguments:
   -b, --bam_in          Provide this flag if bam instead of sam is used as
                         input
   -z, --bam_out         Provide this flag if bam is needed for output
+```
+
+---
+
+## BAM to bed ##
+from pair-end BAM, get fragment coordinate as BED file
+
+```
+usage: bam_to_bed.py [-h] -i IN_BAM [-o OUT_BED] [-m MIN_SIZE] [-M MAX_SIZE]
+
+Making paired-end bam into bed file for every fragment
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i IN_BAM, --in_bam IN_BAM
+                        BAM file name, or stdin (-) ** name sorted
+  -o OUT_BED, --out_bed OUT_BED
+                        BED file output (default: - )
+  -m MIN_SIZE, --min_size MIN_SIZE
+                        minimum fragment size to report
+  -M MAX_SIZE, --max_size MAX_SIZE
+                        minimum fragment size to report
 ```
