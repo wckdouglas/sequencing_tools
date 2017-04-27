@@ -13,13 +13,20 @@ def getopt():
     parser.add_argument('-i', '--in_bam', required=True,
                         help = 'BAM file name, or stdin (-) ** name sorted' )
     parser.add_argument('-o','--out_bed', default='-', help = 'BED file output (default: - )')
+    parser.add_argument('-m','--min_size', default=10, type=int,
+                        help = 'minimum fragment size to report')
+    parser.add_argument('-M','--max_size', default=10000, type=int,
+                        help = 'minimum fragment size to report')
+
     return parser.parse_args()
 
 def main():
     args = getopt()
     in_bam = args.in_bam
     out_file = sys.stdout if args.out_bed == '-' else open(args.out_bed, 'w')
-    bam_to_bed(in_bam, out_file)
+    if args.max_size <= args.min_size:
+        sys.exit('!!!!! Min fragment size > Max fragment size') 
+    bam_to_bed(in_bam, out_file, args.min_size, args.max_size)
     return 0
 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ def fragment_ends(AlignedSegment read1, AlignedSegment read2):
     return start, end
 
 
-def bam_to_bed(bam_file, out_file):
+def bam_to_bed(bam_file, out_file, int min_size, int max_size):
     cdef:
         AlignmentFile in_bam
         AlignedSegment read_1, read_2
@@ -51,7 +51,7 @@ def bam_to_bed(bam_file, out_file):
                     strand = '-' if read_1.is_reverse else '+'
                     start, end = fragment_ends(read_1, read_2)
                     fragment_size = end - start
-                    if 10 < fragment_size < 10000:
+                    if min_size < fragment_size < max_size:
                         line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
                                                         read_1.query_name,
                                                         fragment_size,strand)
