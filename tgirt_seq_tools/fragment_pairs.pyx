@@ -4,7 +4,7 @@ from __future__ import print_function
 import pysam
 from operator import itemgetter
 from cpython cimport bool
-from pysam.calignmentfile cimport AlignmentFile, AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
 
 cdef bool qualify_pairs(AlignedSegment read1, AlignedSegment read2):
