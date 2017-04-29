@@ -54,7 +54,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size):
         long start, end
 
     pair_count = 0
-    with pysam.Samfile(bam_file) as in_bam:
+    with pysam.Samfile(bam_file,'rb') as in_bam:
         while True:
             try:
                 read_1 = in_bam.next()
