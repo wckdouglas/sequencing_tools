@@ -46,7 +46,7 @@ def parse_depth_bed(bed_file, genome_file, output_prefix):
         genome[fields[0]] = long(fields[1])
 
     file_handle = open(bed_file,'r') if bed_file not in ['-','dev/stdin'] else sys.stdin
-    for line in open(-,'r'):
+    for line in file_handle:
         fields = line.rstrip().split('\t')
         chrom, position, value = fields
         if chrom != init_chrom:
