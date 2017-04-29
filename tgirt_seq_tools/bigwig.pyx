@@ -2,6 +2,7 @@ from cpython cimport array
 import pyBigWig as pbw
 import numpy as np
 import array
+import sys
 
 
 class chrom_depth:
@@ -44,7 +45,8 @@ def parse_depth_bed(bed_file, genome_file, output_prefix):
         fields = line.strip().split()
         genome[fields[0]] = long(fields[1])
 
-    for line in open('try.bedgraph','r'):
+    file_handle = open(bed_file,'r') if bed_file not in ['-','dev/stdin'] else sys.stdin
+    for line in open(-,'r'):
         fields = line.rstrip().split('\t')
         chrom, position, value = fields
         if chrom != init_chrom:
