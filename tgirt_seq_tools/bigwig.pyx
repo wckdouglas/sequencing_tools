@@ -24,7 +24,7 @@ class chrom_depth:
         self.values=array.array('i',np.zeros(chrom_size, dtype='int'))
 
     def add_value(self, int position, int value):
-        self.values[position] = value
+        self.values[position-1] = value
 
     def write_bw(self):
         self.positions = range(len(self.values))
