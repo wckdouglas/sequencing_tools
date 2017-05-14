@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from tgirt_seq_tools.pe_to_bed import processFile
+from tgirt_seq_tools.fragment_pairs import process_bedpe
 import argparse
 
 def getopt():
@@ -21,7 +21,7 @@ def main():
     max_length = args.max
     bed_iterator = open(bed_file,'r') if bed_file != '/dev/stdin' and bed_file != '-' else sys.stdin
     out_handle = open(out_file,'w') if out_file != '-' and out_file != '/dev/stdout' else sys.stdout
-    done = processFile(bed_iterator, min_length, max_length, out_handle)
+    done = process_bedpe(bed_iterator, min_length, max_length, out_handle)
 
 
 if __name__=='__main__':
