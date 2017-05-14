@@ -18,7 +18,7 @@ cpdef str filterBed(str bedline, int min_length, int max_length):
 
     fields = bedline.lstrip().split('\t')
     chrom1,start1,end1 = fields[:3]
-    chrom2, start2, end2, strand1, strand2 = itemgetter(3,4,5,8,9,10)(fields)
+    chrom2, start2, end2, strand1, strand2 = itemgetter(3,4,5,8,9)(fields)
     name = bedline[6]
     start = min(map(long,[start1,start2]))
     end = max(map(long,[end1,end2]))
