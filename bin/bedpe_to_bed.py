@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from tgirt_seq_tools.filter_bed import processFile
+from tgirt_seq_tools.pe_to_bed import processFile
 import argparse
 
 def getopt():
