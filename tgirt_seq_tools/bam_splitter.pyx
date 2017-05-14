@@ -1,4 +1,4 @@
-from pysam.calignmentfile cimport AlignmentFile, AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import pysam
 import re
 import numpy as np

@@ -1,5 +1,5 @@
 import re
-from pysam.calignmentfile cimport AlignmentFile, AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from functools import partial
 from itertools import izip

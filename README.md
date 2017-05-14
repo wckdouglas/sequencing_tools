@@ -9,8 +9,16 @@ This repo stores different utils for tgirt-seq pipeline
 pip install git+https://github.com/wckdouglas/tgirt_seq_tools.git
 ```
 
+If this gives an error, try:
+
+```
+git clone https://github.com/wckdouglas/tgirt_seq_tools.git
+cd tgirt_seq_tools
+python setup.py install --user
+```
+
 Prerequisits:
-pysam=0.9.0
+pysam>0.10.0
 numpy
 cython
 

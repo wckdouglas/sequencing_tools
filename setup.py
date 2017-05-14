@@ -35,12 +35,13 @@ setup(
     packages=['tgirt_seq_tools'],
     zip_safe=False,
     scripts = ['bin/reduce_multi_reads.py','bin/split_uniq_bam.py',
-        'bin/filterSoftClip.py','bin/bam_to_bed.py','bin/bedpe_to_bed.py'],
+        'bin/filterSoftClip.py','bin/bam_to_bed.py','bin/bedpe_to_bed.py',
+        'bin/depth_to_bigwig.py'],
     ext_modules = ext_modules,
     install_requires=[
           'cython',
           'numpy',
-          'pysam==0.9.0'
+          'pysam>0.11.0'
       ],
     cmdclass = {'build_ext': build_ext}
 )

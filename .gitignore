@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 *info
 build/*
 dist/*
 *pyc
 *.c
 *.so
+=======
+*so
+build
+*c
+>>>>>>> d3ad60b8085a3fa45b30a796040ef431631a60ee

@@ -1,7 +1,7 @@
 import pysam
 from cpython cimport bool
 import sys
-from pysam.calignmentfile cimport AlignedSegment
+from pysam.libcalignmentfile cimport AlignedSegment
 import numpy as np
 from itertools import izip
 
