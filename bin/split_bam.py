@@ -7,9 +7,9 @@ pyximport.install()
 from tgirt_seq_tools.split_N_bam import parse_bam
 
 def getopt():
-    parser = argparse.ArgumentParser(description = 'Splitting paired-end bam into two bam files:\n'+\
-                                                    '1.  $OUT_PREFIX.fragment.bam:    no N in cigar string on neither read1 nor read2\n' +\
-                                                    '1.  $OUT_PREFIX.split.bam:    with N in cigar string on neither read1 nor read2')
+    parser = argparse.ArgumentParser(description = 'Splitting paired-end bam into two bam files: '+\
+                                                    '1.  $OUT_PREFIX.fragment.bam (no N in cigar string on neither read1 nor read2) and ' +\
+                                                    '2.  $OUT_PREFIX.split.bam (with N in cigar string on neither read1 nor read2)')
     parser.add_argument('-i', '--in_bam', required=True,
                         help = 'BAM file name, or stdin (-) ** name sorted' )
     parser.add_argument('-o','--out_prefix', required=True, help = 'bam file output prefix')
