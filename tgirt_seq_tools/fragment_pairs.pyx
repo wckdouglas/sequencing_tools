@@ -26,7 +26,7 @@ cdef class read_fragment:
         return self.end
 
 
-cdef bool qualify_pairs(AlignedSegment read1, AlignedSegment read2):
+cpdef bool qualify_pairs(AlignedSegment read1, AlignedSegment read2):
     '''
     Only extract concordant proper pairs
     '''
@@ -138,3 +138,6 @@ cpdef int process_bedpe(bed_iterator, int min_length, int max_length, out_handle
         if aln:
             print(aln, file = out_handle)
     return 0
+
+cpdef bool is_split_pair(AlignedSegment read1, AlignedSegment read2):
+    return 'N' in read1.cigarstring or 'N' in read2.cigarstring
