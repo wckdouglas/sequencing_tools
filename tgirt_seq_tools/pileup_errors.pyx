@@ -1,9 +1,10 @@
 import re
 import pysam
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment    
 
 numbers = re.compile(r'[0-9]+')
 strings = re.compile(r'[MIS]')
-def cigar_to_str(cigar_string):
+cpdef str cigar_to_str(str cigar_string):
     '''
     cigar string to string
     '''
@@ -12,11 +13,12 @@ def cigar_to_str(cigar_string):
     cigar_str = ''.join(make_cigar_seq(cigar_numbers, cigar_operator))
     return cigar_str
 
-def get_strand(aln):
+cpdef str get_strand(AlignedSegment aln):
+    cdef str strand = ''
     if aln.is_reverse:
-        return '-'
+        strand = '-'
     else:
-        return '+'
+        strand = '+'
 
 def remove_insert(sequence, qual_seq, cigar):
     cdef:
@@ -32,10 +34,13 @@ def extract_bases(base_dict, pos):
         str strand, base
 
     base_counts = []
+    coverage = 0
     for strand in ['+','-']:
         for base in 'ACTG':
-            base_counts.append(base_dict[pos][strand][base])
-    return sum(base_counts),'\t'.join(map(str, base_counts))
+            bcount = base_dict[pos][strand][base]
+            coverage += bcount
+            base_counts.append(str(bcount))
+    return sum(base_counts),'\t'.join(base_counts)
 
 def make_cigar_seq(cigar_numbers, cigar_operator):
     cdef:
