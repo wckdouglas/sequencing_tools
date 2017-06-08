@@ -43,7 +43,7 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
 def analyze_region(bam, chromosome, qual_threshold, base_dict, start, end):
     for aln in bam.fetch(chromosome, start, end):
         strand = get_strand(aln)
-        if strand:
+        if not aln.is_unmapped and strand:
             positions = aln.get_reference_positions()
             sequence = aln.query_alignment_sequence
             cigar_str = cigar_to_str(aln.cigarstring)
@@ -57,14 +57,15 @@ def analyze_region(bam, chromosome, qual_threshold, base_dict, start, end):
 def output_table(fa, chromosome, base_dict, start, end):
     for i, base in enumerate(fa.get_seq(chromosome,start+1,end+1)):
         pos = i + start
-        base_count_string = extract_bases(base_dict, pos)
-        outline =  '%i\t%s\t%s' %(pos, base, base_count_string)
-        print(outline+'\n', file = sys.stdout)
+        coverage, base_count_string = extract_bases(base_dict, pos)
+        if coverage > 0:
+            outline =  '%i\t%s\t%s' %(pos, base, base_count_string)
+            print(outline+'\n', file = sys.stdout)
     return 0
 
 def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold):
     chrom_length = len(fa[chromosome])
-    get_error = partial(analyze_region, bam, chromosome, qual_threshold)
+    get_error = partial(analyze_region, in_bam, chromosome, qual_threshold)
     output = partial(output_table, fa, chromosome)
     region_generator = make_regions(chrom_length, bases_region)
     for i, (start, end) in enumerate(region_generator):
@@ -74,13 +75,13 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold):
         if i % 10 == 0:
             print('Written %s:%i-%i' %(chromosomes, start, end), file=sys.stderr)
 
-def analyze_bam(in_bam, fa, bases_region):
+def analyze_bam(in_bam, fa, bases_region, qual_threshold):
     chromosomes = fa.keys()
     header = 'pos\tbase\t'
     header = header + 'A+\tC+\tT+\tG+\tA-\tC-\tT-\tG-'
     print(header, file=sys.stdout)
     for chromosome in chromosomes:
-        analyze_chromosome(chromosome, in_bam, fa, bases_region)
+        analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold)
 
 def main():
     args = getopt()

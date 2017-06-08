@@ -34,8 +34,8 @@ def extract_bases(base_dict, pos):
     base_counts = []
     for strand in ['+','-']:
         for base in 'ACTG':
-            base_counts.append(str(base_dict[pos][strand][base]))
-    return '\t'.join(base_counts)
+            base_counts.append(base_dict[pos][strand][base])
+    return sum(base_counts),'\t'.join(map(str, base_counts))
 
 def make_cigar_seq(cigar_numbers, cigar_operator):
     cdef:
