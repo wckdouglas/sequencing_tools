@@ -45,7 +45,7 @@ def output_table(fa, chromosome, base_dict, start, end):
         pos = i + start
         coverage, base_count_string = extract_bases(base_dict, pos)
         if coverage > 0:
-            outline =  '%i\t%s\t%s' %(pos, base, base_count_string)
+            outline =  '%s\t%i\t%s\t%s' %(chromosome, pos, base, base_count_string)
             print(outline+'\n', file = sys.stdout)
     return 0
 
@@ -63,7 +63,7 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold):
 
 def analyze_bam(in_bam, fa, bases_region, qual_threshold):
     chromosomes = fa.keys()
-    header = 'pos\tbase\t'
+    header = 'chrom\tpos\tbase\t'
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)
     for chromosome in chromosomes:
