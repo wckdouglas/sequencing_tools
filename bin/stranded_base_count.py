@@ -12,7 +12,7 @@ import os
 import sys
 import string
 import argparse
-from tgirt_seq_tools.pileup_errors import cigar_to_str, get_strand, remove_insert, extract_bases
+from tgirt_seq_tools.pileup_errors import extract_bases, analyze_region
 
 def getopt():
     parser = argparse.ArgumentParser(description='To convert bedpe file to bed file')
@@ -40,20 +40,6 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
     yield (start, chromosome_length)
 
 
-def analyze_region(bam, chromosome, qual_threshold, base_dict, start, end):
-    for aln in bam.fetch(chromosome, start, end):
-        strand = get_strand(aln)
-        if not aln.is_unmapped and strand:
-            positions = aln.get_reference_positions()
-            sequence = aln.query_alignment_sequence
-            cigar_str = cigar_to_str(aln.cigarstring)
-            qual_seq = aln.query_alignment_qualities
-            adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
-            for pos, (base, qual) in izip(positions, adjusted_sequence):
-                if qual >= qual_threshold:
-                    base_dict[pos][strand][base] += 1
-    return base_dict
-
 def output_table(fa, chromosome, base_dict, start, end):
     for i, base in enumerate(fa.get_seq(chromosome,start+1,end+1)):
         pos = i + start
@@ -70,15 +56,15 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold):
     region_generator = make_regions(chrom_length, bases_region)
     for i, (start, end) in enumerate(region_generator):
         base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
-        base_dict = get_error(base_dict, start, end)
+        aln_count, base_dict = get_error(base_dict, start, end)
         out = output(base_dict, start, end)
         if i % 10 == 0:
-            print('Written %s:%i-%i' %(chromosomes, start, end), file=sys.stderr)
+            print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
 
 def analyze_bam(in_bam, fa, bases_region, qual_threshold):
     chromosomes = fa.keys()
     header = 'pos\tbase\t'
-    header = header + 'A+\tC+\tT+\tG+\tA-\tC-\tT-\tG-'
+    header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)
     for chromosome in chromosomes:
         analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold)
