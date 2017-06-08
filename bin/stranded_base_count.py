@@ -15,7 +15,7 @@ import argparse
 from tgirt_seq_tools.pileup_errors import extract_bases, analyze_region
 
 def getopt():
-    parser = argparse.ArgumentParser(description='To convert bedpe file to bed file')
+    parser = argparse.ArgumentParser(description='Pileup whole genome, only output bases where coverage > 0')
     parser.add_argument('-i', '--bam',required=True, help='Input bam file (indexed)')
     parser.add_argument('-f','--fasta', required=True, help='reference fasta file')
     parser.add_argument('-b','--bases', default = 100000,
