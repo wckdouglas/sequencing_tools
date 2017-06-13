@@ -6,7 +6,7 @@ from numpy cimport ndarray
 from cpython cimport bool
 
 
-cdef bool qualify_aln(AlignedSegment aln):
+cpdef bool qualify_aln(AlignedSegment aln):
     '''
     Check if alignment is properly mapped
     '''
@@ -19,7 +19,7 @@ cdef bool qualify_aln(AlignedSegment aln):
     return qualify
 
 
-cdef ndarray split_cigar(cigar_string):
+cpdef ndarray split_cigar(cigar_string):
     '''
     split cigar string to numpy array
     return:
@@ -34,7 +34,7 @@ cdef ndarray split_cigar(cigar_string):
     cigar_array = np.array([cigar_numbers, cigar_operator])
     return cigar_array
 
-cdef bool check_aln(AlignedSegment aln, float single_end_thresh,
+cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
             float both_end_thresh):
     '''
     Compare soft clip length and threshold and write
