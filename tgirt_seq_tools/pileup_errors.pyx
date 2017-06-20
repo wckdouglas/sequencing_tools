@@ -1,7 +1,7 @@
 import re
 import pysam
 from itertools import izip
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment    
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 
 numbers = re.compile(r'[0-9]+')
@@ -16,7 +16,7 @@ cpdef str cigar_to_str(str cigar_string):
     return cigar_str
 
 cpdef str get_strand(AlignedSegment aln):
-    cdef: 
+    cdef:
         str strand = ''
         bool read1_rvs
         bool read2_rvs
@@ -54,18 +54,19 @@ def extract_bases(base_dict, pos):
 def make_cigar_seq(cigar_numbers, cigar_operator):
     cdef:
         str num, op
-        
+
     for num, op in zip(cigar_numbers, cigar_operator):
         if op != 'S':
             yield int(num)*op
 
 
-def analyze_region(bam, chromosome, qual_threshold, base_dict, start, end):
+def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end):
     cdef:
         int aln_count
         AlignedSegment aln
-        int pos, qual
+        int pos, qual, seq_len
         str base
+        int i, crop_end
 
     for aln_count, aln in enumerate(bam.fetch(chromosome, start, end)):
         strand = get_strand(aln)
@@ -75,8 +76,10 @@ def analyze_region(bam, chromosome, qual_threshold, base_dict, start, end):
             cigar_str = cigar_to_str(aln.cigarstring)
             qual_seq = aln.query_alignment_qualities
             adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
-            for pos, (base, qual) in izip(positions, adjusted_sequence):
-                if qual >= qual_threshold:
-                    base_dict[pos][strand][base] += 1
+            seq_len = len(adjusted_sequence[0])
+            crop_end = seq_len - crop
+            for i, (pos, (base, qual)) in enumerate(izip(positions, adjusted_sequence)):
+                if crop_end > i > crop:
+                    if qual >= qual_threshold:
+                        base_dict[pos][strand][base] += 1
     return aln_count, base_dict
-

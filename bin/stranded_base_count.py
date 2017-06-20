@@ -22,6 +22,9 @@ def getopt():
                     type=int, help='number of bases to look at every iteration (default: 100000)')
     parser.add_argument('-q','--qual', default=30,
                     type=int, help='base quality to filter (defulat: 30)')
+
+    parser.add_argument('-c','--crop', default=0,
+                    type=int, help='Crop how many bases from ends (defulat: 0)')
     args = parser.parse_args()
     return args
 
@@ -49,9 +52,9 @@ def output_table(fa, chromosome, base_dict, start, end):
             print(outline+'\n', file = sys.stdout)
     return 0
 
-def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold):
+def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop):
     chrom_length = len(fa[chromosome])
-    get_error = partial(analyze_region, in_bam, chromosome, qual_threshold)
+    get_error = partial(analyze_region, in_bam, chromosome, qual_threshold, crop)
     output = partial(output_table, fa, chromosome)
     region_generator = make_regions(chrom_length, bases_region)
     for i, (start, end) in enumerate(region_generator):
@@ -61,13 +64,13 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold):
         if i % 10 == 0:
             print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
 
-def analyze_bam(in_bam, fa, bases_region, qual_threshold):
+def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop):
     chromosomes = fa.keys()
     header = 'chrom\tpos\tbase\t'
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)
     for chromosome in chromosomes:
-        analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold)
+        analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop)
 
 def main():
     args = getopt()
@@ -75,9 +78,10 @@ def main():
     ref_fasta = args.fasta
     bases_region = args.bases
     qual_threshold = args.qual
+    crops = args.crop
     with pysam.Samfile(bam_file, 'rb') as in_bam, \
             Fasta(ref_fasta) as fa:
-        analyze_bam(in_bam, fa, bases_region, qual_threshold)
+        analyze_bam(in_bam, fa, bases_region, qual_threshold, crop)
 
 
 if __name__ == '__main__':
