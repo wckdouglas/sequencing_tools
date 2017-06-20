@@ -76,8 +76,7 @@ def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end)
             cigar_str = cigar_to_str(aln.cigarstring)
             qual_seq = aln.query_alignment_qualities
             adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
-            seq_len = len(adjusted_sequence[0])
-            crop_end = seq_len - crop
+            crop_end = len(positions) - crop
             for i, (pos, (base, qual)) in enumerate(izip(positions, adjusted_sequence)):
                 if crop_end > i > crop:
                     if qual >= qual_threshold:
