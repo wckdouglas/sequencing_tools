@@ -78,7 +78,7 @@ def main():
     ref_fasta = args.fasta
     bases_region = args.bases
     qual_threshold = args.qual
-    crops = args.crop
+    crop = args.crop
     with pysam.Samfile(bam_file, 'rb') as in_bam, \
             Fasta(ref_fasta) as fa:
         analyze_bam(in_bam, fa, bases_region, qual_threshold, crop)
