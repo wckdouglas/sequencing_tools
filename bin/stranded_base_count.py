@@ -3,7 +3,6 @@
 from __future__ import print_function
 import pysam
 import numpy as np
-from pyfaidx import Fasta
 from functools import partial
 from collections import defaultdict
 from itertools import izip
@@ -28,12 +27,10 @@ def getopt():
     args = parser.parse_args()
     return args
 
-def make_cigar_seq(cigar_numbers, cigar_operator):
-    for num, op in zip(cigar_numbers, cigar_operator):
-        if op != 'S':
-            yield int(num)*op
-
 def make_regions(chromosome_length, how_many_bases_to_look_at):
+    '''
+    generator: segment chromosome in to regions
+    '''
     start = 0
     end = start + how_many_bases_to_look_at
     while end < chromosome_length:
@@ -44,7 +41,9 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
 
 
 def output_table(fa, chromosome, base_dict, start, end):
-    for i, base in enumerate(fa.get_seq(chromosome,start+1,end+1)):
+    for i, base in enumerate(fa.fetch(reference = chromosome,
+                                      start=start,
+                                      end=end)):
         pos = i + start
         coverage, base_count_string = extract_bases(base_dict, pos)
         if coverage > 0:
@@ -80,7 +79,7 @@ def main():
     qual_threshold = args.qual
     crop = args.crop
     with pysam.Samfile(bam_file, 'rb') as in_bam, \
-            Fasta(ref_fasta) as fa:
+            pysam.FastaFile(ref_fasta) as fa:
         analyze_bam(in_bam, fa, bases_region, qual_threshold, crop)
 
 
