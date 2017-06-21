@@ -52,7 +52,7 @@ def output_table(fa, chromosome, base_dict, start, end):
     return 0
 
 def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop):
-    chrom_length = len(fa[chromosome])
+    chrom_length = fa.get_reference_length(chromosome)
     get_error = partial(analyze_region, in_bam, chromosome, qual_threshold, crop)
     output = partial(output_table, fa, chromosome)
     region_generator = make_regions(chrom_length, bases_region)
@@ -64,7 +64,7 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, cro
             print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
 
 def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop):
-    chromosomes = fa.keys()
+    chromosomes = fa.references
     header = 'chrom\tpos\tbase\t'
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)
