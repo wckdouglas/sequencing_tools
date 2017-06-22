@@ -71,12 +71,12 @@ def main(args):
     if outputprefix != '-':
         run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
                 barcode_cut_off, constant, allow_mismatch, programname,
-                prefix_split, read)
+                prefix_split, UMI_side)
     else:
         stderr.write('[%s] Using STDOUT, Will not split prefix!!\n' %(programname))
         run_pairs_stdout(inFastq1, inFastq2, idx_base,
                 barcode_cut_off, constant, allow_mismatch, programname,
-                prefix_split, read)
+                prefix_split, UMI_side)
     stderr.write('[%s] time lapsed:      %2.3f min\n' %(programname, np.true_divide(time.time()-start,60)))
     return 0
 
