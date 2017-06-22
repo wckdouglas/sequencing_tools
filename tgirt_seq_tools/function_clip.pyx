@@ -186,11 +186,12 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
 
     file_dict = open_files(outputprefix, prefix_split)
     with gzopen(inFastq1, read_flag = 'rb') as in1, gzopen(inFastq2, read_flag = 'rb') as in2:
-        clipping = partial(clip_read1, barcode_cut_off, constant,
+        if read == 'read1':
+            clipping = partial(clip_read1, barcode_cut_off, constant,
                             constant_no_evaluation, prefix_split, idx_base,
                             usable_seq, hamming_threshold)
 
-        if read == 'read1':
+        elif read == 'read2':
             clipping = partial(clip_read2, barcode_cut_off, constant,
                             constant_no_evaluation, prefix_split, idx_base,
                             usable_seq, hamming_threshold)
@@ -237,7 +238,7 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
                             constant_no_evaluation, prefix_split, idx_base,
                             usable_seq, hamming_threshold)
 
-        if read == 'read1':
+        elif read == 'read2':
             clipping = partial(clip_read2, barcode_cut_off, constant,
                             constant_no_evaluation, prefix_split, idx_base,
                             usable_seq, hamming_threshold)
