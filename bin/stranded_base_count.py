@@ -41,6 +41,9 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
 
 
 def output_table(fa, chromosome, base_dict, start, end):
+    '''
+    output table: chrom, pos, base, A+, C+, G+, T+, A-, C-, G-, T-
+    '''
     for i, base in enumerate(fa.fetch(reference = chromosome,
                                       start=start,
                                       end=end)):

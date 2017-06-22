@@ -30,9 +30,10 @@ def getOptions():
         help="Allow how many mismatch in constant region (deflaut: 1)")
     parser.add_argument("-s", "--prefix_split", type=int,default=0, choices = range(5),
         help="Using how many bases on the barcode to split the fastq? A choice of 3 will generate 4^3 = 64 files (deflaut: 4)")
+    parser.add_argument("-r", "--read", default='read1',choices = ['read1','read2'],
+        help="Which read is the UMI on?")
     args = parser.parse_args()
     return args
-
 
 
 def main(args):
@@ -53,6 +54,7 @@ def main(args):
     idx_base = len(re.findall('X+', idx_base)[0])
     allow_mismatch = args.mismatch
     prefix_split = args.prefix_split
+    UMI_side = args.read
 
     #print out parameters
     programname = sys.argv[0]
@@ -63,17 +65,18 @@ def main(args):
     stderr.write('[%s] using constant regions:            %s\n' %(programname, constant))
     stderr.write('[%s] allowed mismatches:                %i\n' %(programname, allow_mismatch))
     stderr.write('[%s] Using prefix bases:                %i\n' %(programname, prefix_split))
+    stderr.write('[%s] Using UMI side:                    %s\n' %(programname, UMI_side))
 
     # divide reads into subclusters
     if outputprefix != '-':
         run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
                 barcode_cut_off, constant, allow_mismatch, programname,
-                prefix_split)
+                prefix_split, read)
     else:
         stderr.write('[%s] Using STDOUT, Will not split prefix!!\n' %(programname))
         run_pairs_stdout(inFastq1, inFastq2, idx_base,
                 barcode_cut_off, constant, allow_mismatch, programname,
-                prefix_split)
+                prefix_split, read)
     stderr.write('[%s] time lapsed:      %2.3f min\n' %(programname, np.true_divide(time.time()-start,60)))
     return 0
 
