@@ -38,7 +38,20 @@ cpdef bool qualify_pairs(AlignedSegment read1, AlignedSegment read2):
 
 def read_ends(AlignedSegment read):
     '''
-    get read end positions
+    get read end positions, output start and end position of a read
+    =============
+
+    read_ends(AlignedSegment)
+
+    Parameters
+    ----------
+    AlignedSegment : a pysam alignment
+
+    Returns
+    -------
+    start:  leftmost positoin of the read
+    end:    rightmost position of the read
+    ============
     '''
     positions = read.get_reference_positions()
     start, end = itemgetter(0,-1)(positions)
@@ -46,7 +59,20 @@ def read_ends(AlignedSegment read):
 
 def fragment_ends(AlignedSegment read1, AlignedSegment read2):
     '''
-    get outer ends of the fragments
+    get start and end position of a pair of reads
+    =============
+
+    fragment_ends(read1, read2)
+
+    Parameters
+    ----------
+    read1: a pysam alignment
+    read2: a pysam alignment
+
+    Returns
+    -------
+    start:  leftmost positoin of the pair
+    end:    rightmost position of the pair
     '''
     cdef:
         long start1, end1, start2, end2

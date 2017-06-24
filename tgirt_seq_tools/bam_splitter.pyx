@@ -8,7 +8,9 @@ from cpython cimport bool
 
 cpdef bool qualify_aln(AlignedSegment aln):
     '''
-    Check if alignment is properly mapped
+    Check if alignment is properly mapped flag == 99, 147, 163, 83
+    input: pysam alginedsegment
+    output: boolean
     '''
     cdef:
         bool qualify
@@ -22,6 +24,7 @@ cpdef bool qualify_aln(AlignedSegment aln):
 cpdef ndarray split_cigar(cigar_string):
     '''
     split cigar string to numpy array
+    input cigar string: e.g. 63M
     return:
         [ [list of numbers],
           [list of cigar operators correspongs to the numbers] ]
@@ -37,7 +40,10 @@ cpdef ndarray split_cigar(cigar_string):
 cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
             float both_end_thresh):
     '''
-    Compare soft clip length and threshold and write
+    Compare soft clip length and threshold and return boolean if alignment has softclipped < threshold
+
+    input: aln, single_end_threshold, both end threshold
+    return: boolean if alignment soft clip is below threshold
     '''
     cdef:
         int total_clipped, seq_len

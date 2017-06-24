@@ -25,7 +25,21 @@ cdef class fastqRecord:
 
 def readfq(fp): # this is a generator function
     '''
+    A fastq iterator
         https://github.com/lh3/readfq/blob/master/readfq.py
+
+
+    usage: readfq(fp)
+    ==============================
+    Parameter:
+
+    fp: file handle of a fastq file
+
+    return:
+    name: sequence id
+    seq: sequence
+    qual: quality
+    ===============================
     '''
     cdef:
         str l, name, seq
@@ -61,9 +75,22 @@ def readfq(fp): # this is a generator function
                 break
 
 
-cpdef float hammingDistance(str expected_constant, str constant_region):
+cpdef float hamming_distance(str expected_constant, str constant_region):
     '''
     Calculating hamming distance from two strings
+
+    usage: hamming_distance(string1, string2)
+    ==============================
+    Parameter:
+
+    string1
+    string2
+
+    has to be same length
+
+    return:
+    edit distance: the edit distance between two string
+    ===============================
     '''
     cdef float dist = hamming(list(expected_constant),list(constant_region))
     return dist
@@ -94,7 +121,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
 
     no_N_barcode = 'N' not in barcode
     hiQ_barcode = barcode_mean_qual > barcode_cut_off
-    accurate_constant = True if constant_no_evaluation else  hammingDistance(constant, constant_region) <= hamming_threshold
+    accurate_constant = True if constant_no_evaluation else  hamming_distance(constant, constant_region) <= hamming_threshold
 
     if no_N_barcode and hiQ_barcode and accurate_constant:
         seq_left = read1.seq[usable_seq:]
@@ -131,7 +158,7 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
 
     no_N_barcode = 'N' not in barcode
     hiQ_barcode = barcode_mean_qual > barcode_cut_off
-    accurate_constant = True if constant_no_evaluation else  hammingDistance(constant, constant_region) <= hamming_threshold
+    accurate_constant = True if constant_no_evaluation else  hamming_distance(constant, constant_region) <= hamming_threshold
 
     if no_N_barcode and hiQ_barcode and accurate_constant:
         seq_right = read2.seq[usable_seq:]

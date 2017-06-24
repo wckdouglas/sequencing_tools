@@ -6,9 +6,63 @@ from cpython cimport bool
 
 numbers = re.compile(r'[0-9]+')
 strings = re.compile(r'[MIS]')
+
+
+def make_cigar_seq(cigar_numbers, cigar_operator):
+    '''
+    generator: convert number and operator into a sequence of aligned status of bases
+
+    usage: make_cigar_seq(cigar_numbers, cigar_operator)
+    return cigar_base
+
+    ==================================
+    parameter:
+
+    cigar_numbers: list of numbers
+    cigar_operator: list of single character
+
+    return:
+    cigar_base: sequence of cigar base
+
+    example:
+    for c in make_cigar_seq('3S5M1I3M'):
+        print c
+
+    SSS
+    MMMMM
+    I
+    MMM
+    ==================================
+    '''
+    cdef:
+        str num, op
+
+    for num, op in zip(cigar_numbers, cigar_operator):
+        if op != 'S':
+            yield int(num)*op
+
 cpdef str cigar_to_str(str cigar_string):
     '''
-    cigar string to string
+    cigar string to string, only extract cigar op == M, I or S
+
+    usage: cigar_to_str(cigar_string)
+    return: cigar_seq
+
+    ==================================
+    parameter:
+
+    cigar_string: standard cigar string from BAM file
+
+    return:
+
+    cigar_seq: same length string as sequence, with every character matched the aligned status of the base
+
+    example:
+    cigar_seq = cigar_to_str('3S5M1I3M')
+    print cigar_seq
+    'SSSMMMMMIMMM'
+
+    ==================================
     '''
     cigar_numbers = numbers.findall(cigar_string)
     cigar_operator = strings.findall(cigar_string)
@@ -16,6 +70,23 @@ cpdef str cigar_to_str(str cigar_string):
     return cigar_str
 
 cpdef str get_strand(AlignedSegment aln):
+    '''
+    get strand of the paired fragment
+
+    usage: get_strand(alignment)
+    return: strand
+
+    ==================================
+    parameter:
+
+    alignment: an aligned segment in bam (see: pysam)
+
+    return:
+
+    strand: "+" if it is reverse read2 or normal read1
+            "-" if it is reverse read1 or normal read2
+    ==================================
+    '''
     cdef:
         str strand = ''
         bool read1_rvs
@@ -30,6 +101,25 @@ cpdef str get_strand(AlignedSegment aln):
     return strand
 
 def remove_insert(sequence, qual_seq, cigar):
+    '''
+    iterator remove insertion base from aligned sequence
+
+    usage: remove_insert(sequence, quality_string, cigar_seq)
+    return: base, base_quality
+
+    ==================================
+    parameter:
+
+    sequence: DNA sequence from BAM
+    quality_string: qual string from BAM
+    cigar_seq: cigar seq from cigar_to_str
+
+    yield:
+
+    base:        base that are not annotated as insertion
+    base_qual:   BAQ associated with the base
+    ==================================
+    '''
     cdef:
         str base, op
         int qual
@@ -51,13 +141,6 @@ def extract_bases(base_dict, pos):
             base_counts.append(str(bcount))
     return coverage,'\t'.join(base_counts)
 
-def make_cigar_seq(cigar_numbers, cigar_operator):
-    cdef:
-        str num, op
-
-    for num, op in zip(cigar_numbers, cigar_operator):
-        if op != 'S':
-            yield int(num)*op
 
 
 def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end):
