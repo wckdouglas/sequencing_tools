@@ -11,7 +11,7 @@ import os
 import sys
 import string
 import argparse
-from tgirt_seq_tools.pileup_errors import extract_bases, analyze_region
+from tgirt_seq_tools.pileup_errors import extract_bases, analyze_region, make_regions
 
 def getopt():
     parser = argparse.ArgumentParser(description='Pileup whole genome, only output bases where coverage > 0')
@@ -26,18 +26,6 @@ def getopt():
                     type=int, help='Crop how many bases from ends (defulat: 0)')
     args = parser.parse_args()
     return args
-
-def make_regions(chromosome_length, how_many_bases_to_look_at):
-    '''
-    generator: segment chromosome in to regions
-    '''
-    start = 0
-    end = start + how_many_bases_to_look_at
-    while end < chromosome_length:
-        yield (start, end)
-        start = end
-        end = end + how_many_bases_to_look_at
-    yield (start, chromosome_length)
 
 
 def output_table(fa, chromosome, base_dict, start, end):

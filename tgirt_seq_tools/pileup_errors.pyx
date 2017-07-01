@@ -7,6 +7,50 @@ from cpython cimport bool
 numbers = re.compile(r'[0-9]+')
 strings = re.compile(r'[MIS]')
 
+def make_regions(chromosome_length, how_many_bases_to_look_at):
+    '''
+    generator: segment chromosome in to regions
+    usage: make_regions(chromosome_length, how_many_bases_every_time)
+    return cigar_base
+
+    ==================================
+    parameter:
+
+    chromosome_length: last base you want to look at
+    how_many_bases_every_time: segment size
+
+    return:
+
+    start: start of segment
+    end: end of segment
+
+    example:
+
+    for start, end in make_regions(100,10):
+        print start, end
+
+    0 10
+    10 20
+    20 30
+    30 40
+    40 50
+    50 60
+    60 70
+    70 80
+    80 90
+    90 100
+
+    ==================================
+    '''
+    cdef:
+        int start = 0
+        int end = start + how_many_bases_to_look_at
+
+    while end < chromosome_length:
+        yield (start, end)
+        start = end
+        end = end + how_many_bases_to_look_at
+    yield (start, chromosome_length)
 
 def make_cigar_seq(cigar_numbers, cigar_operator):
     '''
@@ -83,8 +127,8 @@ cpdef str get_strand(AlignedSegment aln):
 
     return:
 
-    strand: "+" if it is reverse read2 or normal read1
-            "-" if it is reverse read1 or normal read2
+    strand: "+" if it is reverse read2 or forward read1
+            "-" if it is reverse read1 or forward read2
     ==================================
     '''
     cdef:
