@@ -152,3 +152,11 @@ optional arguments:
   -o OUT_BAM, --out_bam OUT_BAM
                         BAM file output (default: - )
 ```
+
+---
+
+## Modules ##
+
+### fastq_tools ###
+
+### bam_tools ###
