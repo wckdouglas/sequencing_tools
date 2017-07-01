@@ -16,17 +16,16 @@ cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
     '''
     cdef:
         int total_clipped, seq_len
-        ndarray cigar_array, all_soft_clipped
         int max_single_clipped
         float bet, set
 
     seq_len = len(aln.query_sequence)
     set = (single_end_thresh * seq_len)
     bet = (both_end_thresh * seq_len)
-    cigar_array = split_cigar(str(aln.cigarstring))
-    all_soft_clipped = np.array(cigar_array[0][cigar_array[1]=='S'],dtype=np.int16)
-    total_clipped = all_soft_clipped.sum()
-    max_single_clipped =  all_soft_clipped.max()
+    cigar_array = split_cigar(aln.cigarstring)
+    all_soft_clipped = [n for n, c in zip(*cigar_array) if c =='S']
+    total_clipped = sum(all_soft_clipped)
+    max_single_clipped =  max(all_soft_clipped)
     single_pass = abs(max_single_clipped) <  set
     both_pass =  abs(total_clipped) < bet
     return single_pass and both_pass and not aln.is_unmapped
