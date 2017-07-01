@@ -2,6 +2,7 @@
 
 This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of several ready-to-use scripts and two module for operations on fastq files and BAM alignments.
 
+---
 
 ## Installation ##
 
@@ -92,7 +93,6 @@ optional arguments:
                         $OUTPUTPREFIX.multi.bam)
 ```
 
----
 
 ### Reduce multi reads ###
 
@@ -116,7 +116,6 @@ optional arguments:
   -z, --bam_out         Provide this flag if bam is needed for output
 ```
 
----
 
 ### BAM to bed ###
 This script process name-sorted paired-end bam and output bed file storing fragment positions.
@@ -137,7 +136,6 @@ optional arguments:
   -M MAX_SIZE, --max_size MAX_SIZE
                         minimum fragment size to report
 ```
----
 
 ### bam_umi_tag.py ###
 
