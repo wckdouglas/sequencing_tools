@@ -4,38 +4,7 @@ import re
 import numpy as np
 from numpy cimport ndarray
 from cpython cimport bool
-
-
-cpdef bool qualify_aln(AlignedSegment aln):
-    '''
-    Check if alignment is properly mapped flag == 99, 147, 163, 83
-    input: pysam alginedsegment
-    output: boolean
-    '''
-    cdef:
-        bool qualify
-        int flag
-
-    flag = aln.flag
-    qualify = (flag == 99) or (flag == 147) or (flag == 163) or (flag == 83)
-    return qualify
-
-
-cpdef ndarray split_cigar(cigar_string):
-    '''
-    split cigar string to numpy array
-    input cigar string: e.g. 63M
-    return:
-        [ [list of numbers],
-          [list of cigar operators correspongs to the numbers] ]
-    '''
-    cdef:
-        ndarray cigar_array
-
-    cigar_numbers = re.findall(r'[0-9]+', cigar_string)
-    cigar_operator = re.findall(r'[A-Z]', cigar_string)
-    cigar_array = np.array([cigar_numbers, cigar_operator])
-    return cigar_array
+from tgirt_seq_tools.bam_tools import concordant_alignment, split_cigar
 
 cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
             float both_end_thresh):
@@ -79,7 +48,7 @@ def filter_bam(in_bam, out_bam, single_end_thresh,
     with pysam.Samfile(in_bam,'rb') as inbam:
         with pysam.Samfile(out_bam,'wb',template = inbam) as outbam:
             for aln_count, aln in enumerate(inbam):
-                flag_qualify_ok = qualify_aln(aln)
+                flag_qualify_ok = concordant_alignment(aln)
                 if not aln.is_unmapped and flag_qualify_ok:
                     soft_clipped = 'S' in aln.cigarstring
                     if not soft_clipped and not inverse:

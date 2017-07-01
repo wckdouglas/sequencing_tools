@@ -3,18 +3,18 @@ from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from functools import partial
 from itertools import izip
+from tgirt_seq_tools.bam_tools import split_cigar
 
 cdef int softClipSize(AlignedSegment aln):
     # compare softclip size, output maximum softclipped base on either side
     cdef:
         str cigar = str(aln.cigarstring)
         str cigar_char
-        str cigar_num
+        int cigar_num
 
-    cigar_nums = re.findall('[0-9]+',cigar)
-    cigar_str = re.findall('[A-Z]',cigar)
-    clipped = [int(cigar_num) for cigar_num, cigar_char in izip(cigar_nums, cigar_str) if cigar_char == 'S']
-    return max(clipped) if clipped else 0
+    iterator = zip(*split_cigar(cigar))
+    clipped = max(cigar_num for cigar_num, cigar_char in iterator if cigar_char=='S')
+    return clipped.max() if clipped else 0
 
 
 cdef bool bowtie2_is_unique(AlignedSegment read1, AlignedSegment read2):

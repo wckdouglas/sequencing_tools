@@ -6,7 +6,7 @@ from operator import itemgetter
 from cpython cimport bool
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
-
+from tgirt_seq_tools.bam_tools import concordant_pairs, read_ends, fragment_ends
 
 cdef class read_fragment:
     cdef:
@@ -24,66 +24,6 @@ cdef class read_fragment:
 
     def end_site(self):
         return self.end
-
-
-cpdef bool qualify_pairs(AlignedSegment read1, AlignedSegment read2):
-    '''
-    Only extract concordant proper pairs
-    '''
-    cdef:
-        bool reverse_fragment = read1.flag == 83 and read2.flag == 163
-        bool forward_fragment = read1.flag == 99 and read2.flag == 147
-    return reverse_fragment or forward_fragment
-
-
-def read_ends(AlignedSegment read):
-    '''
-    get read end positions, output start and end position of a read
-    =============
-
-    read_ends(AlignedSegment)
-
-    Parameters
-    ----------
-    AlignedSegment : a pysam alignment
-
-    Returns
-    -------
-    start:  leftmost positoin of the read
-    end:    rightmost position of the read
-    ============
-    '''
-    positions = read.get_reference_positions()
-    start, end = itemgetter(0,-1)(positions)
-    return start, end
-
-def fragment_ends(AlignedSegment read1, AlignedSegment read2):
-    '''
-    get start and end position of a pair of reads
-    =============
-
-    fragment_ends(read1, read2)
-
-    Parameters
-    ----------
-    read1: a pysam alignment
-    read2: a pysam alignment
-
-    Returns
-    -------
-    start:  leftmost positoin of the pair
-    end:    rightmost position of the pair
-    '''
-    cdef:
-        long start1, end1, start2, end2
-        long start, end
-
-    start1, end1 = read_ends(read1)
-    start2, end2 = read_ends(read2)
-    start = min(start1, start2)
-    end = max(end1, end2) + 1
-    return start, end
-
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size):
     '''
@@ -106,7 +46,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size):
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
                 assert read_1.query_name == read_2.query_name, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
-                if qualify_pairs(read_1, read_2):
+                if concordant_pairs(read_1, read_2):
                     chrom = read_1.reference_name
                     strand = '-' if read_1.is_reverse else '+'
                     start, end = fragment_ends(read_1, read_2)

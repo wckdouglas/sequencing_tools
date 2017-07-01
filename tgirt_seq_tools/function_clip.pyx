@@ -1,5 +1,4 @@
 from itertools import izip, imap, product
-from scipy.spatial.distance import hamming
 from multiprocessing import Pool
 from functools import partial
 import numpy as np
@@ -9,73 +8,12 @@ from sys import stderr
 from cpython cimport bool
 import io
 import os
-
-# define fastq record type
-cdef class fastqRecord:
-    cdef:
-        public str id
-        public str seq
-        public str qual
-
-    def __init__(self, str id, str seq, str qual):
-        self.id = id
-        self.seq = seq
-        self.qual = qual
+from tgirt_seq_tools.fastq_tools import *
+from tgirt_seq_tools.fastq_tools cimport fastqRecord
 
 
-def readfq(fp): # this is a generator function
-    '''
-    A fastq iterator
-        https://github.com/lh3/readfq/blob/master/readfq.py
 
-
-    usage: readfq(fp)
-    ==============================
-    Parameter:
-
-    fp: file handle of a fastq file
-
-    return:
-    name: sequence id
-    seq: sequence
-    qual: quality
-    ===============================
-    '''
-    cdef:
-        str l, name, seq
-
-    last = None # this is a buffer keeping the last unprocessed line
-    while True: # mimic closure; is it a bad idea?
-        if not last: # the first record or a record following a fastq
-            for l in fp: # search for the start of the next record
-                if l[0] in '>@': # fasta/q header line
-                    last = l[:-1] # save this line
-                    break
-        if not last: break
-        name, seqs, last = last[1:].partition(" ")[0], [], None
-        for l in fp: # read the sequence
-            if l[0] in '@+>':
-                last = l[:-1]
-                break
-            seqs.append(l[:-1])
-        if not last or last[0] != '+': # this is a fasta record
-            yield fastqRecord(name, ''.join(seqs), None) # yield a fasta record
-            if not last: break
-        else: # this is a fastq record
-            seq, leng, seqs = ''.join(seqs), 0, []
-            for l in fp: # read the quality
-                seqs.append(l[:-1])
-                leng += len(l) - 1
-                if leng >= len(seq): # have read enough quality
-                    last = None
-                    yield fastqRecord(name, seq, ''.join(seqs)) # yield a fastq record
-                    break
-            if last: # reach EOF before reading enough quality
-                yield name, seq, None # yield a fasta record instead
-                break
-
-
-cpdef float hamming_distance(str expected_constant, str constant_region):
+cpdef int hamming_distance(str expected_constant, str constant_region):
     '''
     Calculating hamming distance from two strings
 
@@ -92,12 +30,20 @@ cpdef float hamming_distance(str expected_constant, str constant_region):
     edit distance: the edit distance between two string
     ===============================
     '''
-    cdef float dist = hamming(list(expected_constant),list(constant_region))
-    return dist
+
+    cdef:
+        str i, j
+        int hamming = 0
+
+    for i, j in zip(expected_constant, constant_region):
+        if i != j:
+            hamming += 1
+
+    return hamming
 
 
 def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
-            idx_base, usable_seq, float hamming_threshold,
+            idx_base, usable_seq, int hamming_threshold,
             fastqRecord read1, fastqRecord read2):
     """
     from each read1, clipped barcode and constant regions and make it as ID
@@ -134,7 +80,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
 
 
 def clip_read2(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
-            idx_base, usable_seq, float hamming_threshold,
+            idx_base, usable_seq, int hamming_threshold,
             fastqRecord read1, fastqRecord read2):
     """
     from each read1, clipped barcode and constant regions and make it as ID
@@ -182,11 +128,6 @@ def open_files(output_prefix, prefix_split):
         file_dict = {prefix: open('%s.fq' %(output_prefix), 'w') for prefix in barcode_prefix}
     return file_dict
 
-def gzopen(filename, read_flag = 'rb'):
-    if 'r' in read_flag:
-        return os.popen('zcat '+ filename)
-    elif 'w' in read_flag:
-        return open(filename, read_flag)
 
 
 def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
@@ -198,7 +139,7 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
     '''
     cdef:
         int usable_seq
-        float hamming_threshold
+        int hamming_threshold
         str out_R1, out_R2
         int out, count, out_count = 0
         fastqRecord read1, read2
@@ -206,7 +147,7 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
 
     constant_length = len(constant)
     constant_no_evaluation = constant_length < 1
-    hamming_threshold = float(allow_mismatch)/constant_length if not constant_no_evaluation else 0
+    hamming_threshold = allow_mismatch if not constant_no_evaluation else 0
     constant_no_evaluation = constant_length < 2
     usable_seq = idx_base if constant_no_evaluation else idx_base + constant_length
 
@@ -247,7 +188,7 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
     '''
     cdef:
         int usable_seq
-        float hamming_threshold
+        int hamming_threshold
         str out_R1, out_R2
         int out, count, out_count = 0
         fastqRecord read1, read2
@@ -255,7 +196,7 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
 
     constant_length = len(constant)
     constant_no_evaluation = constant_length < 1
-    hamming_threshold = float(allow_mismatch)/constant_length if not constant_no_evaluation else 0
+    hamming_threshold = allow_mismatch if not constant_no_evaluation else 0
     usable_seq = idx_base if constant_no_evaluation else idx_base + constant_length
 
 
