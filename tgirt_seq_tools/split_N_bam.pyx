@@ -1,5 +1,5 @@
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from tgirt_seq_tools.fragment_pairs import qualify_pairs, is_split_pair
+from tgirt_seq_tools.fragment_pairs import concordant_pairs, is_split_pair
 
 cpdef int parse_bam(AlignmentFile inbam,
                     AlignmentFile out_split_bam,
@@ -13,7 +13,7 @@ cpdef int parse_bam(AlignmentFile inbam,
         try:
             read1 = inbam.next()
             read2 = inbam.next()
-            if qualify_pairs(read1, read2):
+            if concordant_pairs(read1, read2):
                 if is_split_pair(read1, read2):
                     out_split_bam.write(read1)
                     out_split_bam.write(read2)

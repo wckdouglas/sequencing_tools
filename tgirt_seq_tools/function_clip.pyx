@@ -8,7 +8,7 @@ from sys import stderr
 from cpython cimport bool
 import io
 import os
-from tgirt_seq_tools.fastq_tools import *
+from tgirt_seq_tools.fastq_tools import readfq, gzopen
 from tgirt_seq_tools.fastq_tools cimport fastqRecord
 
 

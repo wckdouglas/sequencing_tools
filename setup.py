@@ -15,6 +15,11 @@ try:
 except ImportError:
     raise ImportError("Requires pysam to "
             "be installed before running setup.py (pip install pysam)")
+try:
+    import pyBigWig
+except ImportError:
+    raise ImportError("Requires pyBigWig to "
+            "be installed before running setup.py (pip install pyBigWig)")
 
 include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
