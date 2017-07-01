@@ -1,6 +1,6 @@
 # TGIRT-seq tools #
 
-This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of several ready-to-use scripts and two module for operations on fastq files and BAM alignments.
+This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of several [ready-to-use scripts](#scripts) and two [module](#modules) for operations on fastq files and BAM alignments.
 
 ---
 
@@ -33,7 +33,7 @@ pip install pyBigWig
 ```
 ---
 
-## Ready-to-use scripts ##
+<h2 id='scripts'> Ready-to-use scripts <h2>
 
 <h3 id='clip'>  Clip UMI from fastq </h3>
 
@@ -155,7 +155,7 @@ optional arguments:
 
 ---
 
-## Modules ##
+<h2 id='modules'> Modules </h2>
 
 ### fastq_tools ###
 
