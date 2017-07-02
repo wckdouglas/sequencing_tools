@@ -157,6 +157,52 @@ optional arguments:
 
 <h2 id='modules'> Modules </h2>
 
-### fastq_tools ###
+### tgirt_Seq_tools.fastq_tools ###
+
+<h4 id='fastq_record'> *class* tgirt_seq_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
+
+Parameters:
+- id - sequence name
+- sequence -  actual sequence
+- quality - base qualities of the sequence
+
+Example:
+```
+from tgirt_seq_tools.fastq_tools import fastqRecord
+seq_name = 'seq1'
+sequence = 'AACCTTGG'
+seq_qual = '!!!!!!!!'
+record = fastqRecord(seq_name, sequence, seq_qual)
+print record.id, record.seq, record.qual
+```
+
+
+#### *function* tgirt_seq_tools.fastq_tools.gzopen ####
+
+**python** gzip library for reading is [slow](http://aripollak.com/pythongzipbenchmarks/).This function provide a faster way open gzip file, using **GNU** ```zcat``` for backend.
+
+This can treat as normal open(filename, 'r') and return a file handle
+
+```
+fastq_tools.gzopen(filename, 'r')
+```
+
+return: file handle
+
+#### *iterator* fastq_tools.readfq(file) ####
+
+This is a fast [fastq iterator](https://github.com/lh3/readfq/blob/master/readfq.py) that returns a [fastqRecord](#fastq_record).
+
+Parameter:
+
+* fp -file handle of a fastq file
+
+Return:
+
+* fastqRecord object
+    * name - sequence id
+    * seq - sequence
+    * qual - quality
+
 
 ### bam_tools ###
