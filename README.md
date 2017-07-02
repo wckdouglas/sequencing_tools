@@ -159,7 +159,7 @@ optional arguments:
 
 ### tgirt_Seq_tools.fastq_tools ###
 
-<h4 id='fastq_record'> *class* tgirt_seq_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
+<h4 id='fastq_record'> <i>class</i> tgirt_seq_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
 
 Parameters:
 - id - sequence name
