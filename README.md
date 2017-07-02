@@ -33,7 +33,7 @@ pip install pyBigWig
 ```
 ---
 
-<h2 id='scripts'> Ready-to-use scripts <h2>
+<h2 id='scripts'> Ready-to-use scripts </h2>
 
 <h3 id='clip'>  Clip UMI from fastq </h3>
 
