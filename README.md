@@ -179,7 +179,7 @@ print record.id, record.seq, record.qual
 ```
 
 
-#### *function* tgirt_seq_tools.fastq_tools.gzopen ####
+#### *function* fastq_tools.gzopen ####
 
 **python** gzip library for reading is [slow](http://aripollak.com/pythongzipbenchmarks/).This function provide a faster way open gzip file, using **GNU** ```zcat``` for backend.
 
@@ -231,4 +231,73 @@ return:
 
 * out - reverse complemented sequence (string)
 
-### bam_tools ###
+### tgirt_seq_tools.bam_tools ###
+
+#### bam_tools.cigar_to_str ####
+
+cigar string to string, only extract cigar op == M, I or S
+
+usage: cigar_to_str(cigar_string)
+
+parameter:
+
+* cigar_string: standard cigar string from BAM file
+
+return:
+
+* cigar_seq: same length string as sequence, with every character matched the aligned status of the base
+
+example:
+```
+$ cigar_seq = cigar_to_str('3S5M1I3M')
+$ print cigar_seq
+'SSSMMMMMIMMM'
+```
+
+#### bam_tools.concordant_alignment ####
+
+Check if alignment is properly mapped flag in [99, 147, 163, 83]
+
+usage: concordant_alignment(alignment)
+
+parameter:
+
+* alignment - pysam alignment segment
+
+return:
+	
+* is_concordant - boolean
+
+
+#### bamtools.concordant_pairs ####
+
+Check if pair: read1.flag and read2.flag ==  (99, 147) or (83,163)
+
+usage: concordant_pairs(read1, read2)
+
+parameters:
+
+* read1 - read1 of the pair (pysam alignment segment)
+* read2 - read2 of the pair (pysam alignment segment)
+
+return:
+
+* Boolean - True if 83 and 163 or 99 and 147 for their flags otherwise False
+
+#### bamtools.fragment_ends ####
+
+Get start and end position of a pair of reads
+
+
+usage: fragment_ends(read1, read2)
+
+parameters:
+
+* read1 - read1 of the pair (pysam alignment segment)
+* read2 - read2 of the pair (pysam alignment segment)
+
+Return:
+
+* start - leftmost positoin of the pair
+* end - rightmost position of the pair
+
