@@ -231,9 +231,7 @@ return:
 
 * out - reverse complemented sequence (string)
 
-<div id='bam_tools'>
-### tgirt_seq_tools.bam_tools ###
-</div>
+<h3 id='bam_tools'> tgirt_seq_tools.bam_tools </h3>
 
 #### bam_tools.cigar_to_str ####
 
@@ -414,9 +412,7 @@ Yield:
 * base_qual - BAQ associated with the base
 
 
-<div id='split_cigar'>
-#### bam_tools.split_cigar ####
-</div>
+<h4 id='split_cigar'> bam_tools.split_cigar </h4>
     
 Split cigar string to numpy array
 
