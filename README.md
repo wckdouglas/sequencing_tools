@@ -301,7 +301,7 @@ Return:
 * start - leftmost positoin of the pair
 * end - rightmost position of the pair
 
-#### bam_tools.get_strand(...) ####
+#### bam_tools.get_strand ####
 
 Get strand of the paired fragment
 
