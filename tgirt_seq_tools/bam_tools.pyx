@@ -165,29 +165,27 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
 
 def make_cigar_seq(cigar_numbers, cigar_operator):
     '''
-    generator: convert number and operator into a sequence of aligned status of bases
+    Generator convert number and operator into a sequence of aligned status of bases, see split_cigar
 
     usage: make_cigar_seq(cigar_numbers, cigar_operator)
-    return cigar_base
 
-    ==================================
     parameter:
 
-    cigar_numbers: list of numbers
-    cigar_operator: list of single character
-
+        cigar_numbers - list of numbers in string format
+        cigar_operator - list of single character
+    
     return:
-    cigar_base: sequence of cigar base
 
-    example:
-    for c in make_cigar_seq('3S5M1I3M'):
-        print c
+        generator cigar_base - sequence of cigar base (Ignored soft clip)
+    
+    Example:
 
-    SSS
+    $ for c in make_cigar_seq(['3','5','1','3'],['S','M','I','M']):
+    $    print c
+
     MMMMM
     I
     MMM
-    ==================================
     '''
     cdef:
         str num, op
