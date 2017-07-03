@@ -231,7 +231,9 @@ return:
 
 * out - reverse complemented sequence (string)
 
+<div id='bam_tools'>
 ### tgirt_seq_tools.bam_tools ###
+</div>
 
 #### bam_tools.cigar_to_str ####
 
@@ -269,7 +271,7 @@ return:
 * is_concordant - boolean
 
 
-#### bamtools.concordant_pairs ####
+#### bam_tools.concordant_pairs ####
 
 Check if pair: read1.flag and read2.flag ==  (99, 147) or (83,163)
 
@@ -284,7 +286,7 @@ return:
 
 * Boolean - True if 83 and 163 or 99 and 147 for their flags otherwise False
 
-#### bamtools.fragment_ends ####
+#### bam_tools.fragment_ends ####
 
 Get start and end position of a pair of reads
 
@@ -301,3 +303,138 @@ Return:
 * start - leftmost positoin of the pair
 * end - rightmost position of the pair
 
+#### bam_tools.get_strand(...) ####
+
+Get strand of the paired fragment
+
+usage: get_strand(alignment)
+
+parameter:
+
+* alignment - an aligned segment in bam (pysam alignment segment)
+
+return:
+
+* strand  
+ - "+" if it is reverse read2 or forward read1
+ - "-" if it is reverse read1 or forward read2
+
+#### bam_tools.make_cigar_seq ####
+
+*Generator* convert number and operator into a sequence of aligned status of bases, see [split_cigar](#split_cigar)
+
+usage: make_cigar_seq(cigar_numbers, cigar_operator)
+
+parameter:
+
+* cigar_numbers - list of numbers in string format
+* cigar_operator - list of single character
+
+return:
+* *generator* cigar_base - sequence of cigar base (Ignored soft clip)
+
+
+Example:
+
+```
+$ for c in make_cigar_seq(['3','5','1','3'],['S','M','I','M']):
+$    print c
+
+MMMMM
+I
+MMM
+```
+
+#### bam_tools.make_regions ####
+
+*Generator* segment chromosome in to regions
+
+usage: make_regions(chromosome_length, how_many_bases_every_time)
+    
+Parameter:
+
+* chromosome_length - last base you want to look at
+* how_many_bases_every_time - segment size
+
+Return:
+
+* tuple (start,end)
+	1.  start - start of segment
+    2.  end - end of segment
+
+
+example:
+
+```
+$ for start, end in make_regions(100,10):
+$    print start, end
+
+0 10
+10 20
+20 30
+30 40
+40 50
+50 60
+60 70
+70 80
+80 90
+90 100
+```
+
+#### bam_tools.read_ends ####
+
+Get read end positions, output start and end position of a read
+
+usage: read_ends(AlignedSegment)
+
+Parameters:
+
+* AlignedSegment -  a pysam alignment
+
+Return:
+
+* start:  leftmost positoin of the read
+* end:    rightmost position of the read
+
+#### bam_tools.remove_insert ####
+
+*Generator* remove insertion base from aligned sequence
+
+usage: remove_insert(sequence, quality_string, cigar_seq)
+
+Parameters:
+
+* sequence - DNA sequence from BAM
+* quality_string - qual string from BAM
+* cigar_seq - cigar seq from [cigar_to_str](#bam_tools)
+
+Yield:
+
+* base - base that are not annotated as insertion
+* base_qual - BAQ associated with the base
+
+
+<div id='split_cigar'>
+#### bam_tools.split_cigar ####
+</div>
+    
+Split cigar string to numpy array
+
+usage: split_cigar(cigar_string)
+
+Parameters:
+
+* cigar_string: cigar string, e.g. 63M
+    
+Return:
+
+* *tuple* ([list of numbers],
+			[list of cigar operators correspongs to the numbers])
+
+Example:
+
+```
+$ split_cigar('63M')
+
+[[63], [M]]
+```
