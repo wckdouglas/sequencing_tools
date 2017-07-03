@@ -1,4 +1,5 @@
 import os
+import string
 
 # define fastq record type
 cdef class fastqRecord:
@@ -68,3 +69,38 @@ def gzopen(filename, read_flag = 'rb'):
         return os.popen('zcat '+ filename)
     elif 'w' in read_flag:
         return open(filename, read_flag)
+
+
+complement_seq = string.maketrans('ACTGNactgn','TGACNtgacn')
+def complement(seq):
+    """
+    Find complement a sequence.
+
+    ============================
+    parameter:
+    
+    string seq: sequence to be complemented
+    
+
+    return:
+
+    complemented sequence
+    """
+    return seq.translate(complement_seq)
+
+
+def reverse_complement(seq):
+    """
+    Reverse complement a sequence.
+
+    ============================
+    parameter:
+    
+    string seq: sequence to be reverse complemented
+    
+
+    return:
+
+    reverse complemented sequence
+    """
+    return seq[::-1].translate(complement_seq)
