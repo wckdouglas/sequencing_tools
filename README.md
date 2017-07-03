@@ -164,9 +164,9 @@ optional arguments:
 <h4 id='fastq_record'> <i>class</i> tgirt_seq_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
 
 Parameters:
-- id - sequence name
-- sequence -  actual sequence
-- quality - base qualities of the sequence
+- id - sequence name (string)
+- sequence -  actual sequence (string)
+- quality - base qualities of the sequence (string)
 
 Example:
 ```
@@ -206,5 +206,29 @@ Return:
     * seq - sequence
     * qual - quality
 
+#### fastq_tools.complement ####
+
+Find complement a sequence.
+
+parameter:
+
+* seq - sequence to be complemented (string)
+
+return:
+
+* out - complemented sequence (string)
+
+
+#### fastq_tools.reverse_complement ####
+
+Reverse complement a sequence.
+
+parameter:
+
+* seq - sequence to be reverse complemented (string)
+
+return:
+
+* out - reverse complemented sequence (string)
 
 ### bam_tools ###
