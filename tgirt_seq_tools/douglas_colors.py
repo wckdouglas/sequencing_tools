@@ -9,14 +9,13 @@ def douglas_palette():
     ax.legend()
     '''
     colors =['salmon',
-         'khaki',
+         'darkseagreen',
          'lightsteelblue',
          'plum',
-         'darkseagreen',
          'darkorange',
          'palevioletred',
-         'tan',
          'dimgray',
+         'khaki',
          'firebrick',
          'goldenrod',
          'navy',
@@ -24,6 +23,7 @@ def douglas_palette():
          'darkolivegreen',
         'darkgoldenrod',
         'crimson',
+         'tan',
         'black']
     try:
         import seaborn as sns
