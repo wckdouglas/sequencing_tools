@@ -434,3 +434,29 @@ $ split_cigar('63M')
 
 [[63], [M]]
 ```
+
+## Extra ##
+
+### tgirt_seq_tools.douglas_colors ###
+
+#### douglas_colors.douglas_palette ####
+
+Automatic set color if seaborn is installed, otherwise return list of colors
+
+usage: douglas_palette()
+
+Example:
+
+```
+import matplotlib.pyplot as plt
+import numpy as np
+from tgirt_seq_tools.douglas_colors import douglas_palette
+douglas_palette()
+plt.figure()
+ax=plt.subplot();
+for i in range(17):
+    ax.plot(np.arange(10),np.arange(10) + i,label=i)
+ax.legend(bbox_to_anchor=(1,1))
+```
+
+
