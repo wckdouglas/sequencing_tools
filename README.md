@@ -159,7 +159,10 @@ optional arguments:
 
 <h2 id='modules'> Modules </h2>
 
-### tgirt_Seq_tools.fastq_tools ###
+* [fastq_tools](#fastq)
+* [bam_tools](#bam_tools)
+
+<h3 id='fastq'> tgirt_Seq_tools.fastq_tools </h3>
 
 <h4 id='fastq_record'> <i>class</i> tgirt_seq_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
 
@@ -265,7 +268,7 @@ parameter:
 * alignment - pysam alignment segment
 
 return:
-	
+
 * is_concordant - boolean
 
 
@@ -313,7 +316,7 @@ parameter:
 
 return:
 
-* strand  
+* strand
  - "+" if it is reverse read2 or forward read1
  - "-" if it is reverse read1 or forward read2
 
@@ -348,7 +351,7 @@ MMM
 *Generator* segment chromosome in to regions
 
 usage: make_regions(chromosome_length, how_many_bases_every_time)
-    
+
 Parameter:
 
 * chromosome_length - last base you want to look at
@@ -413,7 +416,7 @@ Yield:
 
 
 <h4 id='split_cigar'> bam_tools.split_cigar </h4>
-    
+
 Split cigar string to numpy array
 
 usage: split_cigar(cigar_string)
@@ -421,7 +424,7 @@ usage: split_cigar(cigar_string)
 Parameters:
 
 * cigar_string: cigar string, e.g. 63M
-    
+
 Return:
 
 * *tuple* ([list of numbers],
@@ -435,7 +438,7 @@ $ split_cigar('63M')
 [[63], [M]]
 ```
 
-## Extra ##
+<h2 id='extra'> Extra </h2>
 
 ### tgirt_seq_tools.douglas_colors ###
 
