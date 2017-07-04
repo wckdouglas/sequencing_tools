@@ -459,4 +459,4 @@ for i in range(17):
 ax.legend(bbox_to_anchor=(1,1))
 ```
 
-
+![](https://raw.githubusercontent.com/wckdouglas/tgirt_seq_tools/master/img/palette.png)
