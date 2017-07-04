@@ -27,6 +27,7 @@ def douglas_palette():
         'black']
     try:
         import seaborn as sns
+        sns.set_style('white')
         palette = sns.color_palette(colors)
         sns.set_palette(palette)
         return 0
