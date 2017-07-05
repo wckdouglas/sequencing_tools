@@ -173,16 +173,17 @@ def make_cigar_seq(cigar_numbers, cigar_operator):
 
         cigar_numbers - list of numbers in string format
         cigar_operator - list of single character
-    
+
     return:
 
-        generator cigar_base - sequence of cigar base (Ignored soft clip)
-    
+        generator cigar_base - sequence of cigar base
+
     Example:
 
     $ for c in make_cigar_seq(['3','5','1','3'],['S','M','I','M']):
     $    print c
 
+    SSS
     MMMMM
     I
     MMM
@@ -191,8 +192,7 @@ def make_cigar_seq(cigar_numbers, cigar_operator):
         str num, op
 
     for num, op in zip(cigar_numbers, cigar_operator):
-        if op != 'S':
-            yield int(num)*op
+        yield int(num)*op
 
 cpdef str cigar_to_str(str cigar_string):
     '''

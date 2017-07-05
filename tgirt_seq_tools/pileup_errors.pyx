@@ -32,7 +32,7 @@ def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end)
         if not aln.is_unmapped and strand:
             positions = aln.get_reference_positions()
             sequence = aln.query_alignment_sequence
-            cigar_str = cigar_to_str(aln.cigarstring)
+            cigar_str = cigar_to_str(aln.cigarstring).replace('S','')
             qual_seq = aln.query_alignment_qualities
             adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
             crop_end = len(positions) - crop
