@@ -70,7 +70,7 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, bed_file, use_be
     if use_bed:
         base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
         for chrom, start, end in bed_generator(bed_file):
-            aln_count, base_dict = analyze_region(in_bam, chromosome, qual_threshold, crop, base_dict, start, end)
+            aln_count, base_dict = analyze_region(in_bam, chrom, qual_threshold, crop, base_dict, start, end)
             out = output_table(fa, chrom, base_dict, start, end)
     else:
         for chromosome in chromosomes:
