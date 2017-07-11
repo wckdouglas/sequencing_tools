@@ -21,7 +21,7 @@ def extract_bases(base_dict, pos):
 
 def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end):
     cdef:
-        int aln_count
+        int aln_count = 0
         AlignedSegment aln
         int pos, qual, seq_len
         str base
