@@ -34,7 +34,7 @@ def bed_generator(bed_file):
         for line in bed:
             fields = line.split('\t')
             chrom, start, end = itemgetter(0,1,2)(fields)
-            yield chrom, start, end
+            yield chrom, long(start), long(end)
 
 def output_table(fa, chromosome, base_dict, start, end):
     '''
