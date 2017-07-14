@@ -13,8 +13,8 @@ cdef int softClipSize(AlignedSegment aln):
         int cigar_num
 
     iterator = zip(*split_cigar(cigar))
-    clipped = max(cigar_num for cigar_num, cigar_char in iterator if cigar_char=='S')
-    return clipped.max() if clipped else 0
+    clipped = [cigar_num for cigar_num, cigar_char in iterator if cigar_char=='S']
+    return max(clipped) if clipped else 1
 
 
 cdef bool bowtie2_is_unique(AlignedSegment read1, AlignedSegment read2):
