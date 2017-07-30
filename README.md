@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wckdouglas/tgirt_seq_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/tgirt_seq_tools)
+
 # TGIRT-seq tools #
 
 This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of several [ready-to-use scripts](#scripts) and two [module](#modules) for operations on fastq files and BAM alignments.
