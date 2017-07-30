@@ -103,4 +103,4 @@ def reverse_complement(seq):
 
     reverse complemented sequence
     """
-    return seq[::-1].translate(complement_seq)
+    return complement(seq)[::-1]
