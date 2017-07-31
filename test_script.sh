@@ -1,5 +1,7 @@
 set -e
 
+python setup.py install
+
 python --version
 python -c "\
 try:
