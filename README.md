@@ -23,12 +23,12 @@ python setup.py install --user
 Prerequisits:
 
 * pysam>0.11.0
-* numpy
-* cython
+* numpy>=1.12.1
+* cython>=0.25
 * pyBigWig
 
 ```
-pip install pysam==0.11.0
+pip install pysam
 pip install numpy
 pip install cython
 pip install pyBigWig
