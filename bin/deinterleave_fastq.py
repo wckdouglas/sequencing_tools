@@ -43,7 +43,8 @@ def open_file(fastqfile):
 
 def main():
     if len(sys.argv) != 4:
-        sys.exit('usage: python %s <interleaved.fq> <f.fq> <r.fq>' %sys.argv[0])
+        sys.stdout.write('usage: python %s <interleaved.fq> <f.fq> <r.fq>\n' %sys.argv[0])
+        sys.exit(0)
     fastq_in = sys.argv[1]
     fastq_forward = sys.argv[2]
     fastq_reverse = sys.argv[3]
