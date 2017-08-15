@@ -19,7 +19,7 @@ def extract_bases(base_dict, pos):
 
 
 
-def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end):
+def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, start, end):
     cdef:
         int aln_count = 0
         AlignedSegment aln
@@ -30,15 +30,18 @@ def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end)
     indel = re.compile('I\D')
     for aln_count, aln in enumerate(bam.fetch(chromosome, start, end)):
         strand = get_strand(aln)
-        with_indel = indel.search(aln.cigarstring)
-        if not aln.is_unmapped and strand and not with_indel:
-            positions = aln.get_reference_positions()
-            sequence = aln.query_alignment_sequence
-            cigar_str = cigar_to_str(aln.cigarstring).replace('S','')
-            qual_seq = aln.query_alignment_qualities
-            adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
-            crop_end = len(positions) - crop
-            for i, (pos, (base, qual)) in enumerate(izip(positions, adjusted_sequence)):
-                if crop_end >= i >= crop and qual >= qual_threshold:
-                    base_dict[pos][strand][base] += 1
+        if not aln.is_unmapped and strand:
+            with_indel = indel.search(str(aln.cigarstring))
+            no_indel_condition = (not with_indel and no_indel)
+            with_indel_condition = (not no_indel)
+            if (with_indel_condition or no_indel_condition):
+                positions = aln.get_reference_positions()
+                sequence = aln.query_alignment_sequence
+                cigar_str = cigar_to_str(aln.cigarstring).replace('S','')
+                qual_seq = aln.query_alignment_qualities
+                adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
+                crop_end = len(positions) - crop
+                for i, (pos, (base, qual)) in enumerate(izip(positions, adjusted_sequence)):
+                    if crop_end >= i >= crop and qual >= qual_threshold:
+                        base_dict[pos][strand][base] += 1
     return aln_count, base_dict
