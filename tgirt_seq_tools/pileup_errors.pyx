@@ -27,9 +27,11 @@ def analyze_region(bam, chromosome, qual_threshold, crop, base_dict, start, end)
         str base
         int i, crop_end
 
+    indel = re.compile('I\D')
     for aln_count, aln in enumerate(bam.fetch(chromosome, start, end)):
         strand = get_strand(aln)
-        if not aln.is_unmapped and strand:
+        with_indel = indel.search(aln.cigarstring)
+        if not aln.is_unmapped and strand and not with_indel:
             positions = aln.get_reference_positions()
             sequence = aln.query_alignment_sequence
             cigar_str = cigar_to_str(aln.cigarstring).replace('S','')
