@@ -8,9 +8,9 @@ from sys import stderr
 from cpython cimport bool
 import io
 import os
-from tgirt_seq_tools.fastq_tools import readfq, gzopen
+from tgirt_seq_tools.fastq_tools import readfq, gzopen, reverse_complement
 from tgirt_seq_tools.fastq_tools cimport fastqRecord
-
+from cutadapt._align import locate
 
 
 cpdef int hamming_distance(str expected_constant, str constant_region):
@@ -41,9 +41,22 @@ cpdef int hamming_distance(str expected_constant, str constant_region):
 
     return hamming
 
+def trim_other_read(sequence, qual, barcode, adapter):
+
+    cdef:
+        int seq_start, seq_end, clip_start, clip_end, matched, error
+
+    clip_seq = barcode + adapter
+    located = locate(sequence ,clip_seq, 0.1)
+    if located:
+        seq_start, seq_end, clip_start, clip_end, matched, error = located
+        if clip_start == 0:
+            sequence, qual = sequence[:seq_start], qual[:seq_start]
+    return sequence, qual
+
 
 def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
-            idx_base, usable_seq, int hamming_threshold,
+            idx_base, usable_seq, int hamming_threshold, str adapter,
             fastqRecord read1, fastqRecord read2):
     """
     from each read1, clipped barcode and constant regions and make it as ID
@@ -54,7 +67,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
     cdef:
         float barcode_mean_qual
         bool no_N_barcode, hiQ_barcode, accurate_constant
-        str prefix, seq_record
+        str prefix, seq_record, seq_left, qual_left, seq_right, qual_right
 
 
     seq_name = read1.id.split(' ')[0]
@@ -72,15 +85,16 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
     if no_N_barcode and hiQ_barcode and accurate_constant:
         seq_left = read1.seq[usable_seq:]
         qual_left = read1.qual[usable_seq:]
+        seq_right, qual_right = trim_other_read(read2.seq, read2.qual, barcode, adapter)
         seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
-                    '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, read2.seq, read2.qual)
+                    '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
         return 1, prefix, seq_record
     else:
         return 0, None, None
 
 
 def clip_read2(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
-            idx_base, usable_seq, int hamming_threshold,
+            idx_base, usable_seq, int hamming_threshold, str adapter,
             fastqRecord read1, fastqRecord read2):
     """
     from each read1, clipped barcode and constant regions and make it as ID
@@ -91,7 +105,7 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
     cdef:
         float barcode_mean_qual
         bool no_N_barcode, hiQ_barcode, accurate_constant
-        str prefix, seq_record
+        str prefix, seq_record, seq_left, qual_left, seq_right, qual_right
 
 
     seq_name = read2.id.split(' ')[0]
@@ -109,7 +123,8 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
     if no_N_barcode and hiQ_barcode and accurate_constant:
         seq_right = read2.seq[usable_seq:]
         qual_right = read2.qual[usable_seq:]
-        seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, read1.seq, read1.qual) +\
+        seq_left, qual_left = trim_other_read(read1.seq, read1.qual, barcode, adapter)
+        seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
                     '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
         return 1, prefix, seq_record
     else:
@@ -127,6 +142,25 @@ def open_files(output_prefix, prefix_split):
     else:
         file_dict = {prefix: open('%s.fq' %(output_prefix), 'w') for prefix in barcode_prefix}
     return file_dict
+
+
+def clip_funtion(read, barcode_cut_off, constant,
+                constant_no_evaluation, prefix_split, idx_base,
+                usable_seq, hamming_threshold):
+    if read == 'read1':
+        adapter = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
+        clipping = partial(clip_read1, barcode_cut_off, constant,
+                        constant_no_evaluation, prefix_split, idx_base,
+                        usable_seq, hamming_threshold, adapter)
+
+    elif read == 'read2':
+        adapter = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+        clipping = partial(clip_read2, barcode_cut_off, constant,
+                        constant_no_evaluation, prefix_split, idx_base,
+                        usable_seq, hamming_threshold, adapter)
+
+    return clipping
+
 
 
 
@@ -154,16 +188,9 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
 
     file_dict = open_files(outputprefix, prefix_split)
     with gzopen(inFastq1, read_flag = 'rb') as in1, gzopen(inFastq2, read_flag = 'rb') as in2:
-        if read == 'read1':
-            clipping = partial(clip_read1, barcode_cut_off, constant,
-                            constant_no_evaluation, prefix_split, idx_base,
-                            usable_seq, hamming_threshold)
-
-        elif read == 'read2':
-            clipping = partial(clip_read2, barcode_cut_off, constant,
-                            constant_no_evaluation, prefix_split, idx_base,
-                            usable_seq, hamming_threshold)
-
+        clipping = clip_funtion(read, barcode_cut_off, constant,
+                        constant_no_evaluation, prefix_split, idx_base,
+                        usable_seq, hamming_threshold)
 
         for count, (read1, read2) in enumerate(izip(readfq(in1), readfq(in2))):
             out, prefix, seq_record = clipping(read1, read2)
@@ -201,15 +228,9 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
 
 
     with gzopen(inFastq1, read_flag = 'rb') as in1, gzopen(inFastq2, read_flag = 'rb') as in2:
-        if read == 'read1':
-            clipping = partial(clip_read1, barcode_cut_off, constant,
-                            constant_no_evaluation, prefix_split, idx_base,
-                            usable_seq, hamming_threshold)
-
-        elif read == 'read2':
-            clipping = partial(clip_read2, barcode_cut_off, constant,
-                            constant_no_evaluation, prefix_split, idx_base,
-                            usable_seq, hamming_threshold)
+        clipping = clip_funtion(read, barcode_cut_off, constant,
+                constant_no_evaluation, prefix_split, idx_base,
+                usable_seq, hamming_threshold)
 
         for count, (read1, read2) in enumerate(izip(readfq(in1), readfq(in2))):
             out, prefix, seq_record = clipping(read1, read2)
