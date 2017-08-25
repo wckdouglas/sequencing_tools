@@ -2,4 +2,3 @@ pysam>=0.11.0
 numpy>=1.12.1
 cython>=0.25
 pyBigWig
-cutadapt>=1.14

@@ -10,7 +10,7 @@ import io
 import os
 from tgirt_seq_tools.fastq_tools import readfq, gzopen, reverse_complement
 from tgirt_seq_tools.fastq_tools cimport fastqRecord
-from cutadapt._align import locate
+from tgirt_seq_tools.cutadapt_align import locate
 
 
 cpdef int hamming_distance(str expected_constant, str constant_region):

@@ -26,14 +26,12 @@ Prerequisits:
 * numpy>=1.12.1
 * cython>=0.25
 * pyBigWig
-* cutadapt>=1.14
 
 ```
 pip install pysam
 pip install numpy
 pip install cython
 pip install pyBigWig
-pip install cutadapt
 ```
 ---
 
