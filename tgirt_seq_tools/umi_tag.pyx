@@ -2,7 +2,7 @@ import pysam
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
 
-def add_umi_tag(in_bam, out_bam):
+def add_umi_tag(in_bam, out_bam, tag):
     cdef:
         AlignmentFile inbam, outbam
         AlignedSegment aln
@@ -17,7 +17,7 @@ def add_umi_tag(in_bam, out_bam):
                 splitted_id = id.split('_')
                 umi = splitted_id[0]
                 aln.query_name = splitted_id[1]
-                aln.tags += [('RX',umi)]
+                aln.tags += [(tag,umi)]
                 outbam.write(aln)
     print >> sys.stderr, 'Parsed %i alignments from %s to %s' %(aln_count, in_bam, out_bam)
     return 0

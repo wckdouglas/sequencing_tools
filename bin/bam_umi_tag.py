@@ -8,11 +8,12 @@ def getopt():
     parser.add_argument('-i', '--in_bam', required=True,
                         help = 'BAM file name, or stdin (-) ** name sorted' )
     parser.add_argument('-o','--out_bam', default='-', help = 'BAM file output (default: - )')
+    parser.add_argument('-t','--tag', default='RX', help = 'Tag id (default: RX )')
     return parser.parse_args()
 
 def main():
     args = getopt()
-    add_umi_tag(args.in_bam, args.out_bam)
+    add_umi_tag(args.in_bam, args.out_bam, args.tag)
     return 0
 
 if __name__ == '__main__':
