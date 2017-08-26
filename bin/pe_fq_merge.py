@@ -16,11 +16,14 @@ def getOptions():
             help='Merged fastq file (default: -)')
     parser.add_argument('-m', '--min_len', default=18, type=int,
             help='Minimum length of sequence to output (default: 18)')
+    parser.add_argument('-e', '--error', default=0.1, type=float,
+            help='Maximum error rate of alignment (default: 0.1)')
     return parser.parse_args()
 
 def main():
     args = getOptions()
-    merge_interleaved(args.infile, args.outfile, args.min_len)
+    merge_interleaved(args.infile, args.outfile, 
+            args.min_len, args.error)
 
 
 if __name__ == '__main__':

@@ -38,7 +38,7 @@ cdef correct_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
     return seq, qual
 
 
-def merge_interleaved(infile, outfile, min_len):
+def merge_interleaved(infile, outfile, min_len, error):
     cdef:
         fastqRecord R1, R2
         int record_count = 0
@@ -57,7 +57,7 @@ def merge_interleaved(infile, outfile, min_len):
             assert r1_id == r2_id, 'Not interleaved'
 
             r2_seq = reverse_complement(R2.seq)
-            aligned = locate(R1.seq, r2_seq, 0.1)
+            aligned = locate(R1.seq, r2_seq, error)
             if aligned:
                 r1_start, r1_end, r2_start, r2_end, match, error = aligned 
                 if match > min_len:
