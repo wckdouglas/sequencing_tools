@@ -42,7 +42,7 @@ setup(
     scripts = ['bin/reduce_multi_reads.py','bin/split_uniq_bam.py',
         'bin/filterSoftClip.py','bin/bam_to_bed.py','bin/bedpe_to_bed.py',
         'bin/depth_to_bigwig.py', 'bin/split_bam.py','bin/stranded_base_count.py',
-        'bin/bam_umi_tag.py','bin/clip_fastq.py','bin/deinterleave_fastq.py'],
+        'bin/bam_umi_tag.py','bin/clip_fastq.py','bin/deinterleave_fastq.py','bin/pe_fq_merge.py'],
     ext_modules = ext_modules,
     install_requires=[
           'cython',
