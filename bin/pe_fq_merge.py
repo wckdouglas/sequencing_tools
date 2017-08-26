@@ -7,7 +7,8 @@ def getOptions():
     '''
     reading input
     '''
-    descriptions = 'Merging interleaved, paired-end fastq file and output overlapped regions only with error correction'
+    descriptions = 'Merging interleaved, paired-end fastq file and output overlapped '+ \
+        'regions only with error correction using cutadapt module to find overlapping regions'
     parser = argparse.ArgumentParser(description=descriptions)
     parser.add_argument('-i', '--infile', default='-',
         help='Interleaved Fastq files (default: -)')

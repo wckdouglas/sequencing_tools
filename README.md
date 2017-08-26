@@ -79,7 +79,7 @@ optional arguments:
 usage: pe_fq_merge.py [-h] [-i INFILE] [-o OUTFILE] [-m MIN_LEN]
 
 Merging interleaved, paired-end fastq file and output overlapped regions only
-with error correction
+with error correction using cutadapt module to find overlapping regions
 
 optional arguments:
   -h, --help            show this help message and exit
