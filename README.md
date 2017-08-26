@@ -73,6 +73,24 @@ optional arguments:
 
 ```
 
+### Merging paired-end fastq ###
+
+```
+usage: pe_fq_merge.py [-h] [-i INFILE] [-o OUTFILE] [-m MIN_LEN]
+
+Merging interleaved, paired-end fastq file and output overlapped regions only
+with error correction
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INFILE, --infile INFILE
+                        Interleaved Fastq files (default: -)
+  -o OUTFILE, --outfile OUTFILE
+                        Merged fastq file (default: -)
+  -m MIN_LEN, --min_len MIN_LEN
+                        Minimum length of sequence to output (default: 18)
+```
+
 ### Split unique bam ###
 
 This script split bowtie2/hisat2 bam file to uniquely mapped or multiple mapped alignments
