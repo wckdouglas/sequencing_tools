@@ -8,7 +8,7 @@ from tgirt_seq_tools.cutadapt_align import locate
 from itertools import izip
 
 
-cpdef calibrate_qual(str b1, str b2, str q1, str q2):
+cdef calibrate_qual(str b1, str b2, str q1, str q2):
     '''
     https://github.com/ExpressionAnalysis/ea-utils/blob/wiki/FastqJoin.md
     '''
@@ -41,7 +41,7 @@ cdef correct_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
     return seq, qual
 
 
-def merge_interleaved(infile, outfile, min_len, error):
+def merge_interleaved(infile, outfile, min_len, error_toleration):
     cdef:
         fastqRecord R1, R2
         int record_count = 0
@@ -60,9 +60,9 @@ def merge_interleaved(infile, outfile, min_len, error):
             assert r1_id == r2_id, 'Not interleaved'
 
             r2_seq = reverse_complement(R2.seq)
-            aligned = locate(R1.seq, r2_seq, error)
+            aligned = locate(R1.seq, r2_seq, error_toleration)
             if aligned:
-                r1_start, r1_end, r2_start, r2_end, match, error = aligned 
+                r1_start, r1_end, r2_start, r2_end, match, err = aligned 
                 if match > min_len:
     #                print(aligned, file=sys.stdout)
     #                print(R1.seq[r1_start:r1_end], file=sys.stdout)
