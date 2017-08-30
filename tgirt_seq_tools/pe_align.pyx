@@ -8,19 +8,22 @@ from tgirt_seq_tools.cutadapt_align import locate
 from itertools import izip
 
 
-cdef calibrate_qual(str b1, str b2, str q1, str q2):
+cpdef calibrate_qual(str b1, str b2, str q1, str q2):
     '''
     https://github.com/ExpressionAnalysis/ea-utils/blob/wiki/FastqJoin.md
     '''
     cdef:
-        int qual = 33
-        str base = 'N'
+        int qual
+        str base 
 
     if b1==b2:
-        qual = ord(q1) + ord(q2)
-        qual = 73 if qual > 73 else qual
+        qual = ord(q1) + ord(q2) - 66
+        qual = 40 if qual > 40 else qual
         base = b1
-    return base, chr(qual)
+    else:
+        base = 'N'
+        qual = 0
+    return base, chr(qual + 33)
 
         
 
