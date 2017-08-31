@@ -76,7 +76,7 @@ cdef make_concensus(fastqRecord R1, fastqRecord R2,
     aligned = locate(R1.seq, r2_seq, error_toleration)
     if aligned:
         r1_start, r1_end, r2_start, r2_end, match, err = aligned 
-        if match > min_len:
+        if match >= min_len:
 #                print(aligned, file=sys.stdout)
 #                print(R1.seq[r1_start:r1_end], file=sys.stdout)
 #                print(r2_seq[r2_start:r2_end], file=sys.stdout)
