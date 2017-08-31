@@ -64,13 +64,16 @@ cdef correct_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
 
 cdef make_concensus(fastqRecord R1, fastqRecord R2, 
             float error_toleration, int min_len):
+    '''
+    reverse complement read2 sequence and find matching position on read1
+    return concensus sequence
+    '''
     
     cdef:
         str seq, qual, r2_seq, r1_id, r2_id
         str out_line = None
     
-    r1_id, r2_id = R1.id.split('/')[0], R2.id.split('/')[0]
-    assert r1_id == r2_id, 'Not interleaved'
+    r1_id = R1.id.split('/')[0]
 
     r2_seq = reverse_complement(R2.seq)
     aligned = locate(R1.seq, r2_seq, error_toleration)
