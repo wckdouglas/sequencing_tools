@@ -241,14 +241,14 @@ Parameter:
 Return:
 
 * R1: fastqRecord object
-        name: sequence id
-        seq: sequence
-        qual: quality
+    * name: sequence id
+    * seq: sequence
+    * qual: quality
 
 * R2: fastqRecord object
-        name: sequence id
-        seq: sequence
-        qual: quality
+    * name: sequence id
+    * seq: sequence
+    * qual: quality
 
 #### fastq_tools.complement ####
 
