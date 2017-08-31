@@ -25,7 +25,7 @@ def main():
     args = getOptions()
     outfile=args.outfile
     outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else open(outfile,'w')
-    merge_interleaved(args.infile, outfile_handle, 
+    merge_interleaved(args.interleaved, outfile_handle, 
             args.min_len, args.error)
 
 

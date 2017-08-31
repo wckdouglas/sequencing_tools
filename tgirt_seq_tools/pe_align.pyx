@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from tgirt_seq_tools.fastq_tools import readfq, reverse_complement
+from tgirt_seq_tools.fastq_tools import read_interleaved, reverse_complement
 from tgirt_seq_tools.fastq_tools cimport fastqRecord
 import sys
 from tgirt_seq_tools.cutadapt_align import locate
@@ -96,18 +96,12 @@ def merge_interleaved(infile, outfile_handle, min_len, error_toleration):
 
     infile_handle = sys.stdin if infile == '-' or infile == '/dev/stdin' else open(infile,'r')
 
-    fastq_file = readfq(infile_handle)
-    try:
-        while True:
-            R1 = fastq_file.next()
-            R2 = fastq_file.next()
-            out_line = make_concensus(R1, R2, error_toleration, min_len)
-            if out_line:
-                out_count += 1 
-                print(out_line, file=outfile_handle)
-            record_count += 1
+    for R1, R2 in read_interleaved(infile_handle):
+        out_line = make_concensus(R1, R2, error_toleration, min_len)
+        if out_line:
+            out_count += 1 
+            print(out_line, file=outfile_handle)
+        record_count += 1
 
-    except StopIteration:
-        print('Parsed %i records' %(record_count), file=sys.stderr)
-        print('Merged %i records' %(out_count), file=sys.stderr)
-
+    print('Parsed %i records' %(record_count), file=sys.stderr)
+    print('Merged %i records' %(out_count), file=sys.stderr)

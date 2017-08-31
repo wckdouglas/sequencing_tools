@@ -104,3 +104,46 @@ def reverse_complement(seq):
     reverse complemented sequence
     """
     return complement(seq)[::-1]
+
+
+def read_interleaved(infile):   
+    '''
+    A interleaved fastq iterator
+
+    usage: parse_interleaved(fp)
+    ==============================
+    Parameter:
+
+    fp: file handle of a fastq file
+
+    return:
+
+    R1: fastqRecord object
+        name: sequence id
+        seq: sequence
+        qual: quality
+
+    R2: fastqRecord object
+        name: sequence id
+        seq: sequence
+        qual: quality
+
+    ===============================
+    '''
+
+    cdef:
+        str r1_id, r2_id
+        fastqRecord R1, R2
+    fastq_file = readfq(infile)
+
+    try:
+        while True:
+            R1 = fastq_file.next()
+            R2 = fastq_file.next()
+    
+            r1_id, r2_id = R1.id.split('/')[0], R2.id.split('/')[0]
+            assert r1_id == r2_id, 'Not interleaved'
+            yield R1, R2
+
+    except StopIteration:
+        pass

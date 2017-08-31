@@ -230,6 +230,26 @@ Return:
     * seq - sequence
     * qual - quality
 
+#### *iterator* fastq_tools.read_interleaved(file) ####
+
+This is a interleaved fastq file parser, return a pairs of read
+
+Parameter:
+
+* fp: file handle of a interleaved fastq file
+
+Return:
+
+* R1: fastqRecord object
+        name: sequence id
+        seq: sequence
+        qual: quality
+
+* R2: fastqRecord object
+        name: sequence id
+        seq: sequence
+        qual: quality
+
 #### fastq_tools.complement ####
 
 Find complement a sequence.
