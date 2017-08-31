@@ -6,7 +6,7 @@ import argparse
 def getopt():
     parser = argparse.ArgumentParser(description = 'Putting UMI as RX tag in bam, enables picard Markduplicates with BARCODE_TAG=RX')
     parser.add_argument('-i', '--in_bam', required=True,
-                        help = 'BAM file name, or stdin (-) ** name sorted' )
+                        help = 'BAM file name, or stdin (-)' )
     parser.add_argument('-o','--out_bam', default='-', help = 'BAM file output (default: - )')
     parser.add_argument('-t','--tag', default='RX', help = 'Tag id (default: RX )')
     return parser.parse_args()
