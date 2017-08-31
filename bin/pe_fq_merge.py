@@ -2,6 +2,7 @@
 
 from tgirt_seq_tools.pe_align import merge_interleaved
 import argparse
+import sys
 
 def getOptions():
     '''
@@ -10,7 +11,7 @@ def getOptions():
     descriptions = 'Merging interleaved, paired-end fastq file and output overlapped '+ \
         'regions only with error correction using cutadapt module to find overlapping regions'
     parser = argparse.ArgumentParser(description=descriptions)
-    parser.add_argument('-i', '--infile', default='-',
+    parser.add_argument('-i', '--interleaved', default='-',
         help='Interleaved Fastq files (default: -)')
     parser.add_argument('-o', '--outfile', default='-',
             help='Merged fastq file (default: -)')
@@ -22,7 +23,9 @@ def getOptions():
 
 def main():
     args = getOptions()
-    merge_interleaved(args.infile, args.outfile, 
+    outfile=args.outfile
+    outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else open(outfile,'w')
+    merge_interleaved(args.infile, outfile_handle, 
             args.min_len, args.error)
 
 
