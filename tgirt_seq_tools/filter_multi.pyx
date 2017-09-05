@@ -65,6 +65,7 @@ class read_pairs:
             self.out_read2 = read2[0]
 
     def output_read(self):
+        read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
         return self.out_read1, self.out_read2
 
 regular_chroms = range(1,23)
@@ -86,6 +87,10 @@ def fix_flag(read1, read2):
 
     read1.flag = read1_flag
     read2.flag = read2_flag
+    read1.is_supplementary = False
+    read1.is_secondary = False
+    read2.is_supplementary = False
+    read2.is_secondary = False
     return read1, read2
 
 def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
@@ -122,7 +127,6 @@ def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
             #After all reading whole file, clean out memory and output last alignment group
             read_group.generate_filter_alingments()
             read1_aln, read2_aln = read_group.output_read()
-            read1_aln, read2_aln = fix_flag(read1_aln, read2_aln)
 
             out_sam.write(read1_aln)
             out_sam.write(read2_aln)
