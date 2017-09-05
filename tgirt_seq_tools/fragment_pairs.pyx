@@ -46,7 +46,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size):
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
                 assert read_1.query_name == read_2.query_name, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
-                if concordant_pairs(read_1, read_2):
+                if concordant_pairs(read_1, read_2) and not read_1.is_duplicate and not read_2.is_duplicate:
                     chrom = read_1.reference_name
                     strand = '-' if read_1.is_reverse else '+'
                     start, end = fragment_ends(read_1, read_2)
