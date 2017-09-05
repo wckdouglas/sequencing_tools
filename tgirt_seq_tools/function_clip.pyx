@@ -187,7 +187,9 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
 
 
     file_dict = open_files(outputprefix, prefix_split)
-    with gzopen(inFastq1, read_flag = 'rb') as in1, gzopen(inFastq2, read_flag = 'rb') as in2:
+    read_flag1 = 'rb' if inFastq1.endswith('.gz') else 'r' 
+    read_flag2 = 'rb' if inFastq2.endswith('.gz') else 'r' 
+    with gzopen(inFastq1, read_flag = read_flag1) as in1, gzopen(inFastq2, read_flag = read_flag2) as in2:
         clipping = clip_funtion(read, barcode_cut_off, constant,
                         constant_no_evaluation, prefix_split, idx_base,
                         usable_seq, hamming_threshold)
@@ -227,7 +229,9 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
     usable_seq = idx_base if constant_no_evaluation else idx_base + constant_length
 
 
-    with gzopen(inFastq1, read_flag = 'rb') as in1, gzopen(inFastq2, read_flag = 'rb') as in2:
+    read_flag1 = 'rb' if inFastq1.endswith('.gz') else 'r' 
+    read_flag2 = 'rb' if inFastq2.endswith('.gz') else 'r' 
+    with gzopen(inFastq1, read_flag = read_flag1) as in1, gzopen(inFastq2, read_flag = read_flag2) as in2:
         clipping = clip_funtion(read, barcode_cut_off, constant,
                 constant_no_evaluation, prefix_split, idx_base,
                 usable_seq, hamming_threshold)
