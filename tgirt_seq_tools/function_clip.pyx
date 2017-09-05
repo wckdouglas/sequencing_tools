@@ -46,8 +46,8 @@ def trim_other_read(sequence, qual, barcode, adapter):
     cdef:
         int seq_start, seq_end, clip_start, clip_end, matched, error
 
-    clip_seq = barcode + adapter
-    located = locate(sequence ,reverse_complement(clip_seq), 0.1)
+    clip_seq = reverse_complement(barcode) + adapter
+    located = locate(sequence ,clip_seq, 0.1)
     if located:
         seq_start, seq_end, clip_start, clip_end, matched, error = located
         if clip_start == 0:
