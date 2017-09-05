@@ -78,6 +78,15 @@ def is_regular_chrom(chroms):
 def is_ribo_chrom(chroms):
     return np.array([True if 'gi' in chrom else False for chrom in chroms])
 
+def fix_flag(read1, read2):
+    read1_flag, read2_flag = 99, 147
+    if read1.is_reverse:
+        read1_flag = 83
+        read2_flag = 163
+
+    read1.flag = read1_flag
+    read2.flag = read2_flag
+    return read1, read2
 
 def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
 
@@ -113,6 +122,8 @@ def processBam(in_bam, out_bam, bam_in_bool, bam_out_bool):
             #After all reading whole file, clean out memory and output last alignment group
             read_group.generate_filter_alingments()
             read1_aln, read2_aln = read_group.output_read()
+            read1_aln, read2_aln = fix_flag(read1_aln, read2_aln)
+
             out_sam.write(read1_aln)
             out_sam.write(read2_aln)
             out_read_count += 1
