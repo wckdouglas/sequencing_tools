@@ -1,4 +1,6 @@
 from distutils.core import setup, Extension
+import glob
+
 try:
     from Cython.Build import cythonize
     from Cython.Distutils import build_ext
@@ -20,6 +22,16 @@ try:
 except ImportError:
     raise ImportError("Requires pyBigWig to "
             "be installed before running setup.py (pip install pyBigWig)")
+try:
+    import cjson
+except ImportError:
+    raise ImportError("Requires python-cjson to "
+            "be installed before running setup.py (pip install python-cjson)")
+try:
+    import scipy
+except ImportError:
+    raise ImportError("Requires scipy to "
+            "be installed before running setup.py (pip install scipy)")
 
 include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
@@ -39,15 +51,16 @@ setup(
     license='MIT',
     packages=['tgirt_seq_tools'],
     zip_safe=False,
-    scripts = ['bin/reduce_multi_reads.py','bin/split_uniq_bam.py',
-        'bin/filterSoftClip.py','bin/bam_to_bed.py','bin/bedpe_to_bed.py',
-        'bin/depth_to_bigwig.py', 'bin/split_bam.py','bin/stranded_base_count.py',
-        'bin/bam_umi_tag.py','bin/clip_fastq.py','bin/deinterleave_fastq.py','bin/pe_fq_merge.py'],
+    scripts = glob.glob('bin/*'),
     ext_modules = ext_modules,
     install_requires=[
           'cython',
           'numpy',
-          'pysam>0.11.0'
+          'pysam>0.11.0',
+          'matplotlib>=2.0.0',
+          'seaborn>-0.7.1',
+          'python-cjson>=1.2.0',
+          'scipy>=0.19.0'
       ],
     cmdclass = {'build_ext': build_ext}
 )
