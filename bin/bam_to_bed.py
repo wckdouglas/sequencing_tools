@@ -17,6 +17,8 @@ def getopt():
                         help = 'minimum fragment size to report')
     parser.add_argument('-M','--max_size', default=10000, type=int,
                         help = 'minimum fragment size to report')
+    parser.add_argument('-t','--tag', default=None,
+                        help = 'tag to extract')
 
     return parser.parse_args()
 
@@ -24,9 +26,10 @@ def main():
     args = getopt()
     in_bam = args.in_bam
     out_file = sys.stdout if args.out_bed == '-' else open(args.out_bed, 'w')
+    tag = args.tag
     if args.max_size <= args.min_size:
         sys.exit('!!!!! Min fragment size > Max fragment size') 
-    bam_to_bed(in_bam, out_file, args.min_size, args.max_size)
+    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tags)
     return 0
 
 if __name__ == '__main__':

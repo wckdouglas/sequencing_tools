@@ -25,7 +25,7 @@ cdef class read_fragment:
     def end_site(self):
         return self.end
 
-def bam_to_bed(bam_file, out_file, int min_size, int max_size):
+def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag):
     '''
     Read two alignments at a time,
     assume they are pairs,
@@ -46,13 +46,26 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size):
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
                 assert read_1.query_name == read_2.query_name, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+
+                if tag:
+                    rt1 = read_1.get_tag(tag)
+                    rt2 = read_2.get_tag(tag)
+                    assert rt2 == rt1, 'Paired not stored together: %s, %s'  %(rt1, rt2)
+
+
                 if concordant_pairs(read_1, read_2) and not read_1.is_duplicate and not read_2.is_duplicate:
                     chrom = read_1.reference_name
                     strand = '-' if read_1.is_reverse else '+'
                     start, end = fragment_ends(read_1, read_2)
                     fragment_size = end - start
                     if min_size < fragment_size < max_size:
-                        line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
+                        if tag:
+                            line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
+                                                        read_1.query_name,
+                                                        fragment_size,strand,
+                                                        rt1)
+                        else:
+                            line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
                                                         read_1.query_name,
                                                         fragment_size,strand)
                         pair_count += 1
