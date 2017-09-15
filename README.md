@@ -498,7 +498,7 @@ from tgirt_seq_tools.douglas_colors import douglas_palette
 douglas_palette()
 plt.figure()
 ax=plt.subplot();
-for i in range(17):
+for i in range(14):
     ax.plot(np.arange(10),np.arange(10) - i,label=i)
 ax.legend(bbox_to_anchor=(1,1))
 plt.savefig('palette.png',bbox_inches='tight')
