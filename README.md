@@ -505,3 +505,22 @@ plt.savefig('palette.png',bbox_inches='tight')
 ```
 
 ![](https://raw.githubusercontent.com/wckdouglas/tgirt_seq_tools/master/img/palette.png)
+
+#### douglas_colors.cor_plot ####
+
+A specialized paired correlation plot
+
+```
+from tgirt_seq_tools.douglas_colors import cor_plot
+import numpy as np
+import pandas as pd
+import seaborn as sns
+sns.set_style('white')
+
+d = np.random.rand(100,10)
+d = pd.DataFrame(d)
+fig =cor_plot(d)
+fig.savefig('cor.png',bbox_inches='tight')
+```
+
+![](https://raw.githubusercontent.com/wckdouglas/tgirt_seq_tools/master/img/cor.png)

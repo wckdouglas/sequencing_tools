@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 def douglas_palette():
     '''
     Automatic set color if seaborn is installed, otherwise return list of colors
@@ -18,3 +21,53 @@ def douglas_palette():
         return colors
     except:
         return colors
+
+
+def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), 
+            diagonal_line = True, method = 'pearson'):
+
+    sns.set_style('white')
+    assert method in ['spearman', 'pearson'], 'Wrong correlation method'
+    box_size = len(plot_df.columns) 
+    for row in range(box_size):
+        for col in range(box_size):
+            ax = fig.add_subplot(box_size, box_size, row * box_size + col + 1)
+
+            #### Right side plots
+            if col < row:
+                ax.scatter(plot_df.iloc[:,col], plot_df.iloc[:,row])
+
+                if diagonal_line:
+                    plot_data = plot_df[[col,row]]
+                    maxima = plot_data.max()
+                    minima = plot_data.min()
+                    ax.plot([minima,maxima],[minima,maxima], color='red')
+
+            #### Diagonal plots
+            elif col == row:
+                sns.distplot(plot_df.iloc[:,row], 
+                         ax = ax, color = 'salmon',
+                        hist=False)
+
+            #### Right side plot ->>> correlation value
+            else:
+                correlation = plot_df\
+                    .iloc[:,[col,row]]\
+                    .corr(method=method)\
+                    .reset_index()\
+                    .iloc[1,1]
+                ax.text(0.3, 0.5, '%.3f' %correlation, fontsize=20)
+            
+            if col != 0:
+                ax.yaxis.set_visible(False)
+            else:
+                label = plot_df.columns[row]
+                ax.set_ylabel(label)
+                
+            if row != box_size -1:
+                ax.xaxis.set_visible(False)
+            else:
+                label = plot_df.columns[col]
+                ax.set_xlabel(label)        
+    sns.despine()
+    return fig
