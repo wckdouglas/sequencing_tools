@@ -25,6 +25,21 @@ def douglas_palette():
 
 def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), 
             diagonal_line = True, method = 'pearson'):
+    '''
+    given a data frame with columns storing data for each sample,
+    output a matplotlib figure object as correlation plots.
+
+    usage: cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), diagonal_line = True, method = 'pearson')
+    
+    input:
+    * plot_df: a pandas dataframe
+    * fig: matplotlib figure object (optional)
+    * diagonal_line: Boolean controlling if a diagonal line should be drawn
+    * method: correlation method, [spearman or pearson]
+
+    output:
+    * fig: matplotlib figure object
+    '''
 
     sns.set_style('white')
     assert method in ['spearman', 'pearson'], 'Wrong correlation method'
@@ -38,7 +53,7 @@ def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)),
                 ax.scatter(plot_df.iloc[:,col], plot_df.iloc[:,row])
 
                 if diagonal_line:
-                    plot_data = plot_df[[col,row]]
+                    plot_data = plot_df.iloc[:, [col,row]]
                     maxima = plot_data.max()
                     minima = plot_data.min()
                     ax.plot([minima,maxima],[minima,maxima], color='red')

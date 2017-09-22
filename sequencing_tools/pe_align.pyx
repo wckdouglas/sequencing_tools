@@ -6,6 +6,8 @@ from tgirt_seq_tools.fastq_tools cimport fastqRecord
 import sys
 from tgirt_seq_tools.cutadapt_align import locate
 from itertools import izip
+from functools import partial
+from cpython cimport bool
 
 
 cdef calibrate_qual(str b1, str b2, str q1, str q2):
@@ -62,8 +64,10 @@ cdef correct_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
         qual += q
     return seq, qual
 
-cdef make_concensus(fastqRecord R1, fastqRecord R2, 
-            float error_toleration, int min_len):
+
+cdef make_concensus(float error_toleration, int min_len, 
+                bool report_all,
+                fastqRecord R1, fastqRecord R2):
     '''
     reverse complement read2 sequence and find matching position on read1
     return concensus sequence
@@ -72,10 +76,16 @@ cdef make_concensus(fastqRecord R1, fastqRecord R2,
     cdef:
         str seq, qual, r2_seq, r1_id, r2_id
         str out_line = None
+        str left_add_seq = ''
+        str right_add_seq =''
+        str left_add_qual = ''
+        str right_add_qual = ''
+
     
     r1_id = R1.id.split('/')[0]
 
     r2_seq = reverse_complement(R2.seq)
+    r2_qual = R2.qual[::-1]
     aligned = locate(R1.seq, r2_seq, error_toleration)
     if aligned:
         r1_start, r1_end, r2_start, r2_end, match, err = aligned 
@@ -86,12 +96,23 @@ cdef make_concensus(fastqRecord R1, fastqRecord R2,
             seq, qual = correct_error(R1.seq[r1_start:r1_end], 
                                     R1.qual[r1_start:r1_end], 
                                     r2_seq[r2_start:r2_end],
-                                    R2.qual[::-1][r2_start:r2_end])
+                                    r2_qual[r2_start:r2_end])
+            if report_all:
+                if r1_start != 0:
+                    left_add_seq = R1.seq[:r1_start] 
+                    left_add_qual = R1.qual[:r1_start]
+
+                if r2_end != len(r2_seq):
+                    right_add_seq = r2_seq[r2_end:]
+                    right_add_qual = r2_qual[r2_end:]
+                seq = left_add_seq + seq + right_add_seq
+                qual = left_add_qual + qual + right_add_qual
+
             out_line = '@%s\n%s\n+\n%s' %(r1_id,seq, qual)
     return out_line
 
 
-def merge_interleaved(infile, outfile_handle, min_len, error_toleration):
+def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_all):
     cdef:
         fastqRecord R1, R2
         int record_count = 0
@@ -99,8 +120,10 @@ def merge_interleaved(infile, outfile_handle, min_len, error_toleration):
 
     infile_handle = sys.stdin if infile == '-' or infile == '/dev/stdin' else open(infile,'r')
 
+    concensus_builder = partial(make_concensus, error_toleration, min_len, report_all)
+
     for R1, R2 in read_interleaved(infile_handle):
-        out_line = make_concensus(R1, R2, error_toleration, min_len)
+        out_line = concensus_builder(R1, R2)
         if out_line:
             out_count += 1 
             print(out_line, file=outfile_handle)
