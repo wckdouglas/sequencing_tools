@@ -198,9 +198,9 @@ optional arguments:
 * [fastq_tools](#fastq)
 * [bam_tools](#bam_tools)
 
-<h3 id='fastq'> tgirt_Seq_tools.fastq_tools </h3>
+<h3 id='fastq'> sequencing_tools.fastq_tools </h3>
 
-<h4 id='fastq_record'> <i>class</i> sequencing_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
+<h4 id='fastq_record'> <i>class</i> fastq_tools.fastqRecord(id, seq, qual) </h4>
 
 Parameters:
 - id - sequence name (string)
