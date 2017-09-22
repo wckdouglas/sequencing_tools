@@ -20,7 +20,7 @@ def main():
     with open(fastq_forward.rstrip('.gz'),'w') as r1, \
             open(fastq_reverse.rstrip('.gz'),'w') as r2:
         seq_id_1 = ''
-        in_file = open_file(fastq_in) if fastq_in != '-' else sys.stdin
+        in_file = open(fastq_in) if fastq_in != '-' else sys.stdin
         for R1, R2 in read_interleaved(in_file):
 
             r1.write('@%s\n%s\n+\n%s\n' %(R1.id, R1.seq, R1.qual))
