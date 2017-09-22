@@ -17,6 +17,7 @@ If this gives an error, try:
 ```
 git clone https://github.com/wckdouglas/tgirt_seq_tools.git
 cd tgirt_seq_tools
+pip install -r requirements.txt
 python setup.py install --user
 ```
 
@@ -25,14 +26,12 @@ Prerequisits:
 * pysam>0.11.0
 * numpy>=1.12.1
 * cython>=0.25
+* matplotlib>=2.0.0
+* python-cjson>=1.2.0
+* scipy>=0.19.0
+* seaborn>=0.7.1
 * pyBigWig
 
-```
-pip install pysam
-pip install numpy
-pip install cython
-pip install pyBigWig
-```
 ---
 
 <h2 id='scripts'> Ready-to-use scripts </h2>
