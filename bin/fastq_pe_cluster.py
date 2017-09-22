@@ -8,9 +8,7 @@ import argparse
 import glob
 import time
 import os
-import pyximport
-pyximport.install(setup_args={'include_dirs': np.get_include()})
-from tools_umi.cluster_reads import (dictToJson,
+from sequencing_tools.cluster_reads import (dictToJson,
                            writingAndClusteringReads,
                            plotBCdistribution,
                            recordsToDict)

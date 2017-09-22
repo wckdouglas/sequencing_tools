@@ -4,10 +4,7 @@ import pysam
 import numpy as np
 import sys
 import argparse
-import pyximport
-import pysam
-pyximport.install(setup_args = {'include_dirs':[np.get_include() ]+pysam.get_include()}) #pysam=0.9.0
-from tgirt_seq_tools.filter_multi import processBam
+from sequencing_tools.filter_multi import processBam
 
 def getopt():
     parser = argparse.ArgumentParser(description='Process multiply mapped bam and get either shortest insert size or ribosomal reads')

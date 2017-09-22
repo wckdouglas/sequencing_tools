@@ -1,5 +1,5 @@
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from tgirt_seq_tools.fragment_pairs import concordant_pairs, is_split_pair
+from sequencing_tools.fragment_pairs import concordant_pairs, is_split_pair
 
 cpdef int parse_bam(AlignmentFile inbam,
                     AlignmentFile out_split_bam,

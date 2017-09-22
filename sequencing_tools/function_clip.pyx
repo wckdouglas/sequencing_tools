@@ -8,9 +8,9 @@ from sys import stderr
 from cpython cimport bool
 import io
 import os
-from tgirt_seq_tools.fastq_tools import readfq, gzopen, reverse_complement
-from tgirt_seq_tools.fastq_tools cimport fastqRecord
-from tgirt_seq_tools.cutadapt_align import locate
+from sequencing_tools.fastq_tools import readfq, gzopen, reverse_complement
+from sequencing_tools.fastq_tools cimport fastqRecord
+from sequencing_tools.cutadapt_align import locate
 
 
 cpdef int hamming_distance(str expected_constant, str constant_region):

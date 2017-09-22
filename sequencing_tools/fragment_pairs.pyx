@@ -6,7 +6,7 @@ from operator import itemgetter
 from cpython cimport bool
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
-from tgirt_seq_tools.bam_tools import concordant_pairs, read_ends, fragment_ends
+from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends
 
 cdef class read_fragment:
     cdef:

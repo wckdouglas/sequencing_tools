@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tgirt_seq_tools.pe_align import merge_interleaved
+from sequencing_tools.pe_align import merge_interleaved
 import argparse
 import sys
 

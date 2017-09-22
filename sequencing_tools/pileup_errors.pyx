@@ -1,7 +1,7 @@
 from itertools import izip
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
-from tgirt_seq_tools.bam_tools import *
+from sequencing_tools.bam_tools import *
 
 
 def extract_bases(base_dict, pos):

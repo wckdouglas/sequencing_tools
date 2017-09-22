@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
-import pyximport
-pyximport.install()
-from tgirt_seq_tools.bigwig import parse_depth_bed
+from sequencing_tools.bigwig import parse_depth_bed
 import argparse
 
 

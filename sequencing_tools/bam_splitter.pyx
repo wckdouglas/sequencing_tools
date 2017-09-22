@@ -4,7 +4,7 @@ import re
 import numpy as np
 from numpy cimport ndarray
 from cpython cimport bool
-from tgirt_seq_tools.bam_tools import concordant_alignment, split_cigar
+from sequencing_tools.bam_tools import concordant_alignment, split_cigar
 
 cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
             float both_end_thresh):

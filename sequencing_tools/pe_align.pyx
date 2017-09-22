@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from tgirt_seq_tools.fastq_tools import read_interleaved, reverse_complement
-from tgirt_seq_tools.fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools import read_interleaved, reverse_complement
+from sequencing_tools.fastq_tools cimport fastqRecord
 import sys
-from tgirt_seq_tools.cutadapt_align import locate
+from sequencing_tools.cutadapt_align import locate
 from itertools import izip
 from functools import partial
 from cpython cimport bool

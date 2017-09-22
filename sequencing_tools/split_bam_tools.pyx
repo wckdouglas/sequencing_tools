@@ -3,7 +3,7 @@ from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from functools import partial
 from itertools import izip
-from tgirt_seq_tools.bam_tools import split_cigar
+from sequencing_tools.bam_tools import split_cigar
 
 cdef int softClipSize(AlignedSegment aln):
     # compare softclip size, output maximum softclipped base on either side

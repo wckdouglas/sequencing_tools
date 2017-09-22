@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/wckdouglas/tgirt_seq_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/tgirt_seq_tools)
+[![Build Status](https://travis-ci.org/wckdouglas/sequencing_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/sequencing_tools)
 
 # Sequencing tools #
 
@@ -9,14 +9,14 @@ This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of se
 ## Installation ##
 
 ```
-pip install git+https://github.com/wckdouglas/tgirt_seq_tools.git
+pip install git+https://github.com/wckdouglas/sequencing_tools.git
 ```
 
 If this gives an error, try:
 
 ```
-git clone https://github.com/wckdouglas/tgirt_seq_tools.git
-cd tgirt_seq_tools
+git clone https://github.com/wckdouglas/sequencing_tools.git
+cd sequencing_tools
 pip install -r requirements.txt
 python setup.py install --user
 ```
@@ -184,7 +184,7 @@ optional arguments:
 
 <h3 id='fastq'> tgirt_Seq_tools.fastq_tools </h3>
 
-<h4 id='fastq_record'> <i>class</i> tgirt_seq_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
+<h4 id='fastq_record'> <i>class</i> sequencing_tools.fastq_tools.fastqRecord(id, seq, qual) </h4>
 
 Parameters:
 - id - sequence name (string)
@@ -193,7 +193,7 @@ Parameters:
 
 Example:
 ```
-from tgirt_seq_tools.fastq_tools import fastqRecord
+from sequencing_tools.fastq_tools import fastqRecord
 seq_name = 'seq1'
 sequence = 'AACCTTGG'
 seq_qual = '!!!!!!!!'
@@ -274,7 +274,7 @@ return:
 
 * out - reverse complemented sequence (string)
 
-<h3 id='bam_tools'> tgirt_seq_tools.bam_tools </h3>
+<h3 id='bam_tools'> sequencing_tools.bam_tools </h3>
 
 #### bam_tools.cigar_to_str ####
 
@@ -480,7 +480,7 @@ $ split_cigar('63M')
 
 <h2 id='extra'> Extra </h2>
 
-### tgirt_seq_tools.douglas_colors ###
+### sequencing_tools.douglas_colors ###
 
 #### douglas_colors.douglas_palette ####
 
@@ -493,7 +493,7 @@ Example:
 ```
 import matplotlib.pyplot as plt
 import numpy as np
-from tgirt_seq_tools.douglas_colors import douglas_palette
+from sequencing_tools.douglas_colors import douglas_palette
 douglas_palette()
 plt.figure()
 ax=plt.subplot();
@@ -503,14 +503,14 @@ ax.legend(bbox_to_anchor=(1,1))
 plt.savefig('palette.png',bbox_inches='tight')
 ```
 
-![](https://raw.githubusercontent.com/wckdouglas/tgirt_seq_tools/master/img/palette.png)
+![](https://raw.githubusercontent.com/wckdouglas/sequencing_tools/master/img/palette.png)
 
 #### douglas_colors.cor_plot ####
 
 A specialized paired correlation plot
 
 ```
-from tgirt_seq_tools.douglas_colors import cor_plot
+from sequencing_tools.douglas_colors import cor_plot
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -522,4 +522,4 @@ fig =cor_plot(d)
 fig.savefig('cor.png',bbox_inches='tight')
 ```
 
-![](https://raw.githubusercontent.com/wckdouglas/tgirt_seq_tools/master/img/cor.png)
+![](https://raw.githubusercontent.com/wckdouglas/sequencing_tools/master/img/cor.png)

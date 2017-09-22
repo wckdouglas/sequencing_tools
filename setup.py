@@ -36,20 +36,20 @@ except ImportError:
 include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
 ext_modules=cythonize([
-        Extension('*', ['tgirt_seq_tools/*.pyx'],
+        Extension('*', ['sequencing_tools/*.pyx'],
             include_dirs = include_path)
 ])
 
 
 setup(
-    name='tgirt_seq_tools',
+    name='sequencing_tools',
     version='0.1',
-    description='Tools for TGIRT-seq pipeline',
+    description='Tools for different NGS operations',
     url='',
-    author='Douglas Wu',
+    author='Douglas C. Wu',
     author_email='wckdouglas@gmail.com',
     license='MIT',
-    packages=['tgirt_seq_tools'],
+    packages=['sequencing_tools'],
     zip_safe=False,
     scripts = glob.glob('bin/*'),
     ext_modules = ext_modules,

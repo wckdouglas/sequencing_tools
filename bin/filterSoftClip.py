@@ -4,9 +4,7 @@
 import numpy as np
 import argparse
 import pysam
-import pyximport
-pyximport.install(setup_args = {'include_dirs':[np.get_include() ]+pysam.get_include()})
-from tgirt_seq_tools.bam_splitter import filter_bam
+from sequencing_tools.bam_splitter import filter_bam
 import gzip
 import sys
 

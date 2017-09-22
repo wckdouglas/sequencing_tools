@@ -2,9 +2,7 @@
 
 import pysam
 import argparse
-import pyximport
-pyximport.install()
-from tgirt_seq_tools.split_N_bam import parse_bam
+from sequencing_tools.split_N_bam import parse_bam
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Splitting paired-end bam into two bam files: '+\

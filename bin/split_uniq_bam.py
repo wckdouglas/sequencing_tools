@@ -4,9 +4,7 @@ import pysam
 import sys
 import re
 import argparse
-import pyximport
-pyximport.install(setup_args={'include_dirs': pysam.get_include()}) # pysam=0.9.0
-from tgirt_seq_tools.split_bam_tools import split_bam
+from sequencing_tools.split_bam_tools import split_bam
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Splitting bam file to uniquely mapped and multiple mapped (only support bowtie2 and hisat2)')

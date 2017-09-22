@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tgirt_seq_tools.umi_tag import add_umi_tag
+from sequencing_tools.umi_tag import add_umi_tag
 import argparse
 
 def getopt():

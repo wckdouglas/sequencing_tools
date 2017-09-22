@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 
-import pyximport
-import pysam
-pyximport.install(setup_args={'include_dirs':pysam.get_include()})
 import argparse
-from tgirt_seq_tools.fragment_pairs import bam_to_bed
+from sequencing_tools.fragment_pairs import bam_to_bed
 import sys
 
 

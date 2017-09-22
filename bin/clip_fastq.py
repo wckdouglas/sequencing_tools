@@ -6,7 +6,7 @@ import time
 import sys
 import re
 from sys import stderr
-from tgirt_seq_tools.function_clip import run_pairs, run_pairs_stdout
+from sequencing_tools.function_clip import run_pairs, run_pairs_stdout
 
 
 def getOptions():
