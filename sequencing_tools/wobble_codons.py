@@ -179,7 +179,7 @@ class tRNA_adaptation_index:
                 self.tRNA_availability[codon] = self.tRNA_dict[reverse_complement(codon)] + self.p['G']*self.tRNA_dict[reverse_complement(codon_prefix+'A')]
 
         if bacteria:
-            tRNA_availability['ATA'] += isoleucine_p*self.tRNA_dict['GAT']
+            self.tRNA_availability['ATA'] += self.isoleucine_p*self.tRNA_dict['GAT']
 
 
     def tAI(self):
