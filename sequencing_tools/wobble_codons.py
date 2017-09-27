@@ -4,6 +4,7 @@ from sequencing_tools.fastq_tools import  reverse_complement
 from collections import defaultdict
 from scipy.stats.mstats import gmean
 import pandas as pd
+import numpy as np
 
 class wobble_codon:
     def __init__(self):
