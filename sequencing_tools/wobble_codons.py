@@ -139,3 +139,42 @@ class wobble_codon:
             for codon in codons:
                 codon_dict[codon] = anticodon
 
+
+class tRNA_adaptation_index:
+    def __init__(self, tRNA_count):
+    '''
+    adapted from https://github.com/smsaladi/tAI/blob/master/tAI/tAI.py
+
+    input:
+    * tRNA_count: dictionary with anticodon as keys, raw count as values
+    '''
+
+        self.tRNA_dict = tRNA_count
+        self.wobble = wobble_codon()
+        self.wobble.make_codon_dict()
+        self.wobble_dict = self.wobble.codon_dict
+        self.p = {'T': 0.59, 'C': 0.72, 'A': 0.0001, 'G': 0.32}
+        self.isoleucine_p = 1 - 0.89
+
+        tRNA_availability = defaultdict(int)
+        for codon in wobble_dict.iteritems():
+            codon_prefix = codon[:2]
+            wobble_base = codon[2]
+
+            if wobble_base == 'T':                  # INN -> NNT, NNC, NNA
+                weights[codon] = self.tRNA_dict[reverse_complement(codon)] + self.p['T']*self.tRNA_dict[reverse_complement(codon_prefix+'C')]
+            elif wobble_base == 'C':                # GNN -> NNT, NNC
+                weights[codon] = self.tRNA_dict[reverse_complement(codon)] + self.p['C']*self.tRNA_dict[reverse_complement(codon_prefix+'T')]
+            elif wobble_base == 'A':                # TNN -> NNA, NNG
+                weights[codon] = self.tRNA_dict[reverse_complement(codon)] + self.p['A']*self.tRNA_dict[reverse_complement(codon_prefix+'T')]
+            elif wobble_base == 'G':                # CNN -> NNG
+                weights[codon] = self.tRNA_dict[reverse_complement(codon)] + self.p['G']*self.tRNA_dict[reverse_complement(codon_prefix+'A')]
+
+            total_tRNA = sum(tRNA_dict[anticodon] for anticodon in anticodons)
+            tRNA_availability[codon] = total_tRNA
+
+
+   for codon in list(weights.index):
+        base = codon[:2]
+
+            raise ValueError('Non-standard codon or notation')
