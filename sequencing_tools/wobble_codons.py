@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-
 from sequencing_tools.fastq_tools import  reverse_complement
+from collections import defaultdict
 
 class wobble_codon:
     def __init__(self):
@@ -113,7 +113,7 @@ class wobble_codon:
                             'GTC': ['GAC','GAT'],
 
                             #AA: E
-                            'TTC': ['GAA'],
+                            'TTC': ['GAA','GAG'],
                             'CTC':['GAG'],
 
                             #AA: G
@@ -134,8 +134,8 @@ class wobble_codon:
         print 'All clear'
 
     def make_codon_dict(self):
-        self.codon_dict = {}
+        self.codon_dict = defaultdict(list)
         for anticodon, codons in self.anticodon_dict.iteritems():
             for codon in codons:
-                codon_dict[codon] = anticodon
+                self.codon_dict[codon].append(anticodon)
 
