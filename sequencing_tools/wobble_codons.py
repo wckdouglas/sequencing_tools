@@ -3,6 +3,7 @@
 from sequencing_tools.fastq_tools import  reverse_complement
 from collections import defaultdict
 from scipy.stats.mstats import gmean
+import pandas as pd
 
 class wobble_codon:
     def __init__(self):
@@ -143,13 +144,12 @@ class wobble_codon:
 
 class tRNA_adaptation_index:
     def __init__(self, tRNA_count, bacteria=True):
-    '''
-    adapted from https://github.com/smsaladi/tAI/blob/master/tAI/tAI.py
+        '''
+        adapted from https://github.com/smsaladi/tAI/blob/master/tAI/tAI.py
 
-    input:
-    * tRNA_count: dictionary with anticodon as keys, raw count as values
-    '''
-
+        input:
+        * tRNA_count: dictionary with anticodon as keys, raw count as values
+        '''
         self.tRNA_dict = tRNA_count
         self.wobble = wobble_codon()
         self.wobble.make_codon_dict()
@@ -188,7 +188,7 @@ class tRNA_adaptation_index:
             .assign(weight = lambda d: d.tRNA_availability/d.tRNA_availability.sum()) \
             .assign(weight = lambda d: np.where(d.weight >0, d.weight, gmean(d.weight[d.weight>0])))
 
-    
+
 
 
 
