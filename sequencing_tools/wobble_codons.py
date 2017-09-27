@@ -188,8 +188,8 @@ class tRNA_adaptation_index:
         self.tAI_df = pd.DataFrame({'codon':self.tRNA_availability.keys(), 
                                     'tRNA_availability': self.tRNA_availability.values()}) \
             .pipe(lambda d: d[~d.codon.str.contains('ATG|TGA|TAA|TAG')]) \
-            .assign(weight = lambda d: d.tRNA_availability/d.tRNA_availability.sum()) \
-            .assign(weight = lambda d: np.where(d.weight >0, d.weight, gmean(d.weight[d.weight>0])))
+            .assign(tRNA_weight = lambda d: d.tRNA_availability/d.tRNA_availability.sum()) \
+            .assign(tRNA_weight = lambda d: np.where(d.weight >0, d.tRNA_weight, gmean(d.tRNA_weight[d.tRNA_weight>0])))
 
 
 
