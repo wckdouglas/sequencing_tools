@@ -151,7 +151,7 @@ class tRNA_adaptation_index:
         * tRNA_count: dictionary with anticodon as keys, raw count as values
         '''
         self.tRNA_dict = defaultdict(float)
-        for key, value in tRNA_count:
+        for key, value in tRNA_count.iteritems():
             self.tRNA_dict[key] = value
         self.wobble = wobble_codon()
         self.wobble.make_codon_dict()
