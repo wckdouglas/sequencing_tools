@@ -42,8 +42,7 @@ cpdef bool both_read_good_clip(AlignedSegment read1, AlignedSegment read2):
     return read1_clipped < 20 and read2_clipped < 20
 
 
-
-cpdef int split_bam(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
+cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
 
     cdef:
         int pair_count = 0
@@ -68,4 +67,21 @@ cpdef int split_bam(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile mu
                 print 'Parsed %i alignment pairs' %pair_count
         except StopIteration:
             break
+    return 0
+
+cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
+
+    cdef:
+        int pair_count = 0
+        AlignedSegment read
+
+    is_unique = partial(bowtie2_is_unique) if aligner == 'bowtie2' else partial(hisat2_is_unique)
+    for read in bam:
+        if not read.is_unmapped:
+            if (aligner == 'bowtie2' and read.mapq==255) or (aligner=='hisat2' and read.get_tag('NH') == 1):
+                uniquebam.write(read)
+            else:
+                multibam.write(read)
+        if pair_count % 5000000 == 0:
+            print 'Parsed %i alignment pairs' %pair_count
     return 0
