@@ -46,6 +46,8 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
 
     cdef:
         int pair_count = 0
+        int uniq_written = 0
+        int multi_written = 0
         AlignedSegment read1, read2
 
     is_unique = partial(bowtie2_is_unique) if aligner == 'bowtie2' else partial(hisat2_is_unique)
@@ -60,28 +62,36 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
                     if is_unique(read1, read2):
                         uniquebam.write(read1)
                         uniquebam.write(read2)
+                        uniq_written += 1
                     else:
                         multibam.write(read1)
                         multibam.write(read2)
+                        multi_written += 1
             if pair_count % 5000000 == 0:
                 print 'Parsed %i alignment pairs' %pair_count
         except StopIteration:
             break
+            print 'Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written)
     return 0
 
 cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
 
     cdef:
-        int pair_count = 0
+        int count = 0
+        int uniq_written = 0
+        int multi_written = 0
         AlignedSegment read
 
     is_unique = partial(bowtie2_is_unique) if aligner == 'bowtie2' else partial(hisat2_is_unique)
-    for read in bam:
+    for count, read in enumerate(bam):
         if not read.is_unmapped:
             if (aligner == 'bowtie2' and read.mapq==255) or (aligner=='hisat2' and read.get_tag('NH') == 1):
                 uniquebam.write(read)
+                uniq_written += 1
             else:
                 multibam.write(read)
-        if pair_count % 5000000 == 0:
-            print 'Parsed %i alignment pairs' %pair_count
+                multi_written += 1
+        if count % 5000000 == 0:
+            print 'Parsed %i alignment pairs' %count
+    print 'Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written)
     return 0

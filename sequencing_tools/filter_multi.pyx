@@ -76,15 +76,15 @@ cdef mapped_length(str cigarstring):
     for cigar string, find sum of number of mapped base
     '''
     cdef:
-        int cnum
+        str cnum
         int mapped = 0
         str cstr
     
 
     for cnum, cstr in izip(cigar_num.findall(cigarstring), cigar_str.findall(cigarstring)):
         if cstr == 'M':
-            mapped+=cnum
-    return cnum
+            mapped += int(cnum)
+    return mapped
 
 class single_read:
     def __init__(self):
