@@ -191,6 +191,38 @@ optional arguments:
   -t TAG, --tag TAG     Tag id (default: RX )
 ```
 
+
+<h3 id='dedup_bed'> Deuplicate BED </h3>
+
+Deduplicate fragments with UMI in a bed file.
+
+```
+usage: deduplicate_bed.py [-h] [-i INFILE] [-o OUTFILE] [-t THRESHOLD]
+                          [-d DELIM] [-f F]
+
+Demultiplexing UMI bed file with the follwing columns: 1. chrom name 2. start
+3. end 4. {$UMI}_{$READ_ID} 5. score 6.strand The program internally used
+hamming distance matrix of the barcodes to generate connected network and
+identified UMI clusters
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INFILE, --infile INFILE
+                        input bedfile, can be "-" or "/dev/stdin" for stdin
+                        (default: -).Format should be sorted BED: 1. chrom 2.
+                        start 3. end 4. {barcode}_{id} 6. strand
+  -o OUTFILE, --outfile OUTFILE
+                        output bedfile, can be "-" or "/dev/stdout" for stdin
+                        (default: -).
+  -t THRESHOLD, --threshold THRESHOLD
+                        How many error between barcodes can be tolerated?
+                        (default = 1)
+  -d DELIM, --delim DELIM
+                        Deliminator separating read id and bc (default: _ )
+  -f F                  after splitting read name using {delim}, which
+                        fragmnet is UMI? can use -1 as last piece (default: 0)
+```
+
 ---
 
 <h2 id='modules'> Modules </h2>
