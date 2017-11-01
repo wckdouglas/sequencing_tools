@@ -154,10 +154,9 @@ optional arguments:
 
 <h3 id='b2b'> BAM to bed converter</h3>
 
-This script process name-sorted paired-end bam and output bed file storing fragment positions. Outer ends from read1 and read2 are used as fragment ends. 
-
 ```
 usage: bam_to_bed.py [-h] -i IN_BAM [-o OUT_BED] [-m MIN_SIZE] [-M MAX_SIZE]
+                     [-t TAG] [-a]
 
 Making paired-end bam into bed file for every fragment
 
@@ -171,6 +170,8 @@ optional arguments:
                         minimum fragment size to report
   -M MAX_SIZE, --max_size MAX_SIZE
                         minimum fragment size to report
+  -t TAG, --tag TAG     tag to extract
+  -a, --all             output supplementary as single fragment
 ```
 
 <h3 id='bam_tag'> UMI tagger </h3>
