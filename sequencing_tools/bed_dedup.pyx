@@ -151,5 +151,5 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
         print(bc_line, file=out_file_handle)
         out_count += 1
 
-    print('Iput %i lines, output %i lines' %(in_count, out_count), file=sys.stderr)
+    print('Iput %i lines, output %i lines' %(in_count + 1, out_count), file=sys.stderr)
     return 0
