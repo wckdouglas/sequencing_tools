@@ -110,7 +110,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag):
                         print(line, file=out_file)
                 else:
                     while read_1.query_name != read_2.query_name:
-                        if read_1.is_supplementary:
+                        if not read_1.is_secondary:
                             fragment = read_fragment(read_1, max_size, min_size)
                             line = fragment.generate_fragment()
                             single_count += 1
