@@ -42,6 +42,7 @@ Prerequisits:
 * [Multimap BAM reducer](#fix_multi)
 * [BAM to BED converter](#b2b)
 * [UMI tagger](#bam_tag)
+* [BED demultiplexer](#dedup_bed)
 
 <h3 id='clip'>  UMI clipper </h3>
 
