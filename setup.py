@@ -51,7 +51,7 @@ setup(
     license='MIT',
     packages=['sequencing_tools'],
     zip_safe=False,
-    scripts = glob.glob('bin/*'),
+    scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
     install_requires=[
           'cython',
@@ -60,7 +60,8 @@ setup(
           'matplotlib>=2.0.0',
           'seaborn>-0.7.1',
           'python-cjson>=1.2.0',
-          'scipy>=0.19.0'
+          'scipy>=0.19.0',
+          'networkx>=2.0'
       ],
     cmdclass = {'build_ext': build_ext}
 )
