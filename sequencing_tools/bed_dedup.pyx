@@ -112,11 +112,11 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
     cdef:
         str line, bc, read_name, chrom, start, end, strand
         str bc_line
-        int i
-        int out_count
+        int in_count
+        int out_count = 0
 
     barcode_group = None
-    for i, line in enumerate(in_file_handle):
+    for in_count, line in enumerate(in_file_handle):
         fields = line.strip().split('\t')
         read_name = fields[3]
         bc = read_name.split(delim)[f]
@@ -151,5 +151,5 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
         print(bc_line, file=out_file_handle)
         out_count += 1
 
-    print('Iput %i lines, output %i lines' %(i, out_count), file=sys.stderr)
+    print('Iput %i lines, output %i lines' %(in_count, out_count), file=sys.stderr)
     return 0
