@@ -16,6 +16,8 @@ def getopt():
                         help = 'minimum fragment size to report')
     parser.add_argument('-t','--tag', default=None,
                         help = 'tag to extract')
+    parser.add_argument('-a','--all', action='store_true',
+                        help = 'supplementary as single fragment')
 
     return parser.parse_args()
 

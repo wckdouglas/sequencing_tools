@@ -8,22 +8,77 @@ from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
 from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends
 
-cdef class read_fragment:
-    cdef:
-        long start, end
+class read_paired_fragment:
 
-    def __init__(self, frag_start, frag_end):
-        self.end = frag_end
-        self.start = frag_start
 
-    def fragment_ends(self):
-        return self.start, self.end
+    def __init__(self, read1, read2, tag, max_size, min_size):
+        self.tag = tag
+        self.max_size = max_size
+        self.min_size = min_size
+        self.read_1 = None
+        self.read_2 = None
 
-    def start_site(self):
-        return self.start
+        if read1.is_read1:
+            self.read_1 = read1
+            self.read_2 = read2
+        elif read2.is_read1:
+            self.read_1 = read2
+            self.read_2 = read1
 
-    def end_site(self):
-        return self.end
+        if self.tag:
+            self.rt1 = self.read_1.get_tag(self.tag)
+            self.rt2 = self.read_2.get_tag(self.tag)
+
+    def generate_fragment(self):
+        line = None
+        if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
+            chrom = self.read_1.reference_name
+            strand = '-' if self.read_1.is_reverse else '+'
+            start, end = fragment_ends(self.read_1, self.read_2)
+            fragment_size = end - start
+            if self.min_size < fragment_size < self.max_size:
+                if self.tag:
+                    line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
+                                                self.read_1.query_name,
+                                                fragment_size,strand,
+                                                self.rt1)
+                else:
+                    line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
+                                                self.read_1.query_name,
+                                                fragment_size,strand)
+        return line
+
+
+class read_fragment:
+
+    def __init__(self, read, tag, max_size, min_size):
+        self.tag = tag
+        self.read = read
+        self.max_size = max_size
+        self.min_size = min_size
+
+        if self.tag:
+            self.rt = self.read.get_tag(self.tag)
+
+    def generate_fragment(self):
+        chrom = self.read.reference_name
+        strand = '-' if self.read.is_reverse else '+'
+        start, end = self.read.reference_start, self.read.reference_end
+        fragment_size = end - start
+        if self.min_size < fragment_size < self.max_size:
+            if self.tag:
+                line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
+                                            self.read_1.query_name,
+                                            fragment_size,strand,
+                                            self.rt1)
+            else:
+                line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
+                                            self.read_1.query_name,
+                                            fragment_size,strand)
+        return line
+
+
+
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag):
     '''
@@ -38,41 +93,38 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag):
         int fragment_size
         str line
         long start, end
+        int pair_count, single_count
 
     pair_count = 0
+    single_count = 0
     with pysam.Samfile(bam_file,'rb') as in_bam:
         while True:
             try:
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
-                assert read_1.query_name == read_2.query_name, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
-
-                if tag:
-                    rt1 = read_1.get_tag(tag)
-                    rt2 = read_2.get_tag(tag)
-                    assert rt2 == rt1, 'Paired not stored together: %s, %s'  %(rt1, rt2)
-
-
-                if concordant_pairs(read_1, read_2) and not read_1.is_duplicate and not read_2.is_duplicate:
-                    chrom = read_1.reference_name
-                    strand = '-' if read_1.is_reverse else '+'
-                    start, end = fragment_ends(read_1, read_2)
-                    fragment_size = end - start
-                    if min_size < fragment_size < max_size:
-                        if tag:
-                            line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
-                                                        read_1.query_name,
-                                                        fragment_size,strand,
-                                                        rt1)
-                        else:
-                            line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
-                                                        read_1.query_name,
-                                                        fragment_size,strand)
+                if read_1.query_name == read_2.query_name:#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
+                    line = pair_fragment.generate_fragment()
+                    if line:
+                        pair_count += 1
+                        print(line, file=out_file)
+                else:
+                    while read_1.query_name != read_2.query_name:
+                        if read_1.is_supplementary:
+                            fragment = read_fragment(read_1, max_size, min_size)
+                            line = fragment.generate_fragment()
+                            single_count += 1
+                            print(line, file=out_file)
+                        read_1 = read_2
+                        read_2 = in_bam.next()
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
+                    line = pair_fragment.generate_fragment()
+                    if line:
                         pair_count += 1
                         print(line, file=out_file)
             except StopIteration:
                 break
-    sys.stderr.write('Witten %i fragments\n' %(pair_count))
+    sys.stderr.write('Witten %i pair fragments and %i multiple jump fragments\n' %(pair_count, single_count))
     return 0
 
 
