@@ -68,19 +68,19 @@ class read_fragment:
         if self.min_size < fragment_size < self.max_size:
             if self.tag:
                 line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
-                                            self.read_1.query_name,
+                                            self.read.query_name,
                                             fragment_size,strand,
                                             self.rt1)
             else:
                 line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
-                                            self.read_1.query_name,
+                                            self.read.query_name,
                                             fragment_size,strand)
         return line
 
 
 
 
-def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag):
+def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
     '''
     Read two alignments at a time,
     assume they are pairs,
@@ -102,16 +102,16 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag):
             try:
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
-                if read_1.query_name == read_2.query_name:#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+                if read_1.query_name == read_2.query_name and read_1.reference_id == read_2.reference_id:#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
                     pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1
                         print(line, file=out_file)
                 else:
-                    while read_1.query_name != read_2.query_name:
-                        if not read_1.is_secondary:
-                            fragment = read_fragment(read_1, max_size, min_size)
+                    while (read_1.query_name != read_2.query_name) or (read_1.reference_id != read_2.reference_id):
+                        if not read_1.is_secondary and output_all:
+                            fragment = read_fragment(read_1, tag, max_size, min_size)
                             line = fragment.generate_fragment()
                             single_count += 1
                             print(line, file=out_file)

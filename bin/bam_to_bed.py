@@ -28,7 +28,7 @@ def main():
     tag = args.tag
     if args.max_size <= args.min_size:
         sys.exit('!!!!! Min fragment size > Max fragment size') 
-    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag)
+    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, args.all)
     return 0
 
 if __name__ == '__main__':
