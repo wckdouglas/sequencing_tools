@@ -6,7 +6,7 @@ from operator import itemgetter
 from cpython cimport bool
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
-from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends
+from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends, check_concordant
 
 class read_paired_fragment:
 
@@ -79,7 +79,6 @@ class read_fragment:
 
 
 
-
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
     '''
     Read two alignments at a time,
@@ -102,21 +101,38 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
             try:
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
-                if read_1.query_name == read_2.query_name and read_1.reference_id == read_2.reference_id:#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+                if check_concordant(read_1, read_2):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
                     pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1
                         print(line, file=out_file)
                 else:
-                    while (read_1.query_name != read_2.query_name) or (read_1.reference_id != read_2.reference_id):
-                        if not read_1.is_secondary and output_all:
-                            fragment = read_fragment(read_1, tag, max_size, min_size)
-                            line = fragment.generate_fragment()
-                            single_count += 1
-                            print(line, file=out_file)
-                        read_1 = read_2
-                        read_2 = in_bam.next()
+                    while not check_concordant(read_1, read_2):
+                        if not read_1.is_secondary and not read_2.is_secondary:
+                            if output_all:
+                                if read_2.is_supplementary:
+                                    fragment = read_fragment(read_2, tag, max_size, min_size)
+                                    read_2 = in_bam.next()
+
+                                else:
+                                    fragment = read_fragment(read_1, tag, max_size, min_size)
+                                    read_1 = read_2
+                                    read_2 = in_bam.next()
+
+                                line = fragment.generate_fragment()
+                                single_count += 1
+                                print(line, file=out_file)
+                            else:
+                                read_1 = read_2
+                                read_2 = in_bam.next()
+                        elif read_1.is_secondary:
+                            read_1 = read_2
+                            read_2 = in_bam.next()
+
+                        elif read_2.is_secondary:
+                            read_2 = in_bam.next()
+
                     pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
                     line = pair_fragment.generate_fragment()
                     if line:

@@ -280,3 +280,27 @@ def remove_insert(sequence, qual_seq, cigar):
     for base, qual, op in zip(sequence, qual_seq, cigar):
         if op != 'I':
             yield base, qual
+
+cpdef check_concordant(AlignedSegment read_1, AlignedSegment read_2):
+    '''
+    check if read pairs are concordant
+
+    usage: check_concordant(read1, read2)
+    return: boolean
+
+    ==================================
+    parameter:
+
+    read1: first pysam alignment 
+    read2: second pysam alignment 
+
+    return:
+    True: if they have same read ID, ref ID, are read 1 and read2, and is opposite strand
+    ==================================
+    '''
+    cdef:
+        bool same_name = read_1.query_name == read_2.query_name
+        bool same_ref = read_1.reference_id == read_2.reference_id 
+        bool opposite_read = read_1.is_read1 != read_2.is_read1
+        bool directional_pair = read_1.is_reverse != read_2.is_reverse
+    return same_name and same_ref and opposite_read and check_concordant
