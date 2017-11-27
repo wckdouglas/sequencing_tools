@@ -74,7 +74,7 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
                 print('Parsed %i alignment pairs' %pair_count, file = sys.stderr)
         except StopIteration:
             break
-            print('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written), file = sys.stderr)
+    print('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written), file = sys.stderr)
     return 0
 
 cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
