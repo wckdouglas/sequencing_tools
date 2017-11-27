@@ -4,7 +4,7 @@ from __future__ import print_function
 import numpy as np
 import argparse
 import pysam
-from sequencing_tools.bam_splitter import filter_bam
+from sequencing_tools.bam_splitter import filter_bam_single_end, filter_bam_pair_end
 import gzip
 import sys
 from functools import partial

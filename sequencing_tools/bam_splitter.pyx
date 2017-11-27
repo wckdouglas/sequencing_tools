@@ -6,27 +6,39 @@ import sys
 import numpy as np
 from numpy cimport ndarray
 from cpython cimport bool
-from sequencing_tools.bam_tools import concordant_alignment, split_cigar
+from sequencing_tools.bam_tools import concordant_alignment, split_cigar, concordant_pairs
 
 
 class fragment_pairs:
-    def __init__(self, AlignedSegment read1, AlignedSegment read2, 
-            float single_end_thresh, float both_end_thresh):
+    def __init__(self, AlignedSegment read1, AlignedSegment read2):
         self.read1 = read1
         self.read2 = read2
-        self.s_et = single_end_thresh
-        self.b_et = both_end_thresh
-        self.pass_check = None 
+        self.pass_clip_check = None 
+        self.flag_qualify_ok = None
+        self.has_soft_clip = None
+        self.read1_has_S = None
+        self.read2_has_S = None
 
+    def check_flags(self):
+        self.flag_qualify_ok = concordant_pairs(self.read1, self.read2)
+
+    def check_soft_clips(self):
+        self.read1_has_S = 'S' in self.read1.cigarstring 
+        self.read2_has_S = 'S' in self.read2.cigarstring
+        self.has_soft_clip = self.read1_has_S or self.read2_has_S
     
-    def check_pair(self):
-        read1_check = check_aln(self.read1, self.s_et, self.b_et)
-        read2_check = check_aln(self.read2, self.s_et, self.b_et)
-        self.pass_check = read1_check and read2_check
+    def check_pair_clips(self, s_et, b_et):
+        read1_check = True
+        read2_check = True
+        if self.read1_has_S:
+            read1_check = check_aln(self.read1, s_et, b_et)
+        if self.read2_has_S:
+            read2_check = check_aln(self.read2, s_et, b_et)
+        self.pass_clip_check = read1_check and read2_check
         
 
     def output_aln(self, out_bam_handle):
-        if self.pass_check:
+        if self.pass_clip_check:
             out_bam_handle.write(self.read1)
             out_bam_handle.write(self.read2)
             return 1
@@ -93,4 +105,49 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
 
                 if aln_count % 1000000 == 0 and aln_count != 0:
                     print('Parsed %i alignments' %(aln_count), file = sys.stdout)
+    return output_count
+
+def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
+                    both_end_thresh, inverse):
+    '''
+    This function filter softclipped sequence by tresholds regarding to the sequence length
+    '''
+    cdef:
+        AlignmentFile inbam, outbam
+        AlignedSegment read1, read2
+        ndarray cigar_array, all_soft_clipped
+        int pair_count = 0
+        int output_count
+        bool flag_qualify_ok, soft_clipped, clipped_size_right
+        bool inverse_ok, non_inverse_ok
+
+    with pysam.Samfile(in_bam,'rb') as inbam:
+        with pysam.Samfile(out_bam,'wb',template = inbam) as outbam:
+            while True:
+                try:
+                    read1 = inbam.next()
+                    read2 = inbam.next()
+                    pairs = fragment_pairs(read1, read2)
+                    pairs.check_flags()
+                    assert read1.query_name == read2.query_name, 'Wrong pairs'
+                    pair_count += 1
+
+                    if pairs.flag_qualify_ok:
+                        pairs.check_soft_clips()
+                        if not pairs.has_soft_clip and not inverse:
+                            output_count += pairs.output_aln(outbam)
+
+                        elif pairs.has_soft_clip:
+                            pairs.check_pair_clips(single_end_thresh, both_end_thresh)
+
+
+                            inverse_ok = (not pairs.pass_clip_check  and inverse)
+                            non_inverse_ok = (pairs.pass_clip_check and not inverse)
+                            if  inverse_ok or non_inverse_ok:
+                                output_count += pairs.output_aln(outbam)
+
+                    if pair_count % 1000000 == 0 and pair_count != 0:
+                        print('Parsed %i alignments' %(pair_count), file = sys.stdout)
+                except StopIteration:
+                    break
     return output_count
