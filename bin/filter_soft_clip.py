@@ -30,12 +30,12 @@ def main():
     out_bam = args.outbam
     single_end_thresh = args.single_end
     both_end_thresh = args.both_end
-    print('Filtering %s' %in_bam, file = sys.stdout)
+    print('Filtering %s' %in_bam, file = sys.stderr)
 
 
     filter_bam = partial(filter_bam_single_end) if not args.pe else partial(filter_bam_pair_end)
     output_count = filter_bam(in_bam, out_bam, single_end_thresh, both_end_thresh, args.inverse)
-    print('Written %i alignments to %s' %(output_count, out_bam), file = sys.stdout)
+    print('Written %i alignments to %s' %(output_count, out_bam), file = sys.stderr)
 
 if __name__ == '__main__':
     main()
