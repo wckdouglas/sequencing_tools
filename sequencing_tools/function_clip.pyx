@@ -1,10 +1,11 @@
+from __future__ import print_function
 from itertools import izip, imap, product
 from multiprocessing import Pool
 from functools import partial
 import numpy as np
 import gzip
 cimport numpy as np
-from sys import stderr
+import sys
 from cpython cimport bool
 import io
 import os
@@ -198,13 +199,13 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
             out, prefix, seq_record = clipping(read1, read2)
             out_count += out
             if out == 1:
-                file_dict[prefix].write(seq_record + '\n')
+                print(seq_record, file = file_dict[prefix])
             if count % 10000000 == 0 and count != 0:
-                stderr.write('[%s] Parsed %i records\n'%(programname, count))
+                print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
     [f.close() for f in file_dict.values()]
 
-    stderr.write('[%s] Parsed:           %i sequences\n' %(programname, count))
-    stderr.write('[%s] Output:           %i sequences\n' %(programname, out_count))
+    print('[%s] Parsed:           %i sequences' %(programname, count), file = sys.stderr)
+    print('[%s] Output:           %i sequences' %(programname, out_count), file = sys.stderr)
     return 0
 
 
@@ -240,10 +241,10 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
             out, prefix, seq_record = clipping(read1, read2)
             out_count += out
             if out == 1:
-                print seq_record
+                print(seq_record, file = sys.stdout)
             if count % 10000000 == 0 and count != 0:
-                stderr.write('[%s] Parsed %i records\n'%(programname, count))
+                print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
 
-    stderr.write('[%s] Parsed:           %i sequences\n' %(programname, count))
-    stderr.write('[%s] Output:           %i sequences\n' %(programname, out_count))
+    print('[%s] Parsed:           %i sequences' %(programname, count), file = sys.stderr)
+    print('[%s] Output:           %i sequences' %(programname, out_count), file = sys.stderr)
     return 0

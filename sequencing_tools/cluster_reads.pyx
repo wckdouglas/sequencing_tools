@@ -1,9 +1,9 @@
-
+from __future__ import print_function
 import numpy as np
 from matplotlib import use as mpl_use
 mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 import matplotlib.pyplot as plt
-from sys import stderr
+import sys
 import cjson
 import gzip
 import re
@@ -114,7 +114,7 @@ def plotBCdistribution(barcode_family_count, outputprefix):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     fig.savefig(figurename)
-    stderr.write('Plotted %s.\n' %figurename)
+    print('Plotted %s.' %figurename, file = sys.stderr)
     return 0
 
 def concensusPairs(table, float fraction_threshold):
@@ -140,7 +140,7 @@ def concensusPairs(table, float fraction_threshold):
 def dictToJson(barcode_dict, json_file):
     with open(json_file,'w') as f:
         [f.write(cjson.encode(items) + '\n') for items in barcode_dict.iteritems()]
-    stderr.write('written %s' %(json_file) + '\n')
+    print('written %s' %(json_file) + '\n', file = sys.stderr)
     return 0
 
 def errorFreeReads(int min_family_member_count, float fraction_threshold, str json_record):
@@ -165,16 +165,16 @@ def errorFreeReads(int min_family_member_count, float fraction_threshold, str js
     member_count = table.shape[0]
     if member_count >= min_family_member_count:
         sequence_left, quality_left, sequence_right, quality_right = concensusPairs(table, fraction_threshold)
-        left_record = '%s_%i_readCluster\n%s\n+\n%s\n' %(index, member_count, sequence_left, quality_left)
-        right_record = '%s_%i_readCluster\n%s\n+\n%s\n' %(index, member_count, sequence_right, quality_right)
+        left_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_left, quality_left)
+        right_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_right, quality_right)
         return left_record, right_record
     else:
         return 'No'
 
 def writeSeqToFiles(read1, read2, output_cluster_count, result):
     if result!='No':
-        read1.write('@cluster%i_%s' %(output_cluster_count, result[0]))
-        read2.write('@cluster%i_%s' %(output_cluster_count, result[1]))
+        print('@cluster%i_%s' %(output_cluster_count, result[0]), file = read1)
+        print('@cluster%i_%s' %(output_cluster_count, result[1]), file = read2)
         return 1
     else:
         return 0
@@ -199,7 +199,7 @@ def writingAndClusteringReads(outputprefix, min_family_member_count, json_file,
             output_cluster_count += write_func(output_cluster_count, result)
             counter += 1
             if counter % 1000000 == 0:
-                stderr.write('Processed %i read clusters.\n' %(counter))
+                print('Processed %i read clusters.' %(counter), file = sys.stderr)
     pool.close()
     pool.join()
     return output_cluster_count, read1File, read2File
@@ -317,7 +317,7 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
         for read_num, (read1,read2) in iterator:
             discarded_sequence_count += cluster_reads(read1, read2)
             if read_num % 10000000 == 0:
-                stderr.write('[%s] Parsed: %i sequence\n' %(programname,read_num))
+                print('[%s] Parsed: %i sequence' %(programname,read_num), file = sys.stderr)
 
     barcode_count = len(barcode_dict.keys())
     return barcode_dict, read_num, barcode_count, discarded_sequence_count

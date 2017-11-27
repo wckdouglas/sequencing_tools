@@ -1,3 +1,4 @@
+from __future__ import print_function
 import pysam
 from cpython cimport bool
 import sys
@@ -177,8 +178,8 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'
-    sys.stderr.write('Start processing bam file: %s\n' %(in_bam))
-    sys.stderr.write('Writing to: %s\n' %(out_bam))
+    print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
+    print('Writing to: %s' %(out_bam), file = sys.stderr)
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
             for read_count, alignment in enumerate(in_sam):
@@ -205,7 +206,7 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
             out_sam.write(read1_aln)
             out_sam.write(read2_aln)
             out_read_count += 1
-    sys.stderr.write('Writting %i read pairs\n' %(out_read_count))
+    print('Writting %i read pairs' %(out_read_count), file = sys.stderr)
     return 0
 
 def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
@@ -218,8 +219,8 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'
-    sys.stderr.write('Start processing bam file: %s\n' %(in_bam))
-    sys.stderr.write('Writing to: %s\n' %(out_bam))
+    print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
+    print('Writing to: %s' %(out_bam), file = sys.stderr)
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
             for read_count, alignment in enumerate(in_sam):
@@ -244,5 +245,5 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
 
             out_sam.write(read_aln)
             out_read_count += 1
-    sys.stderr.write('Writting %i reads\n' %(out_read_count))
+    print('Writting %i reads' %(out_read_count), file = sys.stderr)
     return 0

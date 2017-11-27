@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 from matplotlib import use as mpl_use
 mpl_use('Agg')
 import numpy as np
@@ -80,7 +81,7 @@ def plot_bc_member(member_count, filename):
     p.set_xlabels('Member in barcode family')
     p.set_ylabels('Barcode count')
     p.savefig(figurename)
-    sys.stderr.write('Plotted: %s\n' %figurename)
+    print('Plotted: %s' %figurename, file = sys.stderr)
 
 
 def cluster_bam(tag, bool conserved, AlignmentFile in_bam, out_fastq):
@@ -123,7 +124,7 @@ def cluster_bam(tag, bool conserved, AlignmentFile in_bam, out_fastq):
                     # reinitialize group
                     read_group = readGroup(aln, tag)
             if iter_count % 5000000 == 0 and iter_count != 0:
-                sys.stderr.write('Parsed %i alignments\n' %iter_count)
+                print('Parsed %i alignments' %iter_count, file = sys.stderr)
 
     #spit out the rest in the stupid list
     read_group.cluster(conserved)

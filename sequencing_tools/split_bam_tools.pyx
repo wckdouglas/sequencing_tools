@@ -1,9 +1,12 @@
+from __future__ import print_function
+import sys
 import re
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from functools import partial
 from itertools import izip
 from sequencing_tools.bam_tools import split_cigar
+from sequencing_tools.fragment_pairs import concordant_pairs, is_split_pair
 
 cdef int softClipSize(AlignedSegment aln):
     # compare softclip size, output maximum softclipped base on either side
@@ -68,10 +71,10 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
                         multibam.write(read2)
                         multi_written += 1
             if pair_count % 5000000 == 0:
-                print 'Parsed %i alignment pairs' %pair_count
+                print('Parsed %i alignment pairs' %pair_count, file = sys.stderr)
         except StopIteration:
             break
-            print 'Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written)
+            print('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written), file = sys.stderr)
     return 0
 
 cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
@@ -92,6 +95,33 @@ cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, Alignment
                 multibam.write(read)
                 multi_written += 1
         if count % 5000000 == 0:
-            print 'Parsed %i alignment pairs' %count
-    print 'Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written)
+            print('Parsed %i alignment pairs' %count, file = sys.stderr)
+    print('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written), file = sys.stderr)
     return 0
+
+cpdef int split_N_bam(AlignmentFile inbam,
+                    AlignmentFile out_split_bam,
+                    AlignmentFile out_fragment_bam):
+    cdef:
+        int split_out = 0
+        int out = 0
+        AlignedSegment read1, read2
+
+    while True:
+        try:
+            read1 = inbam.next()
+            read2 = inbam.next()
+            if concordant_pairs(read1, read2):
+                if is_split_pair(read1, read2):
+                    out_split_bam.write(read1)
+                    out_split_bam.write(read2)
+                    split_out += 2
+                else:
+                    out_fragment_bam.write(read1)
+                    out_fragment_bam.write(read2)
+                    out += 2
+        except StopIteration:
+            break
+    print('Written %i unsplit and %i split alignments' %(out, split_out), file = sys.stderr)
+    return 0
+ 

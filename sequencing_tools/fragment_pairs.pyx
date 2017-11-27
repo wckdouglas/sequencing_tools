@@ -140,7 +140,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
                         print(line, file=out_file)
             except StopIteration:
                 break
-    sys.stderr.write('Witten %i pair fragments and %i multiple jump fragments\n' %(pair_count, single_count))
+    print('Witten %i pair fragments and %i multiple jump fragments' %(pair_count, single_count), file = sys.stderr)
     return 0
 
 

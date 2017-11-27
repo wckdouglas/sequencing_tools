@@ -1,3 +1,4 @@
+from __future__ import print_function
 from itertools import izip
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool

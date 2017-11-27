@@ -2,7 +2,7 @@
 
 import pysam
 import argparse
-from sequencing_tools.split_N_bam import parse_bam
+from sequencing_tools.split_bam_tools import split_N_bam
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Splitting paired-end bam into two bam files: '+\
@@ -23,7 +23,7 @@ def main():
     with pysam.Samfile(args.in_bam, 'rb') as inbam:
         with pysam.Samfile(split_bam,'wb',template = inbam) as out_split_bam, \
                 pysam.Samfile(other_bam, 'wb', template = inbam) as out_fragment_bam:
-            parse_bam(inbam, out_split_bam, out_fragment_bam)
+            split_N_bam(inbam, out_split_bam, out_fragment_bam)
     return 0
 
 
