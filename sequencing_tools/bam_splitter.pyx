@@ -9,7 +9,8 @@ from cpython cimport bool
 from sequencing_tools.bam_tools import concordant_alignment, split_cigar, concordant_pairs
 
 
-class fragment_pairs:
+cdef class fragment_pairs:
+
     def __init__(self, AlignedSegment read1, AlignedSegment read2):
         self.read1 = read1
         self.read2 = read2
@@ -120,6 +121,7 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
         int output_count
         bool flag_qualify_ok, soft_clipped, clipped_size_right
         bool inverse_ok, non_inverse_ok
+        fragment_pairs pairs
 
     with pysam.Samfile(in_bam,'rb') as inbam:
         with pysam.Samfile(out_bam,'wb',template = inbam) as outbam:
@@ -129,7 +131,7 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
                     read2 = inbam.next()
                     pairs = fragment_pairs(read1, read2)
                     pairs.check_flags()
-                    assert read1.query_name == read2.query_name, 'Wrong pairs'
+                    assert read1.query_name == read2.query_name, 'Wrong pairs: %s, %s' %(read1.query_name, read2.query_name)
                     pair_count += 1
 
                     if pairs.flag_qualify_ok:
