@@ -39,12 +39,8 @@ cdef class fragment_pairs:
         
 
     def output_aln(self, out_bam_handle):
-        if self.pass_clip_check:
-            out_bam_handle.write(self.read1)
-            out_bam_handle.write(self.read2)
-            return 1
-        else:
-            return 0
+        out_bam_handle.write(self.read1)
+        out_bam_handle.write(self.read2)
 
 
 cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
@@ -137,7 +133,8 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
                     if pairs.flag_qualify_ok:
                         pairs.check_soft_clips()
                         if not pairs.has_soft_clip and not inverse:
-                            output_count += pairs.output_aln(outbam)
+                            pairs.output_aln(outbam)
+                            output_count += 1
 
                         elif pairs.has_soft_clip:
                             pairs.check_pair_clips(single_end_thresh, both_end_thresh)
@@ -146,7 +143,8 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
                             inverse_ok = (not pairs.pass_clip_check  and inverse)
                             non_inverse_ok = (pairs.pass_clip_check and not inverse)
                             if  inverse_ok or non_inverse_ok:
-                                output_count += pairs.output_aln(outbam)
+                                pairs.output_aln(outbam)
+                                output_count += 1
 
                     if pair_count % 1000000 == 0 and pair_count != 0:
                         print('Parsed %i alignments' %(pair_count), file = sys.stdout)
