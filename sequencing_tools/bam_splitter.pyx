@@ -10,7 +10,9 @@ from sequencing_tools.bam_tools import concordant_alignment, split_cigar, concor
 
 
 cdef class fragment_pairs:
-
+    '''
+    A data structure for pair of reads
+    '''
     def __init__(self, AlignedSegment read1, AlignedSegment read2):
         self.read1 = read1
         self.read2 = read2
