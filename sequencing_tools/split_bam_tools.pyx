@@ -56,7 +56,7 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
             read1 = bam.next()
             read2 = bam.next()
             pair_count += 1
-            assert read1.qname == read2.qname, 'Not paired end'
+            assert read1.query_name == read2.query_name, 'Not paired end'
             if not read1.is_unmapped and not read2.is_unmapped:
                 if both_read_good_clip(read1, read2):
                     if is_unique(read1, read2):
