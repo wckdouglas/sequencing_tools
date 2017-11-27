@@ -8,6 +8,32 @@ from numpy cimport ndarray
 from cpython cimport bool
 from sequencing_tools.bam_tools import concordant_alignment, split_cigar
 
+
+class fragment_pairs:
+    def __init__(self, AlignedSegment read1, AlignedSegment read2, 
+            float single_end_thresh, float both_end_thresh):
+        self.read1 = read1
+        self.read2 = read2
+        self.s_et = single_end_thresh
+        self.b_et = both_end_thresh
+        self.pass_check = None 
+
+    
+    def check_pair(self):
+        read1_check = check_aln(self.read1, self.s_et, self.b_et)
+        read2_check = check_aln(self.read2, self.s_et, self.b_et)
+        self.pass_check = read1_check and read2_check
+        
+
+    def output_aln(self, out_bam_handle):
+        if self.pass_check:
+            out_bam_handle.write(self.read1)
+            out_bam_handle.write(self.read2)
+            return 1
+        else:
+            return 0
+
+
 cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
             float both_end_thresh):
     '''
@@ -32,7 +58,7 @@ cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
     both_pass =  abs(total_clipped) < b_et
     return single_pass and both_pass and not aln.is_unmapped
 
-def filter_bam(in_bam, out_bam, single_end_thresh,
+def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
                     both_end_thresh, inverse):
     '''
     This function filter softclipped sequence by tresholds regarding to the sequence length
