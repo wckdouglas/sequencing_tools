@@ -16,7 +16,7 @@ bedpe_to_bed.py -h
 clip_fastq.py -h
 depth_to_bigwig.py -h
 deinterleave_fastq.py 
-filterSoftClip.py -h
+filter_soft_clip.py -h
 reduce_multi_reads.py -h
 split_bam.py -h
 split_uniq_bam.py -h
