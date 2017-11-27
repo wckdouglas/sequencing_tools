@@ -1,5 +1,6 @@
 #!/bin/env python
 
+from __future__ import print_function
 from sys import stderr
 from collections import defaultdict
 import numpy as np
@@ -57,9 +58,9 @@ def clustering(outputprefix, inFastq1, inFastq2, idx_base, min_family_member_cou
                             barcode_cut_off, constant, barcode_dict, allow_mismatch,
                             which_side, programname)
     barcode_dict, read_num, barcode_count, discarded_sequence_count = result
-    stderr.write('[%s] Extracted: %i barcode group\n' %(programname,barcode_count + 1) +\
-                 '[%s] discarded: %i sequences\n' %(programname, discarded_sequence_count) +\
-                 '[%s] Parsed:    %i seqeucnes\n' %(programname, read_num))
+    print('[%s] Extracted: %i barcode group' %(programname,barcode_count + 1), file = sys.stderr)
+    print('[%s] discarded: %i sequences' %(programname, discarded_sequence_count, file = sys.stderr)
+    print('[%s] Parsed:    %i seqeucnes' %(programname, read_num), file = sys.stderr)
 
     barcode_member_counts = map(lambda index: len(barcode_dict[index]), barcode_dict.keys())
     p = plotBCdistribution(barcode_member_counts, outputprefix)
@@ -68,12 +69,12 @@ def clustering(outputprefix, inFastq1, inFastq2, idx_base, min_family_member_cou
     output_cluster_count, read1File, read2File = writingAndClusteringReads(outputprefix, min_family_member_count,
                                                                            json_file, threads, fraction_threshold)
     # all done!
-    stderr.write('[%s] Finished writing error free reads\n' %programname)
-    stderr.write('[%s] [Summary]                        \n' %programname)
-    stderr.write('[%s] read1:                     %s\n' %(programname, read1File))
-    stderr.write('[%s] read2:                     %s\n' %(programname, read2File))
-    stderr.write('[%s] output clusters:           %i\n' %(programname, output_cluster_count))
-    stderr.write('[%s] Percentage retained:       %.3f\n' %(programname, float(output_cluster_count)/read_num * 100))
+    print('[%s] Finished writing error free reads' %programname, file = sys.stderr)
+    print('[%s] [Summary]                        ' %programname, file = sys.stderr)
+    print('[%s] read1:                     %s' %(programname, read1File), file = sys.stderr)
+    print('[%s] read2:                     %s' %(programname, read2File), file = sys.stderr)
+    print('[%s] output clusters:           %i' %(programname, output_cluster_count), file = sys.stderr)
+    print('[%s] Percentage retained:       %.3f' %(programname, float(output_cluster_count)/read_num * 100), file = sys.stderr)
     return 0
 
 def main(args):
@@ -100,19 +101,19 @@ def main(args):
         sys.exit('Fraction cannot > 1')
 
     #print out parameters
-    stderr.write('[%s] [Parameters] \n' %(programname))
-    stderr.write('[%s] indexed bases:                     %i\n' %(programname, idx_base))
-    stderr.write('[%s] minimum coverage:                  %i\n' %(programname, min_family_member_count))
-    stderr.write('[%s] min mean barcode quality:          %i\n' %(programname, barcode_cut_off))
-    stderr.write('[%s] outputPrefix:                      %s\n' %(programname, outputprefix))
-    stderr.write('[%s] threads:                           %i\n' %(programname, threads))
-    stderr.write('[%s] using constant regions:            %s\n' %(programname, constant))
-    stderr.write('[%s] allowed mismatches:                %i\n' %(programname, allow_mismatch))
-    stderr.write('[%s] Fraction to call concnesus:        %.2f\n' %(programname, fraction_threshold))
+    print('[%s] [Parameters] ' %(programname), file = sys.stderr)
+    print('[%s] indexed bases:                     %i' %(programname, idx_base), file = sys.stderr)
+    print('[%s] minimum coverage:                  %i' %(programname, min_family_member_count), file = sys.stderr)
+    print('[%s] min mean barcode quality:          %i' %(programname, barcode_cut_off), file = sys.stderr)
+    print('[%s] outputPrefix:                      %s' %(programname, outputprefix), file = sys.stderr)
+    print('[%s] threads:                           %i' %(programname, threads), file = sys.stderr)
+    print('[%s] using constant regions:            %s' %(programname, constant), file = sys.stderr)
+    print('[%s] allowed mismatches:                %i' %(programname, allow_mismatch), file = sys.stderr)
+    print('[%s] Fraction to call concnesus:        %.2f' %(programname, fraction_threshold), file = sys.stderr)
 
     # divide reads into subclusters
     clustering(outputprefix, inFastq1, inFastq2, idx_base, min_family_member_count, barcode_cut_off, constant, threads, allow_mismatch, which_side, fraction_threshold)
-    stderr.write('[%s] time lapsed:      %2.3f min\n' %(programname, np.true_divide(time.time()-start,60)))
+    print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)
     return 0
 
 if __name__ == '__main__':

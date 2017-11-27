@@ -1,6 +1,7 @@
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import pysam
 import re
+import sys
 import numpy as np
 from numpy cimport ndarray
 from cpython cimport bool
@@ -64,5 +65,5 @@ def filter_bam(in_bam, out_bam, single_end_thresh,
                             output_count += 1
 
                 if aln_count % 1000000 == 0 and aln_count != 0:
-                    print 'Parsed %i alignments' %(aln_count)
+                    print('Parsed %i alignments' %(aln_count), file = sys.stdout)
     return output_count

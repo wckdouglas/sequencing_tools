@@ -27,9 +27,9 @@ def main():
     out_bam = args.outbam
     single_end_thresh = args.single_end
     both_end_thresh = args.both_end
-    print 'Filtering %s' %in_bam
+    print('Filtering %s' %in_bam, file = sys.stdout)
     output_count = filter_bam(in_bam, out_bam, single_end_thresh, both_end_thresh, args.inverse)
-    print 'Written %i alignments to %s' %(output_count, out_bam)
+    print('Written %i alignments to %s' %(output_count, out_bam), file = sys.stdout)
 
 if __name__ == '__main__':
     main()

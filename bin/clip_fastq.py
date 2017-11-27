@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import argparse
 import numpy as np
 import time
@@ -58,14 +59,14 @@ def main(args):
 
     #print out parameters
     programname = sys.argv[0]
-    stderr.write('[%s] [Parameters] \n' %(programname))
-    stderr.write('[%s] indexed bases:                     %i\n' %(programname, idx_base))
-    stderr.write('[%s] min mean barcode quality:          %i\n' %(programname, barcode_cut_off))
-    stderr.write('[%s] outputPrefix:                      %s\n' %(programname, outputprefix))
-    stderr.write('[%s] using constant regions:            %s\n' %(programname, constant))
-    stderr.write('[%s] allowed mismatches:                %i\n' %(programname, allow_mismatch))
-    stderr.write('[%s] Using prefix bases:                %i\n' %(programname, prefix_split))
-    stderr.write('[%s] Using UMI side:                    %s\n' %(programname, UMI_side))
+    print('[%s] [Parameters] ' %(programname), file = sys.stderr)
+    print('[%s] indexed bases:                     %i' %(programname, idx_base), file = sys.stderr)
+    print('[%s] min mean barcode quality:          %i' %(programname, barcode_cut_off), file = sys.stderr)
+    print('[%s] outputPrefix:                      %s' %(programname, outputprefix), file = sys.stderr)
+    print('[%s] using constant regions:            %s' %(programname, constant), file = sys.stderr)
+    print('[%s] allowed mismatches:                %i' %(programname, allow_mismatch), file = sys.stderr)
+    print('[%s] Using prefix bases:                %i' %(programname, prefix_split), file = sys.stderr)
+    print('[%s] Using UMI side:                    %s' %(programname, UMI_side), file = sys.stderr)
 
     # divide reads into subclusters
     if outputprefix != '-':
@@ -73,11 +74,11 @@ def main(args):
                 barcode_cut_off, constant, allow_mismatch, programname,
                 prefix_split, UMI_side)
     else:
-        stderr.write('[%s] Using STDOUT, Will not split prefix!!\n' %(programname))
+        print('[%s] Using STDOUT, Will not split prefix!!' %(programname), file = sys.stderr)
         run_pairs_stdout(inFastq1, inFastq2, idx_base,
                 barcode_cut_off, constant, allow_mismatch, programname,
                 prefix_split, UMI_side)
-    stderr.write('[%s] time lapsed:      %2.3f min\n' %(programname, np.true_divide(time.time()-start,60)))
+    print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)
     return 0
 
 if __name__ == '__main__':

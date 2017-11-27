@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import pysam
 import argparse
 from sequencing_tools.bam_cluster import cluster_bam
@@ -23,12 +24,12 @@ def main():
     out_fastq = args.outfq
     start = time.time()
 
-    sys.stderr.write('Demultiplexing: %s\n' %in_bam)
+    print('Demultiplexing: %s' %in_bam, file=sys.stderr)
     out_fastq = '/dev/stdout' if out_fastq == '-' else out_fastq
     with pysam.Samfile(in_bam, 'rb') as inbam:
         with open(out_fastq, 'w') as outfastq:
             out_count = cluster_bam(args.tag, args.conserved, inbam, outfastq)
-    sys.stderr.write('Finished clustering: output %i clusters in %.3f min\n' %(out_count, (time.time() - start) /60))
+    print('Finished clustering: output %i clusters in %.3f min' %(out_count, (time.time() - start) /60), file=sys.stderr)
 
 
 if __name__ == '__main__':
