@@ -12,6 +12,12 @@ This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of se
 pip install git+https://github.com/wckdouglas/sequencing_tools.git
 ```
 
+or 
+
+```
+conda install -c wckdouglas sequencing_tools
+```
+
 If this gives an error, try:
 
 ```
