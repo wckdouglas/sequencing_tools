@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import pysam
 import re

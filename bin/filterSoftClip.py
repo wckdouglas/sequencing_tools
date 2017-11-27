@@ -10,14 +10,14 @@ import sys
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Filter alignments from sam file by softclip ratio')
-    parser.add_argument('-i', '--inbam', required=True, help = 'input bam file')
+    parser.add_argument('-i', '--inbam', required=True, help = 'input bam file (can be stdin, use -)')
     parser.add_argument('-o','--outbam', default = '-', help = 'output bam file (defulat: - )')
     parser.add_argument('-s','--single_end',default = 0.2, type=float,
                         help ='Maximum ratio of the whole alignment being clipped in one end (default: 0.2)')
     parser.add_argument('-b','--both_end',default = 0.5, type=float,
                         help ='Maximum ratio of the whole alignment being clipped in sum(each end) (default : 0.5)')
     parser.add_argument('-v','--inverse', action = 'store_true',
-                        help ='Maximum ratio of the whole alignment being clipped in sum(each end) (default : 0.5)')
+                        help ='Only output alignment with clipped base > threshold (like grep -v)')
     args = parser.parse_args()
     return args
 
