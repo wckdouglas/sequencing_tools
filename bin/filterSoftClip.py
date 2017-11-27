@@ -11,7 +11,7 @@ import sys
 def getopt():
     parser = argparse.ArgumentParser(description = 'Filter alignments from sam file by softclip ratio')
     parser.add_argument('-i', '--inbam', required=True, help = 'input bam file (can be stdin, use -)')
-    parser.add_argument('-o','--outbam', default = '-', help = 'output bam file (defulat: - )')
+    parser.add_argument('-o','--outbam', default = '-', help = 'output bam file (default: - )')
     parser.add_argument('-s','--single_end',default = 0.2, type=float,
                         help ='Maximum ratio of the whole alignment being clipped in one end (default: 0.2)')
     parser.add_argument('-b','--both_end',default = 0.5, type=float,
