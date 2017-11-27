@@ -38,7 +38,7 @@ cdef class fragment_pairs:
         self.pass_clip_check = read1_check and read2_check
         
 
-    def output_aln(self, out_bam_handle):
+    def output_aln(self, AlignmentFile out_bam_handle):
         out_bam_handle.write(self.read1)
         out_bam_handle.write(self.read2)
 
