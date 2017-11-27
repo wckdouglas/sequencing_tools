@@ -138,6 +138,8 @@ regular_chroms = range(1,23)
 regular_chroms.extend(list('XY'))
 regular_chroms.append('MT')
 regular_chroms = map(str, regular_chroms)
+regular_chroms.extend(map(lambda x: 'chr'+x, regular_chroms))
+regular_chroms.append('chrM')
 
 def is_regular_chrom(chroms):
     return np.in1d(chroms, regular_chroms)
