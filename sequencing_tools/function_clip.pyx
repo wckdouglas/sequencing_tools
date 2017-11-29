@@ -14,9 +14,21 @@ from sequencing_tools.fastq_tools cimport fastqRecord
 from sequencing_tools.cutadapt_align import locate
 
 
-cpdef int Levenshtein_distance(str s1, str s2):
+cpdef int levenshtein_distance(str s1, str s2):
     '''
+    Calculating Levenshtein distance from two strings
     algorithm from: http://rosettacode.org/wiki/Levenshtein_distance#Python
+
+    usage: levenshtein_distance(string1, string2)
+    ==============================
+    Parameter:
+
+    string1
+    string2
+
+    return:
+    edit distance: the edit distance between two string
+
     '''
 
     cdef:
@@ -43,7 +55,7 @@ cpdef int Levenshtein_distance(str s1, str s2):
     return distances[-1]
 
 
-cpdef int hamming_distance(str expected_constant, str constant_region):
+cpdef int hamming_distance(str s1, str s2):
     '''
     Calculating hamming distance from two strings
 
@@ -64,9 +76,9 @@ cpdef int hamming_distance(str expected_constant, str constant_region):
     cdef:
         str i, j
         int hamming = 0
-    assert len(constant_region) == len(expected_constant), 'Wrong barcode extraction'
+    assert len(s1) == len(s2), 'Wrong barcode extraction'
 
-    for i, j in zip(expected_constant, constant_region):
+    for i, j in zip(s1, s2):
         if i != j:
             hamming += 1
 
