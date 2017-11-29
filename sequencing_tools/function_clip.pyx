@@ -35,6 +35,7 @@ cpdef int hamming_distance(str expected_constant, str constant_region):
     cdef:
         str i, j
         int hamming = 0
+    assert len(constant_region) == len(expected_constant), 'Wrong barcode extraction'
 
     for i, j in zip(expected_constant, constant_region):
         if i != j:

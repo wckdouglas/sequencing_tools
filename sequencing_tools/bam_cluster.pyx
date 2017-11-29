@@ -15,32 +15,8 @@ import pandas as pd
 from collections import defaultdict
 import time
 from read_cluster cimport readGroup
+from sequencing_tools.function_clip import hamming_distance
 
-
-cpdef int hamming_distance(str expected_constant, str constant_region):
-    '''
-    Calculating hamming distance from two strings
-    usage: hamming_distance(string1, string2)
-    ==============================
-    Parameter:
-    string1
-    string2
-    has to be same length
-    return:
-    edit distance: the edit distance between two string
-    ===============================
-    '''
-
-    cdef:
-        str i, j
-        int hamming = 0
-    assert len(constant_region) == len(expected_constant), 'Wrong barcode extraction'
-
-    for i, j in zip(expected_constant, constant_region):
-        if i != j:
-            hamming += 1
-
-    return hamming
 
 accpetable_flag = [99,147,
                 163,83,
@@ -111,9 +87,9 @@ def cluster_bam(tag, bool conserved, AlignmentFile in_bam, out_fastq):
             else:
                 name = aln.query_name
                 barcode = aln.get_tag(tag)
-                barcode_is_same = barcode == read_group.barcode
-                #barcode_not_too_bad =  hamming_distance(barcode, read_group.barcode) < 2
-                if barcode_is_same:
+                #barcode_is_same = barcode == read_group.barcode
+                barcode_not_too_bad =  hamming_distance(barcode, read_group.barcode) < 2
+                if barcode_not_too_bad:
                     read_group.put_alignment(aln)
                 else:
                     # conclude group and write

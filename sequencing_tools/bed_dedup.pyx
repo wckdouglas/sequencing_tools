@@ -6,7 +6,7 @@ from itertools import combinations
 from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
-from sequencing_tools.bam_cluster import hamming_distance
+from sequencing_tools.function_clip import hamming_distance
 import sys
 
 

@@ -12,6 +12,7 @@ from itertools import imap, izip
 from functools import partial
 from cpython cimport bool
 import io
+from sequencing_tools.function_clip import hamming_distance
 
 np_ord = np.vectorize(ord)
 
@@ -69,31 +70,6 @@ def concensusSeq(in_seq_list, in_qual_list, float fraction_threshold):
         sequence = str(in_seq_list[0])
         quality = str(in_qual_list[0])
     return sequence, quality
-
-
-cpdef int hamming_distance(str expected_constant, str constant_region):
-    '''
-    Calculating hamming distance from two strings
-    usage: hamming_distance(string1, string2)
-    ==============================
-    Parameter:
-    string1
-    string2
-    has to be same length
-    return:
-    edit distance: the edit distance between two string
-    ===============================
-    '''
-
-    cdef:
-        str i, j
-        int hamming = 0
-
-    for i, j in zip(expected_constant, constant_region):
-        if i != j:
-            hamming += 1
-
-    return hamming
 
 
 
