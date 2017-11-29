@@ -11,7 +11,10 @@ from numba import jit
 
 
 class fragment_group:
-
+    '''
+    Data structure for storing fragments with same start, end positions and strands
+    store barcode as a dictionary with values indicating numbers of same fragment
+    '''
     def __init__(self, chrom, start, end, strand, bc):
         self.chrom = chrom
         self.start = start
@@ -27,18 +30,28 @@ class fragment_group:
         self.barcodes_set[bc] += 1
 
     def add_member(self, bc):
+        '''
+        add a member to the fragment group, add barcode to barcode dictionary
+        '''
         self.barcodes_set[bc] += 1
 
 
     def demultiplexing_barcodes(self, threshold):
-        if len(self.barcodes_set.keys()) == 1:
+        '''
+        Demultiplex the barcode list
+        '''
+        if len(self.barcodes_set.keys()) == 1: # for theingular fragment
+                                                # generate a phantom list with the single fragment record 
             self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode=self.barcodes_set.keys()[0], 
                                                                 count = self.barcodes_set.values()[0])]
-        else:
-            self.unique_barcodes = demultiplex(self.barcodes_set, threshold)
+        else: # for more than 1 unique barcode
+            self.unique_barcodes = demultiplex(self.barcodes_set, threshold = threshold)
 
 
     def output_bed_line(self):
+        '''
+        output every unique fragments
+        '''
         for barcode in self.unique_barcodes:
             template = '{chrom}\t{start}\t{end}\t{barcode}\t{length}\t{strand}' \
                 .format(chrom = self.chrom,
@@ -50,13 +63,20 @@ class fragment_group:
             yield template
 
     def check_fragment(self, chrom, start, end, strand):
+        '''
+        check if new fragment belong to this fragment group
+        '''
         chrom_same = (chrom == self.chrom)
         start_end_same = (start == self.start and end == self.end)
         strand_same = (strand == self.strand)
         return chrom_same and start_end_same and strand_same
 
 
-cdef int hamming_barcode(barcode_pair):
+cpdef int hamming_barcode(barcode_pair):
+    '''
+    calculating hamming distance of a barcode pair
+    inpurt is tuple of two barcodes
+    '''
     cdef:
         str a, b
         str i, j
@@ -85,6 +105,7 @@ def make_graph(comparison, threshold):
 
 def unique_barcode_from_graph(graph, barcodes):
     '''
+    Merging barcode families, using the pre-built network-of-barcode 
     '''
     unique_barcode = []
     for subgraph in connected_components(graph):
@@ -99,7 +120,10 @@ def unique_barcode_from_graph(graph, barcodes):
         unique_barcode.append(barcode_id)
     return unique_barcode
 
-def demultiplex(barcodes, threshold):
+def demultiplex(barcodes, threshold=1):
+    '''
+    demultiplexing barcode families
+    '''
     comparison = combinations(barcodes.keys(),r=2)
     graph = make_graph(comparison, threshold)
     unique_barcode =  unique_barcode_from_graph(graph, barcodes)
