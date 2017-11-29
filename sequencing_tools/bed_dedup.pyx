@@ -6,6 +6,7 @@ from itertools import combinations
 from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
+from sequencing_tools.bam_cluster import hamming_distance
 import sys
 
 
@@ -82,11 +83,7 @@ cpdef int hamming_barcode(barcode_pair):
         int hd
 
     a, b = barcode_pair
-    assert len(a) == len(b), 'Wrong barcode extraction'
-    hd = 0
-    for i, j in zip(a, b):
-        if i != j:
-            hd += 1
+    hd = hamming_distance(a, b)
     return hd
 
 def make_graph(comparison, threshold):
