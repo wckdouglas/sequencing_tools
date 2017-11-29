@@ -7,7 +7,6 @@ from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
 import sys
-from numba import jit
 
 
 class fragment_group:
