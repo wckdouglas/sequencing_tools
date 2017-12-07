@@ -24,9 +24,9 @@ def main():
         in_file = open(fastq_in) if fastq_in != '-' else sys.stdin
         for R1, R2 in read_interleaved(in_file):
 
-            print('@%s\n%s\n+\n%s\n' %(R1.id, R1.seq, R1.qual), file = r1)
+            print('@%s\n%s\n+\n%s' %(R1.id, R1.seq, R1.qual), file = r1)
             r1_count += 1
-            print('@%s\n%s\n+\n%s\n' %(R2.id, R2.seq, R2.qual), file = r2)
+            print('@%s\n%s\n+\n%s' %(R2.id, R2.seq, R2.qual), file = r2)
             r2_count += 1
 
     assert r1_count == r2_count, 'Not equal reads!!!! %i != %i' %(r1_count, r2_count)
