@@ -49,6 +49,7 @@ Prerequisits:
 * [BAM to BED converter](#b2b)
 * [UMI tagger](#bam_tag)
 * [BED demultiplexer](#dedup_bed)
+* [FastQ deinterleave](#deinterleaved)
 
 <h3 id='clip'>  UMI clipper </h3>
 
@@ -229,6 +230,24 @@ optional arguments:
                         Deliminator separating read id and bc (default: _ )
   -f F                  after splitting read name using {delim}, which
                         fragmnet is UMI? can use -1 as last piece (default: 0)
+```
+
+<h3 id='deinterleaved'> Deinterleaved fastq </h3>
+
+Deinterleaved an interleaved fastq file.
+
+```
+usage: deinterleave_fastq.py [-h] [-i INFQ] -1 READ1 [-2 READ2]
+
+Deinterleaving an interleaved fastq file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i INFQ, --infq INFQ  interleaved fq (defualt: -)
+  -1 READ1, --read1 READ1
+                        read 1 fastq output
+  -2 READ2, --read2 READ2
+                        read 2 fastq output
 ```
 
 ---
