@@ -153,5 +153,4 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
             except StopIteration:
                 outbam.close()
                 break
-        print('Written %i from %i alignment pairs' %(output_count, pair_count), file = sys.stderr)
     return output_count, pair_count
