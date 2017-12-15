@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pandas import Series
+from itertools import izip
 
 def douglas_palette():
     '''
@@ -13,14 +15,7 @@ def douglas_palette():
     '''
     colors = ['#B98476', '#6297B6', '#BF7F8E', '#8E955A', '#6F94B9', '#579F79', '#3C9F9D', 
             '#EDAEB5', '#B0BDEA', '#D8BA90', '#7BCBD5', '#87CDA9', '#B1C68D', '#E7C039']
-    try:
-        import seaborn as sns
-        sns.set_style('white')
-        palette = sns.color_palette(colors)
-        sns.set_palette(palette)
-        return colors
-    except:
-        return colors
+    return colors
 
 
 def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), 
@@ -86,3 +81,14 @@ def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)),
                 ax.set_xlabel(label)        
     sns.despine()
     return fig
+
+
+def color_encoder(xs, colors=douglas_palette()):
+    '''
+    color encoding a categoric vector
+    '''
+    xs = Series(xs)
+    cat = xs.unique()
+    assert len(cat) < len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(cat))
+    encoder = {x:col for x, col in izip(cat, colors)}
+    return xs.map(encoder)

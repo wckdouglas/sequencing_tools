@@ -134,6 +134,7 @@ def read_interleaved(infile):
     cdef:
         str r1_id, r2_id
         fastqRecord R1, R2
+        
     fastq_file = readfq(infile)
 
     try:
