@@ -122,34 +122,36 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
         fragment_pairs pairs
 
     with pysam.Samfile(in_bam,'rb') as inbam:
-        with pysam.Samfile(out_bam,'wb',template = inbam) as outbam:
-            while True:
-                try:
-                    read1 = inbam.next()
-                    read2 = inbam.next()
-                    pairs = fragment_pairs(read1, read2)
-                    pairs.check_flags()
-                    assert read1.query_name == read2.query_name, 'Wrong pairs: %s, %s' %(read1.query_name, read2.query_name)
-                    pair_count += 1
+        outbam = pysam.Samfile(out_bam,'wb',template = inbam)
+        while True:
+            try:
+                read1 = inbam.next()
+                read2 = inbam.next()
+                pairs = fragment_pairs(read1, read2)
+                pairs.check_flags()
+                assert read1.query_name == read2.query_name, 'Wrong pairs: %s, %s' %(read1.query_name, read2.query_name)
+                pair_count += 1
 
-                    if pairs.flag_qualify_ok:
-                        pairs.check_soft_clips()
-                        if not pairs.has_soft_clip and not inverse:
+                if pairs.flag_qualify_ok:
+                    pairs.check_soft_clips()
+                    if not pairs.has_soft_clip and not inverse:
+                        pairs.output_aln(outbam)
+                        output_count += 1
+
+                    elif pairs.has_soft_clip:
+                        pairs.check_pair_clips(single_end_thresh, both_end_thresh)
+
+
+                        inverse_ok = (not pairs.pass_clip_check  and inverse)
+                        non_inverse_ok = (pairs.pass_clip_check and not inverse)
+                        if  inverse_ok or non_inverse_ok:
                             pairs.output_aln(outbam)
                             output_count += 1
 
-                        elif pairs.has_soft_clip:
-                            pairs.check_pair_clips(single_end_thresh, both_end_thresh)
-
-
-                            inverse_ok = (not pairs.pass_clip_check  and inverse)
-                            non_inverse_ok = (pairs.pass_clip_check and not inverse)
-                            if  inverse_ok or non_inverse_ok:
-                                pairs.output_aln(outbam)
-                                output_count += 1
-
-                    if pair_count % 1000000 == 0 and pair_count != 0:
-                        print('Parsed %i alignments' %(pair_count), file = sys.stdout)
-                except StopIteration:
-                    break
+                if pair_count % 1000000 == 0 and pair_count != 0:
+                    print('Parsed %i alignments' %(pair_count), file = sys.stdout)
+            except StopIteration:
+                outbam.close()
+                break
+        print('Written %i from %i alignment pairs' %(output_count, pair_count), file = sys.stderr)
     return output_count
