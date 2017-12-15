@@ -104,7 +104,7 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
 
                 if aln_count % 1000000 == 0 and aln_count != 0:
                     print('Parsed %i alignments' %(aln_count), file = sys.stderr)
-    return output_count
+    return output_count, aln_count
 
 def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
                     both_end_thresh, inverse):
@@ -154,4 +154,4 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
                 outbam.close()
                 break
         print('Written %i from %i alignment pairs' %(output_count, pair_count), file = sys.stderr)
-    return output_count
+    return output_count, pair_count
