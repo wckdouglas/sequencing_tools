@@ -1,4 +1,5 @@
 from __future__ import print_function
+from statistics import mean
 import numpy as np
 from matplotlib import use as mpl_use
 mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
@@ -8,7 +9,7 @@ import cjson
 import gzip
 import re
 from multiprocessing import Pool
-from itertools import imap, izip
+from builtins import zip, map, range
 from functools import partial
 from cpython cimport bool
 import io
@@ -59,10 +60,10 @@ def concensusSeq(in_seq_list, in_qual_list, float fraction_threshold):
 
     if len(in_seq_list) > 1:
         seq_len = len(in_seq_list[0])
-        seq_list = np.array(map(list, in_seq_list))
-        qual_list = np.array(map(list, in_qual_list))
+        seq_list = np.array(list(map(list, in_seq_list)))
+        qual_list = np.array(list(map(list, in_qual_list)))
         iter_list = ((seq_list[:,pos], qual_list[:,pos], fraction_threshold) for pos in xrange(seq_len))
-        concensus_position = imap(voteConcensusBase, iter_list)
+        concensus_position = map(voteConcensusBase, iter_list)
         bases, quals = zip(*concensus_position)
         sequence = ''.join(list(bases))
         quality = ''.join(list(quals))
@@ -170,7 +171,7 @@ def writingAndClusteringReads(outputprefix, min_family_member_count, json_file,
         error_func = partial(errorFreeReads, min_family_member_count, fraction_threshold)
         write_func = partial(writeSeqToFiles,read1, read2)
         processes = pool.imap_unordered(error_func, infile, chunksize = 1000)
-        #processes = imap(error_func, infile)
+        #processes = map(error_func, infile)
         for result in processes:
             output_cluster_count += write_func(output_cluster_count, result)
             counter += 1
@@ -204,14 +205,14 @@ cpdef int readClusteringR2(barcode_dict, idx_base, barcode_cut_off, constant,
     assert id_left.split(' ')[0] == id_right.split(' ')[0], 'Wrongly splitted files!! %s\n%s' %(id_right, id_left)
     barcode = seq_right[:idx_base]
     constant_region = seq_right[idx_base:usable_seq]
-    barcodeQualmean = int(np.mean(map(ord,qual_right[:idx_base])) - 33)
+    barcodeQualmean = int(mean(map(ord,qual_right[:idx_base])) - 33)
 
     no_N_barcode = 'N' not in barcode
     is_low_complexity_barcode = bool(low_complexity_composition.search(barcode))
     hiQ_barcode = barcodeQualmean > barcode_cut_off
     accurate_constant = hamming_distance(constant, constant_region) <= hamming_threshold
-    min_qual_left = np.min(map(ord, qual_left))
-    min_qual_right = np.min(map(ord, qual_right))
+    min_qual_left = min(map(ord, qual_left))
+    min_qual_right = min(map(ord, qual_right))
     qual_pass = np.min([min_qual_left,min_qual_right])  >= 53
 
     if no_N_barcode and hiQ_barcode and accurate_constant: #and not is_low_complexity_barcode):
@@ -243,15 +244,15 @@ cpdef int readClusteringR1(barcode_dict, idx_base, barcode_cut_off, constant,
     assert id_left.split(' ')[0] == id_right.split(' ')[0], 'Wrongly splitted files!! %s\n%s' %(id_right, id_left)
     barcode = seq_left[:idx_base]
     constant_region = seq_left[idx_base:usable_seq]
-    barcode_qual_min = int(np.min(map(ord,qual_left[:idx_base])) - 33)
+    barcode_qual_min = int(min(map(ord,qual_left[:idx_base])) - 33)
 
     no_N_barcode = 'N' not in barcode
     is_low_complexity_barcode = bool(low_complexity_composition.search(barcode))
     hiQ_barcode = barcode_qual_min >= barcode_cut_off
     accurate_constant = hamming_distance(constant, constant_region) <= hamming_threshold
-    min_qual_left = np.min(map(ord, qual_left))
-    min_qual_right = np.min(map(ord, qual_right))
-    qual_pass = np.min([min_qual_left,min_qual_right])  >= 53
+    min_qual_left = min(map(ord, qual_left))
+    min_qual_right = min(map(ord, qual_right))
+    qual_pass = min([min_qual_left,min_qual_right]) >= 53
 
 
     if no_N_barcode and hiQ_barcode and accurate_constant and qual_pass: #and not low_complexity_barcode:
@@ -289,7 +290,7 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
                             constant, constant_length, allow_mismatch, usable_seq,
                             failed_file, low_complexity_composition)
 
-        iterator = enumerate(izip(read_fastq(fq1), read_fastq(fq2)))
+        iterator = enumerate(zip(read_fastq(fq1), read_fastq(fq2)))
         for read_num, (read1,read2) in iterator:
             discarded_sequence_count += cluster_reads(read1, read2)
             if read_num % 10000000 == 0:

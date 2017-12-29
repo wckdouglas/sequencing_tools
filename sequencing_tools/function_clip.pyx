@@ -1,5 +1,6 @@
 from __future__ import print_function
-from itertools import izip, imap, product
+from itertools import product
+from builtins import zip, map
 from multiprocessing import Pool
 from functools import partial
 import numpy as np
@@ -118,7 +119,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
     barcode =  read1.seq[:idx_base]
     barcode_qual = read1.qual[:idx_base]
     constant_region = read1.seq[idx_base:usable_seq]
-    barcode_mean_qual = np.mean(map(ord, barcode_qual)) - 33
+    barcode_mean_qual = np.mean(list(map(ord, barcode_qual))) - 33
     prefix = barcode[:prefix_split]
 
     no_N_barcode = 'N' not in barcode
@@ -156,7 +157,7 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation, prefix_split,
     barcode =  read2.seq[:idx_base]
     barcode_qual = read1.qual[:idx_base]
     constant_region = read2.seq[idx_base:usable_seq]
-    barcode_mean_qual = np.mean(map(ord, barcode_qual)) - 33
+    barcode_mean_qual = np.mean(list(map(ord, barcode_qual))) - 33
     prefix = barcode[:prefix_split]
 
     no_N_barcode = 'N' not in barcode
@@ -237,7 +238,7 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
                         constant_no_evaluation, prefix_split, idx_base,
                         usable_seq, hamming_threshold)
 
-        for count, (read1, read2) in enumerate(izip(readfq(in1), readfq(in2))):
+        for count, (read1, read2) in enumerate(zip(readfq(in1), readfq(in2))):
             out, prefix, seq_record = clipping(read1, read2)
             out_count += out
             if out == 1:
@@ -279,7 +280,7 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
                 constant_no_evaluation, prefix_split, idx_base,
                 usable_seq, hamming_threshold)
 
-        for count, (read1, read2) in enumerate(izip(readfq(in1), readfq(in2))):
+        for count, (read1, read2) in enumerate(zip(readfq(in1), readfq(in2))):
             out, prefix, seq_record = clipping(read1, read2)
             out_count += out
             if out == 1:

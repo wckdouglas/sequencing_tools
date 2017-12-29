@@ -4,7 +4,7 @@ import re
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from functools import partial
-from itertools import izip
+from builtins import zip
 from sequencing_tools.bam_tools import split_cigar
 from sequencing_tools.fragment_pairs import concordant_pairs, is_split_pair
 

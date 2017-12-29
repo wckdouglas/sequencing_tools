@@ -1,4 +1,5 @@
 from cpython cimport array
+from builtins import map, range
 import pyBigWig as pbw
 import numpy as np
 import array
@@ -27,8 +28,8 @@ class chrom_depth:
         self.values[position-1] = value
 
     def write_bw(self):
-        self.positions = range(len(self.values))
-        self.values = map(float, self.values)
+        self.positions = list(range(len(self.values)))
+        self.values = list(map(float, self.values))
         self.bw.addEntries(self.chrom, self.positions, values=self.values, span=1)
         self.bw.close()
         print 'Written %s' %self.filename

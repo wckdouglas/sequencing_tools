@@ -1,4 +1,5 @@
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+from builtins import map, zip, range
 from cpython cimport bool
 import pysam
 import re
@@ -20,7 +21,7 @@ def split_cigar(cigar_string):
     [63], [M]
     '''
 
-    cigar_numbers = map(int, numbers.findall(cigar_string))
+    cigar_numbers = list(map(int, numbers.findall(cigar_string)))
     cigar_operator = all_strings.findall(cigar_string)
     cigar_array = [cigar_numbers, cigar_operator]
     return cigar_array

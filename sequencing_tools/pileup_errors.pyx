@@ -1,5 +1,5 @@
 from __future__ import print_function
-from itertools import izip
+from builtins import zip
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from sequencing_tools.bam_tools import *
@@ -42,7 +42,7 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
                 qual_seq = aln.query_alignment_qualities
                 adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
                 crop_end = len(positions) - crop
-                for i, (pos, (base, qual)) in enumerate(izip(positions, adjusted_sequence)):
+                for i, (pos, (base, qual)) in enumerate(zip(positions, adjusted_sequence)):
                     if crop_end >= i >= crop and qual >= qual_threshold:
                         base_dict[pos][strand][base] += 1
     return aln_count, base_dict

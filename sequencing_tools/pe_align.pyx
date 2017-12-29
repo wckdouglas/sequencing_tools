@@ -5,7 +5,7 @@ from sequencing_tools.fastq_tools import read_interleaved, reverse_complement
 from sequencing_tools.fastq_tools cimport fastqRecord
 import sys
 from sequencing_tools.cutadapt_align import locate
-from itertools import izip
+from builtins import zip
 from functools import partial
 from cpython cimport bool
 
@@ -57,7 +57,7 @@ cdef correct_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
         str qual = ''
         str b1, b2, q1, q2
 
-    iterator = izip(r1_seq, r1_qual, r2_seq, r2_qual)
+    iterator = zip(r1_seq, r1_qual, r2_seq, r2_qual)
     for b1, q1, b2, q2 in iterator:
         b, q = calibrate_qual(b1, b2, q1, q2)
         seq += b

@@ -1,7 +1,7 @@
 from __future__ import division, print_function
 import numpy as np
 import pysam
-from itertools import izip, imap
+from builtins import zip, map
 import string
 from libc.math cimport log10, exp
 import sys
@@ -220,15 +220,15 @@ def concensus_sequence(conserved, aln_table):
         len_filter = (len_array ==  seq_len)
         in_seq_list = in_seq_list[len_filter]
         in_qual_list = in_qual_list[len_filter]
-        seq_list = np.array(map(list, in_seq_list))
-        qual_list = np.array(map(list, in_qual_list))
+        seq_list = np.array(list(map(list, in_seq_list)))
+        qual_list = np.array(list(map(list, in_qual_list)))
         iter_list = ((seq_list[:,pos], qual_list[:,pos]) for pos in xrange(seq_len))
         if conserved:
-            for base, posterior_correct_prob in imap(vote_concensus_base, iter_list):
+            for base, posterior_correct_prob in map(vote_concensus_base, iter_list):
                 sequence += base
                 quality += prob_to_qual_string(posterior_correct_prob)
         else:
-            for base, posterior_correct_prob in imap(calculate_concensus_base, iter_list):
+            for base, posterior_correct_prob in map(calculate_concensus_base, iter_list):
                 sequence += base
                 quality += prob_to_qual_string(posterior_correct_prob)
     return sequence, quality
@@ -321,7 +321,7 @@ cdef class readGroup:
             bool strand1, strand2
 
         assert self.concensus_read1, 'No concensus read generated'
-        iterable = izip(self.concensus_read1, self.concensus_read2,
+        iterable = zip(self.concensus_read1, self.concensus_read2,
                         self.member_count_list,
                         self.concensus_flag1, self.concensus_flag2)
         for (r1_seq, r1_qual), (r2_seq, r2_qual), member_count, strand1, strand2 in iterable:

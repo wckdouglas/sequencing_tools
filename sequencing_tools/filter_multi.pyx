@@ -4,7 +4,7 @@ from cpython cimport bool
 import sys
 from pysam.libcalignmentfile cimport AlignedSegment
 import numpy as np
-from itertools import izip
+from builtins import zip, range
 import re
 
 
@@ -35,7 +35,7 @@ class read_pairs:
         isizes = []
         read1_group = []
         read2_group = []
-        for r1, r2 in izip(self.read1, self.read2):
+        for r1, r2 in zip(self.read1, self.read2):
             if r1.reference_name == r2.reference_name and abs(r1.isize) == abs(r2.isize):
                 read1_group.append(r1)
                 read2_group.append(r2)
@@ -82,7 +82,7 @@ cdef mapped_length(str cigarstring):
         str cstr
     
 
-    for cnum, cstr in izip(cigar_num.findall(cigarstring), cigar_str.findall(cigarstring)):
+    for cnum, cstr in zip(cigar_num.findall(cigarstring), cigar_str.findall(cigarstring)):
         if cstr == 'M':
             mapped += int(cnum)
     return mapped
@@ -135,11 +135,11 @@ class single_read:
         return read_aln
 
 
-regular_chroms = range(1,23)
+regular_chroms = list(range(1,23))
 regular_chroms.extend(list('XY'))
 regular_chroms.append('MT')
-regular_chroms = map(str, regular_chroms)
-regular_chroms.extend(map(lambda x: 'chr'+x, regular_chroms))
+regular_chroms = list(map(str, regular_chroms))
+regular_chroms.extend(list(map(lambda x: 'chr'+x, regular_chroms)))
 regular_chroms.append('chrM')
 
 def is_regular_chrom(chroms):
