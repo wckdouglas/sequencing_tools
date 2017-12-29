@@ -6,7 +6,6 @@ import numpy as np
 import time
 import sys
 import re
-from sys import stderr
 from sequencing_tools.function_clip import run_pairs, run_pairs_stdout
 
 

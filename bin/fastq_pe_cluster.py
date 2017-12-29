@@ -62,7 +62,7 @@ def clustering(outputprefix, inFastq1, inFastq2, idx_base, min_family_member_cou
     print('[%s] discarded: %i sequences' %(programname, discarded_sequence_count, file = sys.stderr)
     print('[%s] Parsed:    %i seqeucnes' %(programname, read_num), file = sys.stderr)
 
-    barcode_member_counts = map(lambda index: len(barcode_dict[index]), barcode_dict.keys())
+    barcode_member_counts = list(map(lambda index: len(barcode_dict[index]), barcode_dict.keys()))
     p = plotBCdistribution(barcode_member_counts, outputprefix)
     dictToJson(barcode_dict, json_file)
     barcode_dict.clear()

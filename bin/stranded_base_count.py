@@ -5,7 +5,6 @@ import pysam
 import numpy as np
 from functools import partial
 from collections import defaultdict
-from itertools import izip
 import re
 import os
 import sys
