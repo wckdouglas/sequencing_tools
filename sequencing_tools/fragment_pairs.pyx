@@ -9,7 +9,7 @@ import sys
 from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends, check_concordant
 
 class read_paired_fragment:
-    def __init__(self, read1, read2, tag, max_size, min_size):
+    def __init__(self, read1, read2, tag=None, max_size=0, min_size=1000000):
         self.tag = tag
         self.max_size = max_size
         self.min_size = min_size
@@ -88,6 +88,35 @@ class read_fragment:
         return self.bed_line
 
 
+def pair_end_iterator(in_bam):
+    '''
+    read bam file two alignments by two alignments
+    '''
+    cdef:
+        AlignedSegment read_1
+        AlignedSegment read_2
+
+    while True:
+        try:
+            read_1 = in_bam.next()
+            read_2 = in_bam.next()
+            yield read_1, read_2
+
+        except StopIteration:
+            break
+
+def fragment_iterator(in_bam):
+    '''
+    read bam file two alignments by two alignments and return fragments
+    '''
+    cdef:
+        AlignedSegment read_1
+        AlignedSegment read_2
+
+    for read_1, read_2 in pair_end_iterator(in_bam):
+        yield read_paired_fragment(read_1, read_2)
+
+
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
     '''
     Read two alignments at a time,
@@ -111,7 +140,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
                 if check_concordant(read_1, read_2):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
-                    pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, max_size = max_size, min_size = min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1
@@ -142,7 +171,8 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
                         elif read_2.is_secondary:
                             read_2 = in_bam.next()
 
-                    pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
+                                                        max_size = max_size, min_size = min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1
