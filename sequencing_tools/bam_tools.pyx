@@ -284,7 +284,7 @@ def remove_insert(sequence, qual_seq, cigar):
         if op != 'I':
             yield base, qual
 
-cpdef bool check_concordant(AlignedSegment read_1, AlignedSegment read_2):
+cpdef check_concordant(AlignedSegment read_1, AlignedSegment read_2):
     '''
     check if read pairs are concordant
 
@@ -309,7 +309,7 @@ cpdef bool check_concordant(AlignedSegment read_1, AlignedSegment read_2):
     return same_name and same_ref and opposite_read and check_concordant
 
 
-cpdef bool check_primary(AlignedSegment read_1, AlignedSegment read_2):
+cpdef check_primary(AlignedSegment read_1, AlignedSegment read_2):
     '''
     check if read pairs are both primary
 

@@ -134,7 +134,6 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
         str line
         long start, end
         int pair_count, single_count
-        bool primary_pair, concordant
 
     pair_count = 0
     single_count = 0
