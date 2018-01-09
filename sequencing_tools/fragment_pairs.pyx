@@ -79,7 +79,8 @@ class read_fragment:
 
 
 
-def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
+def bam_to_bed(bam_file, out_file, int min_size, int max_size, 
+                str tag, bool output_all, bool only_primary):
     '''
     Read two alignments at a time,
     assume they are pairs,
@@ -93,6 +94,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
         str line
         long start, end
         int pair_count, single_count
+        bool primary_pair, concordant
 
     pair_count = 0
     single_count = 0
@@ -101,7 +103,9 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
             try:
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
-                if check_concordant(read_1, read_2):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+                concordant = check_concordant(read_1, read_2)
+                primary_pair = check_primary(read_1, read_2)
+                if concordant and ((primary_pair and only_primary) or not only_primary):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
                     pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
                     line = pair_fragment.generate_fragment()
                     if line:

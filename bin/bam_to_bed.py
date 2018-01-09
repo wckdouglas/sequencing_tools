@@ -18,6 +18,8 @@ def getopt():
                         help = 'tag to extract')
     parser.add_argument('-a','--all', action='store_true',
                         help = 'supplementary as single fragment')
+    parser.add_argument('-p','--primary', action='store_true',
+                        help = 'Only primary')
 
     return parser.parse_args()
 
@@ -28,7 +30,7 @@ def main():
     tag = args.tag
     if args.max_size <= args.min_size:
         sys.exit('!!!!! Min fragment size > Max fragment size') 
-    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, args.all)
+    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, args.all, args.primary)
     return 0
 
 if __name__ == '__main__':
