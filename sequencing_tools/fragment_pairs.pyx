@@ -9,14 +9,22 @@ import sys
 from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends, check_concordant
 
 class read_paired_fragment:
-
-
-    def __init__(self, read1, read2, tag, max_size, min_size):
+    def __init__(self, read1, read2, tag=None, max_size=0, min_size=1000000):
         self.tag = tag
         self.max_size = max_size
         self.min_size = min_size
         self.read_1 = None
         self.read_2 = None
+
+        # output elements
+        self.bed_line = None
+        self.chrom = None
+        self.start = None
+        self.end = None
+        self.fragment_size = None
+        self.strand = None
+        self.pass_filter = False
+
 
         if read1.is_read1:
             self.read_1 = read1
@@ -29,24 +37,25 @@ class read_paired_fragment:
             self.rt1 = self.read_1.get_tag(self.tag)
             self.rt2 = self.read_2.get_tag(self.tag)
 
-    def generate_fragment(self):
-        line = None
         if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
-            chrom = self.read_1.reference_name
-            strand = '-' if self.read_1.is_reverse else '+'
-            start, end = fragment_ends(self.read_1, self.read_2)
-            fragment_size = end - start
-            if self.min_size < fragment_size < self.max_size:
-                if self.tag:
-                    line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
-                                                self.read_1.query_name,
-                                                fragment_size,strand,
-                                                self.rt1)
-                else:
-                    line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
-                                                self.read_1.query_name,
-                                                fragment_size,strand)
-        return line
+            self.chrom = self.read_1.reference_name
+            self.strand = '-' if self.read_1.is_reverse else '+'
+            self.start, self.end = fragment_ends(self.read_1, self.read_2)
+            self.fragment_size = self.end - self.start
+            self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
+
+    def generate_fragment(self):
+        if self.pass_filter:
+            self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
+                .format(chrom = self.chrom,
+                        start = self.start, 
+                        end = self.end, 
+                        read_name = self.read_1.query_name,
+                        fragment_size = self.fragment_size,
+                        strand = self.strand)
+            if self.tag: 
+                self.bed_line = self.bed_line + '\t' + self.rt1
+        return self.bed_line
 
 
 class read_fragment:
@@ -59,24 +68,53 @@ class read_fragment:
 
         if self.tag:
             self.rt = self.read.get_tag(self.tag)
+        
+        self.chrom = self.read.reference_name
+        self.strand = '-' if self.read.is_reverse else '+'
+        self.start, self.end = self.read.reference_start, self.read.reference_end
+        self.fragment_size = self.end - self.start
 
     def generate_fragment(self):
-        chrom = self.read.reference_name
-        strand = '-' if self.read.is_reverse else '+'
-        start, end = self.read.reference_start, self.read.reference_end
-        fragment_size = end - start
-        if self.min_size < fragment_size < self.max_size:
-            if self.tag:
-                line = '%s\t%i\t%i\t%s\t%i\t%s\t%s' %(chrom, start, end,
-                                            self.read.query_name,
-                                            fragment_size,strand,
-                                            self.rt1)
-            else:
-                line = '%s\t%i\t%i\t%s\t%i\t%s' %(chrom, start, end,
-                                            self.read.query_name,
-                                            fragment_size,strand)
-        return line
+        if self.min_size < self.fragment_size < self.max_size:
+            self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
+                .format(chrom = self.chrom,
+                        start = self.start, 
+                        end = self.end, 
+                        read_name = self.read_1.query_name,
+                        fragment_size = self.fragment_size,
+                        strand = self.strand)
+            if self.tag: 
+                self.bed_line = self.bed_line + '\t' + self.rt1
+        return self.bed_line
 
+
+def pair_end_iterator(in_bam):
+    '''
+    read bam file two alignments by two alignments
+    '''
+    cdef:
+        AlignedSegment read_1
+        AlignedSegment read_2
+
+    while True:
+        try:
+            read_1 = in_bam.next()
+            read_2 = in_bam.next()
+            yield read_1, read_2
+
+        except StopIteration:
+            break
+
+def fragment_iterator(in_bam):
+    '''
+    read bam file two alignments by two alignments and return fragments
+    '''
+    cdef:
+        AlignedSegment read_1
+        AlignedSegment read_2
+
+    for read_1, read_2 in pair_end_iterator(in_bam):
+        yield read_paired_fragment(read_1, read_2)
 
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, 
@@ -106,7 +144,8 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                 concordant = check_concordant(read_1, read_2)
                 primary_pair = check_primary(read_1, read_2)
                 if concordant and ((primary_pair and only_primary) or not only_primary):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
-                    pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
+                                                        max_size = max_size, min_size = min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1
@@ -137,7 +176,8 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                         elif read_2.is_secondary:
                             read_2 = in_bam.next()
 
-                    pair_fragment = read_paired_fragment(read_1, read_2, tag, max_size, min_size)
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
+                                                        max_size = max_size, min_size = min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1
