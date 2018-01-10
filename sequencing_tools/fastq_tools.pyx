@@ -70,10 +70,12 @@ def gzopen(filename, read_flag = 'rb'):
     elif 'w' in read_flag:
         return open(filename, read_flag)
 
+# python 3 compatibility
 try:
     complement_seq = string.maketrans('ACTGNactgn','TGACNtgacn')
 except AttributeError:
     complement_seq = str.maketrans('ACTGNactgn','TGACNtgacn')
+
 def complement(seq):
     """
     Find complement a sequence.

@@ -2,27 +2,18 @@ from __future__ import division, print_function
 import numpy as np
 import pysam
 from builtins import zip, map
-import string
 from libc.math cimport log10, exp
 import sys
 from cpython cimport bool
 from scipy.misc import logsumexp
+from sequencing_tools.fastq_tools import reverse_complement
 
 np_len = np.vectorize(len,otypes=[np.int32])
 np_ord = np.vectorize(ord, otypes=[np.int16])
 
 cdef:
-    double min_q = 33.0
-    double max_q = 73.0
-    double max_prob = 0.999999
-
-
-complement =  string.maketrans('ACTGNactgn','TGACNTGACN')
-def reverse_complement(seq):
-    '''
-    Generate reverse complement as name suggested....-,-
-    '''
-    return seq.translate(complement)[::-1]
+    double MIN_Q = 33.0
+    double MAX_Q = 73.0
 
 
 def fix_strand(str seq, str qual, bool strand):
@@ -69,7 +60,7 @@ cdef str phred_to_string(double phred):
         int integer_phred
         str string_phred
 
-    adjusted_phred = clip(adjusted_phred, min_q, max_q)
+    adjusted_phred = clip(adjusted_phred, MIN_Q, MAX_Q)
     integer_phred = int(adjusted_phred)
     string_phred =chr(integer_phred)
     return string_phred
