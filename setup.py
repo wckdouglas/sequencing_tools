@@ -25,7 +25,7 @@ except ImportError:
 try:
     import ujson
 except ImportError:
-    raise ImportError("Requires python-ujson to "
+    raise ImportError("Requires ujson to "
             "be installed before running setup.py (pip install ujson)")
 try:
     import scipy
