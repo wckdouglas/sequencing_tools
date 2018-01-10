@@ -5,7 +5,7 @@ from matplotlib import use as mpl_use
 mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 import matplotlib.pyplot as plt
 import sys
-import cjson
+import ujson
 import gzip
 import re
 from multiprocessing import Pool
@@ -116,7 +116,7 @@ def concensusPairs(table, float fraction_threshold):
 
 def dictToJson(barcode_dict, json_file):
     with open(json_file,'w') as f:
-        [f.write(cjson.encode(items) + '\n') for items in barcode_dict.iteritems()]
+        [f.write(ujson.encode(items) + '\n') for items in barcode_dict.iteritems()]
     print('written %s' %(json_file) + '\n', file = sys.stderr)
     return 0
 
@@ -136,7 +136,7 @@ def errorFreeReads(int min_family_member_count, float fraction_threshold, str js
         str sequence_right, quality_right
         str left_record, right_record
 
-    record = cjson.decode(json_record)
+    record = ujson.decode(json_record)
     index = record[0]
     table = np.array(record[1])
     member_count = table.shape[0]
