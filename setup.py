@@ -59,7 +59,7 @@ setup(
           'pysam>0.12.0',
           'matplotlib>=2.0.0',
           'seaborn>-0.7.1',
-          'python-cjson>=1.2.0',
+          'ujson',
           'scipy>=0.19.0',
           'networkx>=2.0'
       ],
