@@ -43,6 +43,7 @@ def filter_umi(inbam, outbam, threshold, tag):
         str umi 
         AlignedSegment aln 
 
+    threshold = int(threshold)
     bases = [(threshold + 1) * x for x in 'ACTG']
     nucleotide_runs = re.compile('|'.join(bases))
 
@@ -56,4 +57,3 @@ def filter_umi(inbam, outbam, threshold, tag):
                     out_count += 1
     print('Parsed %i alignments\noutput %i alignments' %(aln_count, out_count), file=sys.stderr)
     return 0
-
