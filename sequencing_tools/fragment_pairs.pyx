@@ -100,7 +100,10 @@ def pair_end_iterator(in_bam):
         try:
             read_1 = in_bam.next()
             read_2 = in_bam.next()
-            yield read_1, read_2
+            if check_concordant(read_1, read_2):
+                yield read_1, read_2
+            else:
+                raise Exception('Pairs not sorted together, try samtools sort -n and/or samtools view -F2048 -F256')
 
         except StopIteration:
             break
@@ -114,7 +117,7 @@ def fragment_iterator(in_bam):
         AlignedSegment read_2
 
     for read_1, read_2 in pair_end_iterator(in_bam):
-        yield read_paired_fragment(read_1, read_2)
+            yield read_paired_fragment(read_1, read_2)
 
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):

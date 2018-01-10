@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from builtins import map, zip, range
 from cpython cimport bool
@@ -14,7 +16,7 @@ def split_cigar(cigar_string):
     input cigar string: e.g. 63M
     return:
         ([list of numbers],
-          [list of cigar operators correspongs to the numbers])
+         [list of cigar operators correspongs to the numbers])
 
     split_cigar('63M')
 
