@@ -14,6 +14,7 @@ np_ord = np.vectorize(ord, otypes=[np.int16])
 cdef:
     double MIN_Q = 33.0
     double MAX_Q = 73.0
+    double MAX_PROB = 0.99999999999
 
 
 def fix_strand(str seq, str qual, bool strand):
@@ -75,7 +76,7 @@ cdef str prob_to_qual_string(posterior):
         str qual_char
 
     # convert posterior to quality score
-    q = clip(posterior, 0, max_prob)
+    q = clip(posterior, 0, MAX_PROB)
     q = error_prob_to_phred(q)
     qual_char = phred_to_string(q)
     return qual_char
@@ -147,7 +148,7 @@ def calculate_concensus_base(arg):
     number_possible_bases = len(possible_bases)
     if number_possible_bases == 1:
         concensus_base = possible_bases[0]
-        posterior_correct_probability = max_prob
+        posterior_correct_probability = MAX_PROB
     else:
         log_posteriors = [calculatePosterior(column_bases, column_qualities, guess_base) for guess_base in possible_bases]
         total_posterior = logsumexp(log_posteriors)
