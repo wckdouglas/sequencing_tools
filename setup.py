@@ -56,7 +56,7 @@ setup(
     install_requires=[
           'cython',
           'numpy',
-          'pysam>0.11.0',
+          'pysam>0.12.0',
           'matplotlib>=2.0.0',
           'seaborn>-0.7.1',
           'python-cjson>=1.2.0',
