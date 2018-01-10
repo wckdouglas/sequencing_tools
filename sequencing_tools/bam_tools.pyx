@@ -307,3 +307,24 @@ cpdef check_concordant(AlignedSegment read_1, AlignedSegment read_2):
         bool opposite_read = read_1.is_read1 != read_2.is_read1
         bool directional_pair = read_1.is_reverse != read_2.is_reverse
     return same_name and same_ref and opposite_read and check_concordant
+
+
+cpdef check_primary(AlignedSegment read_1, AlignedSegment read_2):
+    '''
+    check if read pairs are both primary
+
+    usage: check_primary(read1, read2)
+    return: boolean
+
+    ==================================
+    parameter:
+
+    read1: first pysam alignment 
+    read2: second pysam alignment 
+
+    return:
+    True: if both of them are primary alignments
+    ==================================
+    '''
+    return not read_1.is_secondary and not read_2.is_secondary
+ 

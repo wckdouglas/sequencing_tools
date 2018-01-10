@@ -6,7 +6,9 @@ from operator import itemgetter
 from cpython cimport bool
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
-from sequencing_tools.bam_tools import concordant_pairs, read_ends, fragment_ends, check_concordant
+from sequencing_tools.bam_tools import concordant_pairs, read_ends,\
+                                        fragment_ends, check_concordant, \
+                                        check_primary
 
 class read_paired_fragment:
     def __init__(self, read1, read2, tag=None, max_size=0, min_size=1000000):
@@ -120,7 +122,8 @@ def fragment_iterator(in_bam):
             yield read_paired_fragment(read_1, read_2)
 
 
-def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
+def bam_to_bed(bam_file, out_file, int min_size, int max_size, 
+                str tag, bool output_all, bool only_primary):
     '''
     Read two alignments at a time,
     assume they are pairs,
@@ -142,8 +145,11 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size, tag, output_all):
             try:
                 read_1 = in_bam.next()
                 read_2 = in_bam.next()
-                if check_concordant(read_1, read_2):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
-                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, max_size = max_size, min_size = min_size)
+                concordant = check_concordant(read_1, read_2)
+                primary_pair = check_primary(read_1, read_2)
+                if concordant and ((primary_pair and only_primary) or not only_primary):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
+                                                        max_size = max_size, min_size = min_size)
                     line = pair_fragment.generate_fragment()
                     if line:
                         pair_count += 1

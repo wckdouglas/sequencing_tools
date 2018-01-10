@@ -23,10 +23,10 @@ except ImportError:
     raise ImportError("Requires pyBigWig to "
             "be installed before running setup.py (pip install pyBigWig)")
 try:
-    import cjson
+    import ujson
 except ImportError:
-    raise ImportError("Requires python-cjson to "
-            "be installed before running setup.py (pip install python-cjson)")
+    raise ImportError("Requires ujson to "
+            "be installed before running setup.py (pip install ujson)")
 try:
     import scipy
 except ImportError:
