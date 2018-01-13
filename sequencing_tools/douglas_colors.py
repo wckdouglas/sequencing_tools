@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pandas import Series
-from itertools import izip
+from builtins import zip
 
 def douglas_palette():
     '''
@@ -83,12 +83,37 @@ def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)),
     return fig
 
 
-def color_encoder(xs, colors=douglas_palette()):
+class color_encoder:
     '''
     color encoding a categoric vector
     '''
-    xs = Series(xs)
-    cat = xs.unique()
-    assert len(cat) < len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(cat))
-    encoder = {x:col for x, col in izip(cat, colors)}
-    return xs.map(encoder)
+    def __init__(self):
+        self.xs  = None
+        self.categories = None
+        self.colors = None
+        self.encoder = None
+
+
+    def fit(self, xs, colors=douglas_palette()):
+        self.xs = Series(xs)
+        self.categories = set(self.xs)
+        assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
+        self.encoder = {x:col for x, col in zip(self.categories, colors)}
+        return self
+
+    def transform(self, xs):
+        if not self.encoder:
+            raise ValueError('Call color_encoder.fit() first!!')
+
+        if not self.categories.union(set(xs)) == self.categories:
+            raise ValueError('Contain unseen data!!')
+
+        return xs.map(encoder)
+
+    def fit_transform(self, xs, colors=douglas_palette()):
+        self.xs = Series(xs)
+        self.categories = xs.unique()
+        assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
+        self.encoder = {x:col for x, col in zip(self.categories, colors)}
+        self.colors = xs.map(encoder)
+        return self.colors
