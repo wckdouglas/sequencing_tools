@@ -45,7 +45,7 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
                 for aln_pos, ref_pos in aln.get_aligned_pairs(True):
                     qual = aln.query_qualities[aln_pos]
                     base = aln.query_sequence[aln_pos]
-                    if crop_end >= aln_pos >= crop and qual >= qual_threshold:
+                    if ref_pos and aln_pos and crop_end >= aln_pos >= crop and qual >= qual_threshold:
                         base_dict[ref_pos][strand][base] += 1
 
                 '''
