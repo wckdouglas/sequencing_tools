@@ -59,5 +59,5 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
                 for i, (pos, (base, qual)) in enumerate(zip(positions, adjusted_sequence)):
                     if crop_end >= i >= crop and qual >= qual_threshold:
                         base_dict[pos][strand][base] += 1
-                ''''
+                '''
     return aln_count, base_dict
