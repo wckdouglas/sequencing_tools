@@ -10,5 +10,9 @@ cdef class fragment_pairs:
         bool has_soft_clip
         bool read1_has_S
         bool read2_has_S
+        int read1_clipped 
+        int read2_clipped
+        int template_length
+
 
 
