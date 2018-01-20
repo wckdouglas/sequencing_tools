@@ -21,6 +21,9 @@ cdef class fragment_pairs:
         self.has_soft_clip = None
         self.read1_has_S = None
         self.read2_has_S = None
+        self.read1_clipped = 0
+        self.read2_clipped = 0
+        self.template_length = abs(self.read1.template_length)
 
     def check_flags(self):
         self.flag_qualify_ok = concordant_pairs(self.read1, self.read2)
@@ -34,10 +37,18 @@ cdef class fragment_pairs:
         read1_check = True
         read2_check = True
         if self.read1_has_S:
-            read1_check = check_aln(self.read1, s_et, b_et)
+            read1_check, self.read1_clipped = check_aln(self.read1, s_et)
         if self.read2_has_S:
-            read2_check = check_aln(self.read2, s_et, b_et)
-        self.pass_clip_check = read1_check and read2_check
+            read2_check, self.read2_clipped = check_aln(self.read2, s_et)
+        
+        if self.template_length > 0:
+            pair_check = (self.read1_clipped + self.read2_clipped) < b_et * abs(self.read1.template_length)
+        else:
+            t1 = b_et * self.read1.query_length
+            t2 = b_et * self.read2.query_length 
+            pair_check = (self.read1_clipped + self.read2_clipped) <  t1 and (self.read1_clipped + self.read2_clipped) < t2
+        
+        self.pass_clip_check = read1_check and read2_check and pair_check
         
 
     def output_aln(self, AlignmentFile out_bam_handle):
@@ -45,8 +56,7 @@ cdef class fragment_pairs:
         out_bam_handle.write(self.read2)
 
 
-cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
-            float both_end_thresh):
+def check_aln(AlignedSegment aln, float single_end_thresh):
     '''
     Compare soft clip length and threshold and return boolean if alignment has softclipped < threshold
 
@@ -58,16 +68,12 @@ cpdef bool check_aln(AlignedSegment aln, float single_end_thresh,
         int max_single_clipped
         float b_et, s_et
 
-    seq_len = len(aln.query_sequence)
+    seq_len = aln.query_length
     s_et = (single_end_thresh * seq_len)
-    b_et = (both_end_thresh * seq_len)
     cigar_array = split_cigar(aln.cigarstring)
-    all_soft_clipped = [n for n, c in zip(*cigar_array) if c =='S']
-    total_clipped = sum(all_soft_clipped)
-    max_single_clipped =  max(all_soft_clipped)
-    single_pass = abs(max_single_clipped) <  s_et
-    both_pass =  abs(total_clipped) < b_et
-    return single_pass and both_pass and not aln.is_unmapped
+    all_soft_clipped = sum(n for n, c in zip(*cigar_array) if c =='S')
+    single_pass = all_soft_clipped <  s_et
+    return single_pass and not aln.is_unmapped, all_soft_clipped
 
 def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
                     both_end_thresh, inverse):
@@ -94,7 +100,7 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
                         output_count += 1
 
                     elif soft_clipped:
-                        clipped_size_right = check_aln(aln, single_end_thresh, both_end_thresh)
+                        clipped_size_right = check_aln(aln, single_end_thresh)
 
                         inverse_ok = (not clipped_size_right and inverse)
                         non_inverse_ok = (clipped_size_right and not inverse)
