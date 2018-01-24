@@ -15,10 +15,12 @@ class read_pairs:
         self.out_read1 = ''
         self.out_read2 = ''
         self.read_id = ''
+        self.is_group = None
 
     def initiate_group(self, alignment):
         self.read_id = alignment.query_name
         self.put_in_group(alignment)
+        self.is_group = True
 
     def put_in_group(self, alignment):
         if alignment.is_read2:
@@ -67,8 +69,11 @@ class read_pairs:
             self.out_read2 = read2[0]
 
     def output_read(self):
-        read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
-        return read1_aln, read2_aln
+        if self.is_group:
+            read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
+            return read1_aln, read2_aln
+        else:
+            return None, None
 
 cigar_num = re.compile('\d+')
 cigar_str = re.compile('[A-Z]')
@@ -221,6 +226,7 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
     write_flag = 'wb' if bam_out_bool else 'w'
     print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
     print('Writing to: %s' %(out_bam), file = sys.stderr)
+    read_group = single_read()
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
             for read_count, alignment in enumerate(in_sam):
