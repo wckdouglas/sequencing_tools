@@ -14,8 +14,8 @@ def getopt():
     parser.add_argument('-o','--outbam', default = '-', help = 'output bam file (default: - )')
     parser.add_argument('-s','--single_end',default = 0.2, type=float,
                         help ='Maximum ratio of the whole alignment being clipped in one end (default: 0.2)')
-    parser.add_argument('-b','--both_end',default = 0.5, type=float,
-                        help ='Maximum ratio of the whole alignment being clipped in sum(each end) (default : 0.5)')
+    parser.add_argument('-b','--both_end',default = 0.1, type=float,
+                        help ='Maximum ratio of the whole fragment (insert size) being clipped in sum(each end), only useful when --pe is used (default : 0.1)')
     parser.add_argument('-v','--inverse', action = 'store_true',
                         help ='Only output alignment with clipped base > threshold (like grep -v)')
     parser.add_argument('--pe', action = 'store_true',
