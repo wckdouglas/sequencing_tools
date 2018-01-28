@@ -17,6 +17,16 @@ def douglas_palette():
             '#EDAEB5', '#B0BDEA', '#D8BA90', '#7BCBD5', '#87CDA9', '#B1C68D', '#E7C039']
     return colors
 
+def okabeito_palette():
+    '''
+    Color palette proposed by Okabe and Ito
+    copy from colorboindr R package 
+    https://github.com/clauswilke/colorblindr/blob/master/R/palettes.R
+    '''
+    colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999"]
+    sns.set_palette(colors)
+    return colors
+
 
 def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), 
             diagonal_line = True, method = 'pearson'):
