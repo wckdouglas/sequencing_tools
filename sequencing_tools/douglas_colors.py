@@ -88,17 +88,16 @@ class color_encoder:
     color encoding a categoric vector
     '''
     def __init__(self):
-        self.xs  = None
+        self.x  = None
         self.categories = None
-        self.colors = None
         self.encoder = None
 
 
-    def fit(self, xs, colors=douglas_palette()):
-        self.xs = Series(xs)
-        self.categories = set(self.xs)
+    def fit(self, x, colors=douglas_palette()):
+        self.x = Series(x)
+        self.categories = set(self.x)
         assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
-        self.encoder = {x:col for x, col in zip(self.categories, colors)}
+        self.encoder = {c:col for c, col in zip(self.categories, colors)}
         return self
 
     def transform(self, xs):
@@ -111,9 +110,9 @@ class color_encoder:
         return xs.map(encoder)
 
     def fit_transform(self, xs, colors=douglas_palette()):
-        self.xs = Series(xs)
-        self.categories = xs.unique()
+        self.x = Series(xs)
+        self.categories = set(self.x)
         assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
-        self.encoder = {x:col for x, col in zip(self.categories, colors)}
-        self.colors = xs.map(encoder)
-        return self.colors
+        self.encoder = {c:col for c, col in zip(self.categories, colors)}
+        colors = self.x.map(self.encoder)
+        return colors
