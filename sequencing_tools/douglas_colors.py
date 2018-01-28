@@ -24,7 +24,6 @@ def okabeito_palette():
     https://github.com/clauswilke/colorblindr/blob/master/R/palettes.R
     '''
     colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999"]
-    sns.set_palette(colors)
     return colors
 
 
