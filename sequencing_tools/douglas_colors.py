@@ -24,7 +24,6 @@ def okabeito_palette():
     https://github.com/clauswilke/colorblindr/blob/master/R/palettes.R
     '''
     colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999"]
-    sns.set_palette(colors)
     return colors
 
 
@@ -93,9 +92,32 @@ def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)),
     return fig
 
 
-class color_encoder:
+
+### COLOR ENCODER ##########
+
+def assert_color_vector(categorical_vector, color_vector):
+    categories = set(categorical_vector)
+    assert len(categories) <= len(color_vector), 'Not enough colors!! %i colors for %i categories' %(len(color_vector),len(categories))
+    return categories
+
+class color_encoder():
     '''
     color encoding a categoric vector
+
+    Example:
+
+    colors = obakeito_palette()
+    ce = color_encoder()
+    ce.fit(categroical_vector, colors)
+    encoded_colors = ce.transform(new_categorical_vector) 
+
+    #or
+
+    ce = color_encoder()
+    encoded_colors = ce.fit_transform(categorical_vector, colors)
+
+    #access color encoder
+    encoded_color_map = ce.encoder
     '''
     def __init__(self):
         self.x  = None
@@ -103,10 +125,9 @@ class color_encoder:
         self.encoder = None
 
 
-    def fit(self, x, colors=douglas_palette()):
+    def fit(self, x, colors = okabeito_palette()):
         self.x = Series(x)
-        self.categories = set(self.x)
-        assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
+        self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
 
     def transform(self, xs):
@@ -118,10 +139,9 @@ class color_encoder:
 
         return xs.map(self.encoder)
 
-    def fit_transform(self, xs, colors=douglas_palette()):
+    def fit_transform(self, xs, colors = okabeito_palette()):
         self.x = Series(xs)
-        self.categories = set(self.x)
-        assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
+        self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
         colors = self.x.map(self.encoder)
         return colors
