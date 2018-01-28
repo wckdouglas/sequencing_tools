@@ -108,7 +108,6 @@ class color_encoder:
         self.categories = set(self.x)
         assert len(self.categories) <= len(colors), 'Not enough colors!! %i colors for %i categories' %(len(colors),len(self.categories))
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
-        return self
 
     def transform(self, xs):
         if not self.encoder:
@@ -117,7 +116,7 @@ class color_encoder:
         if not self.categories.union(set(xs)) == self.categories:
             raise ValueError('Contain unseen data!!')
 
-        return xs.map(encoder)
+        return xs.map(self.encoder)
 
     def fit_transform(self, xs, colors=douglas_palette()):
         self.x = Series(xs)
