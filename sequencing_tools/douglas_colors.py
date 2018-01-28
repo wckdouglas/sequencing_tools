@@ -126,11 +126,20 @@ class color_encoder():
 
 
     def fit(self, x, colors = okabeito_palette()):
+        '''
+        ce = color_encoder()
+        ce.fit(categroical_vector, colors)
+        '''
         self.x = Series(x)
         self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
 
     def transform(self, xs):
+        '''
+        ce = color_encoder()
+        ce.fit(categroical_vector, colors)
+        encoded_colors = ce.transform(new_categorical_vector) 
+        '''
         if not self.encoder:
             raise ValueError('Call color_encoder.fit() first!!')
 
@@ -140,6 +149,10 @@ class color_encoder():
         return xs.map(encoder)
 
     def fit_transform(self, xs, colors = okabeito_palette()):
+        '''
+        ce = color_encoder()
+        encoded_colors = ce.fit_transform(categorical_vector, colors)
+        '''
         self.x = Series(xs)
         self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
