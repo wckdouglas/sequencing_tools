@@ -102,7 +102,7 @@ def assert_color_vector(categorical_vector, color_vector):
 
 class color_encoder():
     '''
-    color encoding a categoric vector
+    color-encoding a categoric vector
 
     Example:
 
