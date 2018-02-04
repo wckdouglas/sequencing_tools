@@ -10,12 +10,15 @@ cpdef np.ndarray p_adjust(np.ndarray pvalue):
     adapted from https://stackoverflow.com/questions/7450957/how-to-implement-rs-p-adjust-in-python/21739593
 
     Usage:
-        padj = p_adjust(pvalue_array)
 
-    Input:
+    padj = p_adjust(pvalue_array)
+
+    Parameter:
+
     - pvalue_array: list of pvalue
 
     Return:
+
     - list of adjusted pvalue 
     '''
 
