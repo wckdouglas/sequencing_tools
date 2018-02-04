@@ -146,7 +146,7 @@ class color_encoder():
         if not self.categories.union(set(xs)) == self.categories:
             raise ValueError('Contain unseen data!!')
 
-        return xs.map(encoder)
+        return xs.map(self.encoder)
 
     def fit_transform(self, xs, colors = okabeito_palette()):
         '''
