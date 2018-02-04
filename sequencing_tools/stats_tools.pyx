@@ -2,6 +2,7 @@
 
 import numpy as np
 cimport numpy as np
+from cython cimport floating
 
 
 cpdef np.ndarray p_adjust(pvalue):
@@ -37,11 +38,13 @@ cpdef np.ndarray p_adjust(pvalue):
     '''
 
     cdef:
-        np.ndarray descending_p_order, in_order, steps, adjusted_p
+        np.ndarray  steps, adjusted_p
+        np.ndarray[long, ndim=1] descending_p_order, in_order
 
     pvalue = np.array(pvalue, dtype='float')
+    assert pvalue.ndim == 1, 'Only accept 1D array'
     descending_p_order = pvalue.argsort()[::-1]
     in_order = descending_p_order.argsort()
     steps = float(len(pvalue)) / np.arange(len(pvalue), 0, -1)
-    adjusted_p = np.minimum(1, np.minimum.accumulate(steps * pvalue[descending_p_order]))
+    adjusted_p = np.minimum(1.0, np.minimum.accumulate(steps * pvalue[descending_p_order]))
     return adjusted_p[in_order]
