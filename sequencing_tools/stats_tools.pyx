@@ -42,6 +42,7 @@ cpdef np.ndarray p_adjust(pvalue):
         np.ndarray[long, ndim=1] descending_p_order, in_order
 
     pvalue = np.array(pvalue, dtype='float')
+    pvalue[np.isnan(pvalue)] = 1
     assert pvalue.ndim == 1, 'Only accept 1D array'
     descending_p_order = pvalue.argsort()[::-1]
     in_order = descending_p_order.argsort()
