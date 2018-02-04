@@ -4,7 +4,7 @@ import numpy as np
 cimport numpy as np
 
 
-cpdef np.ndarray p_adjust(np.ndarray pvalue):
+cpdef np.ndarray p_adjust(pvalue):
     '''
     Benjamini-Hochberg p-value correction for multiple hypothesis testing.
     adapted from https://stackoverflow.com/questions/7450957/how-to-implement-rs-p-adjust-in-python/21739593
