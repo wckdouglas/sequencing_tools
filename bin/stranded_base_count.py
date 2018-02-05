@@ -30,11 +30,11 @@ def getopt():
     return args
 
 def bed_generator(bed_file):
-    with open(bed_file,'r') as bed:
-        for line in bed:
-            fields = line.split('\t')
-            chrom, start, end = itemgetter(0,1,2)(fields)
-            yield chrom, long(start), long(end)
+    bed = sys.stdin if bed_file == '-' else open(bed_file)
+    for line in bed:
+        fields = line.split('\t')
+        chrom, start, end = itemgetter(0,1,2)(fields)
+        yield chrom, long(start), long(end)
 
 def output_table(fa, chromosome, base_dict, start, end):
     '''
