@@ -13,7 +13,7 @@ from builtins import zip, map, range
 from functools import partial
 from cpython cimport bool
 import io
-from sequencing_tools.function_clip import hamming_distance
+from sequencing_tools.fastq_tools.function_clip import hamming_distance
 
 np_ord = np.vectorize(ord)
 

@@ -10,7 +10,7 @@ import os
 import sys
 import string
 import argparse
-from sequencing_tools.pileup_errors import extract_bases, analyze_region, make_regions
+from sequencing_tools.bam_tools.pileup_errors import extract_bases, analyze_region, make_regions
 from operator import itemgetter
 
 def getopt():

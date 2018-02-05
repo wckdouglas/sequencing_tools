@@ -11,8 +11,8 @@ from cpython cimport bool
 import io
 import os
 from sequencing_tools.fastq_tools import readfq, gzopen, reverse_complement
-from sequencing_tools.fastq_tools cimport fastqRecord
-from sequencing_tools.cutadapt_align import locate
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools.cutadapt_align import locate
 
 
 cpdef int levenshtein_distance(str s1, str s2):

@@ -3,7 +3,7 @@
 from __future__ import print_function
 import pysam
 import argparse
-from sequencing_tools.bam_cluster import cluster_bam
+from sequencing_tools.bam_tools.bam_cluster import cluster_bam
 import time
 import sys
 import glob

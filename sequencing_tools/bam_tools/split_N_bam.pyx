@@ -1,6 +1,6 @@
 from __future__ import print_function
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from sequencing_tools.fragment_pairs import concordant_pairs, is_split_pair
+from sequencing_tools.bam_tools.fragment_pairs import concordant_pairs, is_split_pair
 import sys
 
 cpdef int parse_bam(AlignmentFile inbam,

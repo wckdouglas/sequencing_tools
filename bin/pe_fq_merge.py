@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sequencing_tools.pe_align import merge_interleaved
+from sequencing_tools.fastq_tools.pe_align import merge_interleaved
 import argparse
 import sys
 

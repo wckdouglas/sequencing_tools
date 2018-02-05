@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sequencing_tools.bigwig import parse_depth_bed
+from sequencing_tools.bam_tools.bigwig import parse_depth_bed
 import argparse
 
 

@@ -2,9 +2,9 @@
 
 from __future__ import print_function
 from sequencing_tools.fastq_tools import read_interleaved, reverse_complement
-from sequencing_tools.fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 import sys
-from sequencing_tools.cutadapt_align import locate
+from sequencing_tools.fastq_tools.cutadapt_align import locate
 from builtins import zip
 from functools import partial
 from cpython cimport bool

@@ -36,9 +36,11 @@ except ImportError:
 include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
 ext_modules=cythonize([
-        Extension('*', ['sequencing_tools/*.pyx'],
+        Extension('*', ['sequencing_tools/*tools/*.pyx'],
             include_dirs = include_path)
 ])
+packages = glob.glob('sequencing_tools/*tools')
+packages.append('sequencing_tools')
 
 
 setup(
@@ -49,7 +51,7 @@ setup(
     author='Douglas C. Wu',
     author_email='wckdouglas@gmail.com',
     license='MIT',
-    packages=['sequencing_tools'],
+    packages=packages,
     zip_safe=False,
     scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
@@ -61,7 +63,8 @@ setup(
           'seaborn>-0.7.1',
           'ujson',
           'scipy>=0.19.0',
-          'networkx>=2.0'
+          'networkx>=2.0',
+          'pytest'
       ],
     cmdclass = {'build_ext': build_ext}
 )

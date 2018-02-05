@@ -9,7 +9,7 @@ import argparse
 import glob
 import time
 import os
-from sequencing_tools.cluster_reads import (dictToJson,
+from sequencing_tools.bam_tools.cluster_reads import (dictToJson,
                            writingAndClusteringReads,
                            plotBCdistribution,
                            recordsToDict)

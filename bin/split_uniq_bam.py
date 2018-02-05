@@ -4,7 +4,7 @@ import pysam
 import sys
 import re
 import argparse
-from sequencing_tools.split_bam_tools import split_bam_pair, split_bam_single
+from sequencing_tools.bam_tools.split_bam_tools import split_bam_pair, split_bam_single
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Splitting bam file to uniquely mapped and multiple mapped (only support bowtie2 and hisat2)')
