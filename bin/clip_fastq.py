@@ -6,7 +6,7 @@ import numpy as np
 import time
 import sys
 import re
-from sequencing_tools.fastq_tools.function_clip import run_pairs_stdout
+from sequencing_tools.fastq_tools.function_clip import clip_pairs
 
 
 def getOptions():
@@ -68,7 +68,7 @@ def main(args):
     print('[%s] Using UMI side:                    %s' %(programname, UMI_side), file = sys.stderr)
 
     # divide reads into subclusters
-    run_pairs_stdout(inFastq1, inFastq2, out_file, idx_base,
+    clip_pairs(inFastq1, inFastq2, out_file, idx_base,
             barcode_cut_off, constant, allow_mismatch, programname,
             prefix_split, UMI_side)
     print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)

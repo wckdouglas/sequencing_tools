@@ -251,7 +251,7 @@ def run_pairs_deprecated(outputprefix, inFastq1, inFastq2, idx_base,
     return 0
 
 
-def run_pairs(inFastq1, inFastq2, out_file, idx_base,
+def clip_pairs(inFastq1, inFastq2, out_file, idx_base,
             barcode_cut_off, constant, allow_mismatch, programname,
             prefix_split, read):
     '''

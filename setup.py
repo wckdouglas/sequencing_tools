@@ -54,6 +54,9 @@ setup(
     zip_safe = False,
     scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
+    cmdclass = {'build_ext': build_ext}
+)
+'''
     install_requires = [
           'cython',
           'numpy',
@@ -65,5 +68,4 @@ setup(
           'networkx>=2.0',
           'pytest'
       ],
-    cmdclass = {'build_ext': build_ext}
-)
+'''
