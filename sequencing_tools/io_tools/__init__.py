@@ -1,5 +1,5 @@
 """
-This is a copy from https://github.com/marcelm/xopen
+Modified from https://github.com/marcelm/xopen
 Provide utils for fast opening of files
 Open compressed files transparently.
 """
@@ -17,13 +17,6 @@ __version__ = '0.3.2'
 
 _PY3 = sys.version > '3'
 
-if not _PY3:
-	import bz2file as bz2
-else:
-	try:
-		import bz2
-	except ImportError:
-		bz2 = None
 
 try:
 	import lzma
@@ -207,18 +200,6 @@ def xopen(filename, mode='r', compresslevel=6):
 			wt=sys.stdout,
 			wb=sys.stdout.buffer)[mode]
 
-	if filename.endswith('.bz2'):
-		if bz2 is None:
-			raise ImportError("Cannot open bz2 files: The bz2 module is not available")
-		if _PY3:
-			return bz2.open(filename, mode)
-		else:
-			if mode[0] == 'a':
-				raise ValueError("mode '{0}' not supported with BZ2 compression".format(mode))
-			if sys.version_info[:2] <= (2, 6):
-				return ClosingBZ2File(filename, mode)
-			else:
-				return bz2.BZ2File(filename, mode)
 	elif filename.endswith('.xz'):
 		if lzma is None:
 			raise ImportError("Cannot open xz files: The lzma module is not available (use Python 3.3 or newer)")
