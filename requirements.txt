@@ -8,3 +8,4 @@ seaborn>=0.7.1
 pyBigWig
 ujson
 pytest
+networkx

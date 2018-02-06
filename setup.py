@@ -1,5 +1,5 @@
-from setuptools import find_packages
-from distutils.core import setup, Extension
+from setuptools import find_packages, setup, Extension
+#from distutils.core import setup, Extension
 import glob
 
 try:
@@ -54,9 +54,6 @@ setup(
     zip_safe = False,
     scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
-    cmdclass = {'build_ext': build_ext}
-)
-'''
     install_requires = [
           'cython',
           'numpy',
@@ -68,4 +65,5 @@ setup(
           'networkx>=2.0',
           'pytest'
       ],
-'''
+    cmdclass = {'build_ext': build_ext}
+)
