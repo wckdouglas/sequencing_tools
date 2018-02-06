@@ -1,3 +1,4 @@
+from setuptools import find_packages
 from distutils.core import setup, Extension
 import glob
 
@@ -37,25 +38,23 @@ include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
 ext_modules=cythonize([
         Extension('*', ['sequencing_tools/*tools/*.pyx'],
-            include_dirs = include_path)
+            include_dirs = include_path),
 ])
-packages = glob.glob('sequencing_tools/*tools')
-packages.append('sequencing_tools')
 
 
 setup(
-    name='sequencing_tools',
-    version='0.1',
-    description='Tools for different NGS operations',
-    url='',
-    author='Douglas C. Wu',
-    author_email='wckdouglas@gmail.com',
-    license='MIT',
-    packages=packages,
-    zip_safe=False,
+    name = 'sequencing_tools',
+    version = '0.1',
+    description = 'Tools for different NGS operations',
+    url = '',
+    author = 'Douglas C. Wu',
+    author_email = 'wckdouglas@gmail.com',
+    license = 'MIT',
+    packages = find_packages(),
+    zip_safe = False,
     scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
-    install_requires=[
+    install_requires = [
           'cython',
           'numpy',
           'pysam>0.12.0',
