@@ -38,7 +38,7 @@ include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
 ext_modules=cythonize([
         Extension('*', ['sequencing_tools/*tools/*.pyx'],
-            include_dirs = include_path),
+            include_dirs = include_path)
 ])
 
 

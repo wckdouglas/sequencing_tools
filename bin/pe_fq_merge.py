@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from sequencing_tools.fastq_tools.pe_align import merge_interleaved
+from sequencing_tools.io_tools import xopen
 import argparse
 import sys
 
@@ -26,7 +27,7 @@ def getOptions():
 def main():
     args = getOptions()
     outfile=args.outfile
-    outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else open(outfile,'w')
+    outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else xopen(outfile,mode = 'w')
     merge_interleaved(args.interleaved, outfile_handle,
             args.min_len, args.error, args.all)
 

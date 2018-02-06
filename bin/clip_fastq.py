@@ -6,7 +6,7 @@ import numpy as np
 import time
 import sys
 import re
-from sequencing_tools.fastq_tools.function_clip import run_pairs, run_pairs_stdout
+from sequencing_tools.fastq_tools.function_clip import run_pairs_stdout
 
 
 def getOptions():
@@ -15,7 +15,7 @@ def getOptions():
     '''
     descriptions = 'Clip the barcode sequence and attached to the front of seq id'
     parser = argparse.ArgumentParser(description=descriptions)
-    parser.add_argument('-o', '--outputprefix', default='-',
+    parser.add_argument('-o', '--out_file', default='-',
         help='Interleaved Fastq files (default: -)')
     parser.add_argument('-1', '--fastq1', required=True,
         help='Paired end Fastq file 1 with four line/record')
@@ -28,8 +28,8 @@ def getOptions():
         help="Average base calling quality for barcode sequence (default=20)")
     parser.add_argument("-a", "--mismatch", type=int,default=1,
         help="Allow how many mismatch in constant region (deflaut: 1)")
-    parser.add_argument("-s", "--prefix_split", type=int,default=0, choices = range(5),
-        help="Using how many bases on the barcode to split the fastq? A choice of 3 will generate 4^3 = 64 files (deflaut: 4)")
+#    parser.add_argument("-s", "--prefix_split", type=int,default=0, choices = range(5),
+#        help="Using how many bases on the barcode to split the fastq? A choice of 3 will generate 4^3 = 64 files (deflaut: 4)")
     parser.add_argument("-r", "--read", default='read1',choices = ['read1','read2'],
         help="Which read is the UMI on?")
     args = parser.parse_args()
@@ -45,7 +45,7 @@ def main(args):
         3. writing concensus sequence to files
     """
     start = time.time()
-    outputprefix = args.outputprefix
+    out_file = args.out_file
     inFastq1 = args.fastq1
     inFastq2 = args.fastq2
     idx_base = args.idxBase
@@ -61,22 +61,16 @@ def main(args):
     print('[%s] [Parameters] ' %(programname), file = sys.stderr)
     print('[%s] indexed bases:                     %i' %(programname, idx_base), file = sys.stderr)
     print('[%s] min mean barcode quality:          %i' %(programname, barcode_cut_off), file = sys.stderr)
-    print('[%s] outputPrefix:                      %s' %(programname, outputprefix), file = sys.stderr)
+    print('[%s] output file:                       %s' %(programname, out_file), file = sys.stderr)
     print('[%s] using constant regions:            %s' %(programname, constant), file = sys.stderr)
     print('[%s] allowed mismatches:                %i' %(programname, allow_mismatch), file = sys.stderr)
     print('[%s] Using prefix bases:                %i' %(programname, prefix_split), file = sys.stderr)
     print('[%s] Using UMI side:                    %s' %(programname, UMI_side), file = sys.stderr)
 
     # divide reads into subclusters
-    if outputprefix != '-':
-        run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
-                barcode_cut_off, constant, allow_mismatch, programname,
-                prefix_split, UMI_side)
-    else:
-        print('[%s] Using STDOUT, Will not split prefix!!' %(programname), file = sys.stderr)
-        run_pairs_stdout(inFastq1, inFastq2, idx_base,
-                barcode_cut_off, constant, allow_mismatch, programname,
-                prefix_split, UMI_side)
+    run_pairs_stdout(inFastq1, inFastq2, out_file, idx_base,
+            barcode_cut_off, constant, allow_mismatch, programname,
+            prefix_split, UMI_side)
     print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)
     return 0
 

@@ -13,6 +13,7 @@ import os
 from sequencing_tools.fastq_tools import readfq, gzopen, reverse_complement
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools.cutadapt_align import locate
+from sequencing_tools.io_tools import xopen
 
 
 cpdef int levenshtein_distance(str s1, str s2):
@@ -208,7 +209,7 @@ def clip_funtion(read, barcode_cut_off, constant,
 
 
 
-def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
+def run_pairs_deprecated(outputprefix, inFastq1, inFastq2, idx_base,
             barcode_cut_off, constant, allow_mismatch, programname,
             prefix_split, read):
     '''
@@ -231,9 +232,7 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
 
 
     file_dict = open_files(outputprefix, prefix_split)
-    read_flag1 = 'rb' if inFastq1.endswith('.gz') else 'r' 
-    read_flag2 = 'rb' if inFastq2.endswith('.gz') else 'r' 
-    with gzopen(inFastq1, read_flag = read_flag1) as in1, gzopen(inFastq2, read_flag = read_flag2) as in2:
+    with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
         clipping = clip_funtion(read, barcode_cut_off, constant,
                         constant_no_evaluation, prefix_split, idx_base,
                         usable_seq, hamming_threshold)
@@ -252,7 +251,7 @@ def run_pairs(outputprefix, inFastq1, inFastq2, idx_base,
     return 0
 
 
-def run_pairs_stdout(inFastq1, inFastq2, idx_base,
+def run_pairs(inFastq1, inFastq2, out_file, idx_base,
             barcode_cut_off, constant, allow_mismatch, programname,
             prefix_split, read):
     '''
@@ -272,10 +271,8 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
     hamming_threshold = allow_mismatch if not constant_no_evaluation else 0
     usable_seq = idx_base if constant_no_evaluation else idx_base + constant_length
 
-
-    read_flag1 = 'rb' if inFastq1.endswith('.gz') else 'r' 
-    read_flag2 = 'rb' if inFastq2.endswith('.gz') else 'r' 
-    with gzopen(inFastq1, read_flag = read_flag1) as in1, gzopen(inFastq2, read_flag = read_flag2) as in2:
+    out_handle = sys.stdout if out_file in ['/dev/stdout','-'] else xopen(out_file, 'w')
+    with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
         clipping = clip_funtion(read, barcode_cut_off, constant,
                 constant_no_evaluation, prefix_split, idx_base,
                 usable_seq, hamming_threshold)
@@ -284,7 +281,7 @@ def run_pairs_stdout(inFastq1, inFastq2, idx_base,
             out, prefix, seq_record = clipping(read1, read2)
             out_count += out
             if out == 1:
-                print(seq_record, file = sys.stdout)
+                print(seq_record, file = out_handle)
             if count % 10000000 == 0 and count != 0:
                 print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
 
