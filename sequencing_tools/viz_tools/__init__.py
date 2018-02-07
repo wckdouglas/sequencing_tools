@@ -27,13 +27,12 @@ def okabeito_palette():
     return colors
 
 
-def cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), 
-            diagonal_line = True, method = 'pearson'):
+def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson'):
     '''
     given a data frame with columns storing data for each sample,
     output a matplotlib figure object as correlation plots.
 
-    usage: cor_plot(plot_df, fig=plt.figure(figsize=(17,17)), diagonal_line = True, method = 'pearson')
+    usage: cor_plot(plot_df, fig=fig, diagonal_line = True, method = 'pearson')
     
     input:
     * plot_df: a pandas dataframe
