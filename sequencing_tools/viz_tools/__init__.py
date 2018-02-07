@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
 from pandas import Series
 from builtins import zip
 
@@ -44,6 +42,8 @@ def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson'):
     * fig: matplotlib figure object
     '''
 
+    import matplotlib.pyplot as plt
+    import seaborn as sns
     sns.set_style('white')
     assert method in ['spearman', 'pearson'], 'Wrong correlation method'
     box_size = len(plot_df.columns) 
