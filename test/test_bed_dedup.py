@@ -1,4 +1,4 @@
-from sequencing_tools.bed_dedup import *
+from sequencing_tools.bam_tools.bed_dedup import *
 
 def test_hamming_barcode():
     assert(hamming_barcode(('ACTG','ACCC')) == 2)

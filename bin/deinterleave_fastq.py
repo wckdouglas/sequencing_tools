@@ -5,6 +5,7 @@ import sys
 import argparse
 import os
 from sequencing_tools.fastq_tools import read_interleaved
+from sequencing_tools.io_tools import xopen
 
 
 def getopt():
@@ -27,10 +28,10 @@ def main():
     print('Writing to read1: %s' %(fastq_forward), file = sys.stderr)
     print('Writing to read2: %s' %(fastq_reverse), file = sys.stderr)
 
-    with open(fastq_forward.rstrip('.gz'),'w') as r1, \
-            open(fastq_reverse.rstrip('.gz'),'w') as r2:
+    with xopen(fastq_forward, mode = 'w') as r1, \
+            xopen(fastq_reverse, mode = 'w') as r2:
         seq_id_1 = ''
-        in_file = open(fastq_in) if fastq_in != '-' else sys.stdin
+        in_file = xopen(fastq_in, mode = 'r') if fastq_in != '-' else sys.stdin
         for R1, R2 in read_interleaved(in_file):
 
             print('@%s\n%s\n+\n%s' %(R1.id, R1.seq, R1.qual), file = r1)
@@ -39,9 +40,6 @@ def main():
             r2_count += 1
 
     assert r1_count == r2_count, 'Not equal reads!!!! %i != %i' %(r1_count, r2_count)
-    if fastq_forward.endswith('.gz'):
-        os.system('gzip -f %s' %(fastq_forward.rstrip('.gz')))
-        os.system('gzip -f %s' %(fastq_reverse.rstrip('.gz')))
     print('Written %i records' %(r1_count), file = sys.stderr)
 
 

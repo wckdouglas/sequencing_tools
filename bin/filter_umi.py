@@ -3,7 +3,7 @@
 from __future__ import print_function
 import argparse
 import sys
-from sequencing_tools.umi_tag import filter_umi
+from sequencing_tools.bam_tools.umi_tag import filter_umi
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Filter out alignments with UMI having nucleotide runs > 3nt')

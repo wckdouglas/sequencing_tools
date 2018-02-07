@@ -4,7 +4,7 @@ import pysam
 import numpy as np
 import sys
 import argparse
-from sequencing_tools.filter_multi import process_pair_bam, process_single_bam
+from sequencing_tools.bam_tools.filter_multi import process_pair_bam, process_single_bam
 from functools import partial
 
 def getopt():

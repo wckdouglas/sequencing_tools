@@ -274,8 +274,6 @@ cdef class readGroup:
         '''
             from read group, generate concensus sequence, quality
         '''
-        assert self.R2 and self.R1, (self.R1, self.R2, self.barcode)
-        assert self.R2.shape == self.R1.shape, 'Unequal R1 list vs R2'
 
         iterator = set(zip(self.R1_chrom, self.R2_chrom,
                            self.R1_position, self.R2_position,
@@ -289,6 +287,9 @@ cdef class readGroup:
         R2_flag_array = np.array(self.R2_flag)
         R1_pos_array = np.array(self.R1_position)
         R2_pos_array = np.array(self.R2_position)
+
+        assert self.R2 and self.R1, (self.R1, self.R2, self.barcode)
+        assert R2_array.shape == R1_array.shape, 'Unequal R1 list vs R2'
 
         for _chrom1, _chrom2, _pos1, _pos2, _R1_flag, _R2_flag in iterator:
             chrom_is_right = (R1_chrom_array == _chrom1) & (R2_chrom_array == _chrom2)

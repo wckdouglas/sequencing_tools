@@ -555,37 +555,39 @@ $ split_cigar('63M')
 
 <h2 id='extra'> Extra </h2>
 
-### sequencing_tools.douglas_colors ###
+### sequencing_tools.viz_tools ###
 
-#### douglas_colors.douglas_palette ####
+#### viz_tools.color_encoder ####
 
-Automatic set color if seaborn is installed, otherwise return list of colors
-
-usage: douglas_palette()
-
+color-encoding a categoric vector
+ 
 Example:
 
+``` 
+colors = obakeito_palette()
+ce = color_encoder()
+ce.fit(categroical_vector, colors)
+encoded_colors = ce.transform(new_categorical_vector)
+``` 
+
+or 
+
 ```
-import matplotlib.pyplot as plt
-import numpy as np
-from sequencing_tools.douglas_colors import douglas_palette
-douglas_palette()
-plt.figure()
-ax=plt.subplot();
-for i in range(14):
-    ax.plot(np.arange(10),np.arange(10) - i,label=i)
-ax.legend(bbox_to_anchor=(1,1))
-plt.savefig('palette.png',bbox_inches='tight')
+ce = color_encoder()
+encoded_colors = ce.fit_transform(categorical_vector, colors)
 ```
 
-![](https://raw.githubusercontent.com/wckdouglas/sequencing_tools/master/img/palette.png)
+To access color encoder
+```
+encoded_color_map = ce.encoder
+```
 
-#### douglas_colors.cor_plot ####
+#### viz_tools.cor_plot ####
 
 A specialized paired correlation plot
 
 ```
-from sequencing_tools.douglas_colors import cor_plot
+from sequencing_tools.viz_tools import cor_plot
 import numpy as np
 import pandas as pd
 import seaborn as sns

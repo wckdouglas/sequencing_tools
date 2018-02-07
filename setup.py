@@ -1,4 +1,5 @@
-from distutils.core import setup, Extension
+from setuptools import find_packages, setup, Extension
+#from distutils.core import setup, Extension
 import glob
 
 try:
@@ -36,24 +37,28 @@ except ImportError:
 include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
 ext_modules=cythonize([
-        Extension('*', ['sequencing_tools/*.pyx'],
+        Extension('*', ['sequencing_tools/*tools/*.pyx'],
             include_dirs = include_path)
 ])
 
 
 setup(
-    name='sequencing_tools',
-    version='0.1',
-    description='Tools for different NGS operations',
-    url='',
-    author='Douglas C. Wu',
-    author_email='wckdouglas@gmail.com',
-    license='MIT',
-    packages=['sequencing_tools'],
-    zip_safe=False,
+    name = 'sequencing_tools',
+    version = '0.1',
+    description = 'Tools for different NGS operations',
+    url = '',
+    author = 'Douglas C. Wu',
+    author_email = 'wckdouglas@gmail.com',
+    license = 'MIT',
+    packages = find_packages(),
+    zip_safe = False,
     scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
-    install_requires=[
+    cmdclass = {'build_ext': build_ext}
+)
+
+"""
+    install_requires = [
           'cython',
           'numpy',
           'pysam>0.12.0',
@@ -61,7 +66,8 @@ setup(
           'seaborn>-0.7.1',
           'ujson',
           'scipy>=0.19.0',
-          'networkx>=2.0'
+          'networkx>=2.0',
+          'pytest'
       ],
-    cmdclass = {'build_ext': build_ext}
-)
+"""
+

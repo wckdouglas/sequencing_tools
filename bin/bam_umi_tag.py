@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from sequencing_tools.umi_tag import add_umi_tag
+from sequencing_tools.bam_tools.umi_tag import add_umi_tag
 import argparse
 
 def getopt():

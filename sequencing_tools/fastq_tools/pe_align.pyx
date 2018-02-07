@@ -2,9 +2,10 @@
 
 from __future__ import print_function
 from sequencing_tools.fastq_tools import read_interleaved, reverse_complement
-from sequencing_tools.fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools.cutadapt_align import locate
+from sequencing_tools.io_tools import xopen
 import sys
-from sequencing_tools.cutadapt_align import locate
 from builtins import zip
 from functools import partial
 from cpython cimport bool
@@ -118,7 +119,7 @@ def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_
         int record_count = 0
         int out_count = 0
 
-    infile_handle = sys.stdin if infile == '-' or infile == '/dev/stdin' else open(infile,'r')
+    infile_handle = sys.stdin if infile == '-' or infile == '/dev/stdin' else xopen(infile,mode = 'r')
 
     concensus_builder = partial(make_concensus, error_toleration, min_len, report_all)
 

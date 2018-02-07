@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-from sequencing_tools.fragment_pairs import bam_to_bed
+from sequencing_tools.bam_tools.fragment_pairs import bam_to_bed
 import sys
 
 

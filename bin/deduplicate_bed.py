@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from sequencing_tools.bed_dedup import  dedup_bed
+from sequencing_tools.bam_tools.bed_dedup import  dedup_bed
 import sys
 import argparse
 

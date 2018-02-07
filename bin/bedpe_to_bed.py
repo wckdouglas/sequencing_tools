@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from sequencing_tools.fragment_pairs import process_bedpe
+from sequencing_tools.bam_tools.fragment_pairs import process_bedpe
 import argparse
 
 def getopt():

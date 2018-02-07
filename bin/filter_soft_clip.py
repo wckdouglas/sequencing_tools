@@ -6,7 +6,7 @@ import argparse
 import pysam
 import sys
 from functools import partial
-from sequencing_tools.unique_bam import filter_bam_single_end, filter_bam_pair_end
+from sequencing_tools.bam_tools.unique_bam import filter_bam_single_end, filter_bam_pair_end
 
 def getopt():
     parser = argparse.ArgumentParser(description = 'Filter alignments from sam file by softclip ratio')

@@ -6,7 +6,7 @@ from cpython cimport bool
 from functools import partial
 from builtins import zip
 from sequencing_tools.bam_tools import split_cigar
-from sequencing_tools.fragment_pairs import concordant_pairs, is_split_pair
+from sequencing_tools.bam_tools.fragment_pairs import concordant_pairs, is_split_pair
 
 cdef int softClipSize(AlignedSegment aln):
     # compare softclip size, output maximum softclipped base on either side
