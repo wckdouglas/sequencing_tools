@@ -3,7 +3,7 @@
 import numpy as np
 cimport numpy as np
 from cython cimport floating
-
+from scipy.stats import binom
 
 cpdef np.ndarray p_adjust(pvalue):
     '''
@@ -49,3 +49,8 @@ cpdef np.ndarray p_adjust(pvalue):
     steps = float(len(pvalue)) / np.arange(len(pvalue), 0, -1)
     adjusted_p = np.minimum(1.0, np.minimum.accumulate(steps * pvalue[descending_p_order]))
     return adjusted_p[in_order]
+
+def binom_test(success_test, total_test, expected_p = 0.5):
+    assert len(success_test)==len(total_test), 'Wrong length of vector!'
+    ps = binom.cdf(success_test,n=total_test,p=expected_p)
+    return ps
