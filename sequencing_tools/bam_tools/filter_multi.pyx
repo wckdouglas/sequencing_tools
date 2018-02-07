@@ -8,13 +8,19 @@ from builtins import zip, range
 import re
 
 
-class read_pairs:
+cdef class read_pairs:
+    cdef:
+        list read1, read2
+        AlignedSegment out_read1, out_read2
+        str read_id
+        bool is_group
+
     def __init__(self):
         self.read1 = []
         self.read2 = []
-        self.out_read1 = ''
-        self.out_read2 = ''
-        self.read_id = ''
+        self.out_read1 = None
+        self.out_read2 = None
+        self.read_id = None
         self.is_group = None
 
     def initiate_group(self, alignment):
@@ -180,6 +186,7 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
         int read_count
         int out_read_count = 0
         int read_group_count = 0
+        read_pairs read_group
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'

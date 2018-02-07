@@ -4,17 +4,25 @@ import fileinput
 from operator import itemgetter
 from itertools import combinations
 from functools import partial
-from collections import Counter, defaultdict
+from collections import Counter
 from networkx import Graph, connected_components
 from sequencing_tools.fastq_tools.function_clip import hamming_distance
 import sys
 
 
-class fragment_group:
+cdef class fragment_group:
     '''
     Data structure for storing fragments with same start, end positions and strands
     store barcode as a dictionary with values indicating numbers of same fragment
     '''
+
+    cdef: 
+        str chrom, start, end, strand
+        long fragment_size
+        list unique_barcodes
+        dict barcodes_set
+
+
     def __init__(self, chrom, start, end, strand, bc):
         self.chrom = chrom
         self.start = start
@@ -22,18 +30,17 @@ class fragment_group:
         self.strand = strand
         self.fragment_size = long(self.end) - long(self.start)
 
-        self.barcodes_set = defaultdict(int)
-        self.unique_barcodes = None
-        self.barcode_counter = None
+        self.barcodes_set = dict()
+        self.unique_barcodes = []
 
         # add first record
-        self.barcodes_set[bc] += 1
+        self.barcodes_set[bc] = 1
 
     def add_member(self, bc):
         '''
         add a member to the fragment group, add barcode to barcode dictionary
         '''
-        self.barcodes_set[bc] += 1
+        self.barcodes_set[bc] = self.barcodes_set.setdefault(bc, 0) + 1
 
 
     def demultiplexing_barcodes(self, threshold):
@@ -52,6 +59,9 @@ class fragment_group:
         '''
         output every unique fragments
         '''
+        cdef:
+            str barcode
+
         for barcode in self.unique_barcodes:
             template = '{chrom}\t{start}\t{end}\t{barcode}\t{length}\t{strand}' \
                 .format(chrom = self.chrom,
@@ -123,9 +133,7 @@ def demultiplex(barcodes, threshold=1):
     comparison = combinations(barcodes.keys(),r=2)
     graph = make_graph(comparison, threshold)
     unique_barcode =  unique_barcode_from_graph(graph, barcodes)
-    #print 'In: %i, out: %i' %(len(barcodes), len(unique_barcode))
     return unique_barcode
-
 
 
 def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
@@ -134,6 +142,7 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
         str bc_line
         int in_count
         int out_count = 0
+        fragment_group barcode_group
 
     barcode_group = None
     for in_count, line in enumerate(in_file_handle):

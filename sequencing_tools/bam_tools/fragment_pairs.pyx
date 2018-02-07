@@ -57,20 +57,13 @@ cdef class read_paired_fragment(read_fragment):
         AlignedSegment read_2
         str rt2
 
-    def __init__(self, read1, read2, tag=None, max_size=0, min_size=1000000):
+    def __init__(self, read1, read2, tag=None, min_size=0, max_size=1000000):
         self.tag = tag
-        self.max_size = max_size
         self.min_size = min_size
-        self.read_1 = None
-        self.read_2 = None
+        self.max_size = max_size
 
         # output elements
         self.bed_line = None
-        self.chrom = None
-        self.start = None
-        self.end = None
-        self.fragment_size = None
-        self.strand = None
         self.pass_filter = False
 
 
