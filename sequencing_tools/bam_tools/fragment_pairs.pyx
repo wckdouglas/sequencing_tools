@@ -9,8 +9,54 @@ import sys
 from sequencing_tools.bam_tools import concordant_pairs, read_ends,\
                                         fragment_ends, check_concordant, \
                                         check_primary
+cdef class read_fragment:
+    cdef:
+        str tag
+        int min_size
+        long max_size
+        str chrom, strand
+        long start, end
+        int fragment_size
+        AlignedSegment read_1
+        str rt1
+        str bed_line
+        bool pass_filter
 
-class read_paired_fragment:
+    def __init__(self, read, tag, max_size, min_size):
+        self.tag = tag
+        self.read_1 = read
+        self.max_size = max_size
+        self.min_size = min_size
+
+        if self.tag:
+            self.rt1 = self.read_1.get_tag(self.tag)
+        
+        self.chrom = self.read_1.reference_name
+        self.strand = '-' if self.read_1.is_reverse else '+'
+        self.start, self.end = self.read_1.reference_start, self.read_1.reference_end
+        self.fragment_size = self.end - self.start
+        self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
+
+    def generate_fragment(self):
+        if self.pass_filter:
+            self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
+                .format(chrom = self.chrom,
+                        start = self.start, 
+                        end = self.end, 
+                        read_name = self.read_1.query_name,
+                        fragment_size = self.fragment_size,
+                        strand = self.strand)
+            if self.tag: 
+                self.bed_line = self.bed_line + '\t' + self.rt1
+        return self.bed_line
+
+
+
+cdef class read_paired_fragment(read_fragment):
+    cdef: 
+        AlignedSegment read_2
+        str rt2
+
     def __init__(self, read1, read2, tag=None, max_size=0, min_size=1000000):
         self.tag = tag
         self.max_size = max_size
@@ -38,6 +84,7 @@ class read_paired_fragment:
         if self.tag:
             self.rt1 = self.read_1.get_tag(self.tag)
             self.rt2 = self.read_2.get_tag(self.tag)
+            assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
 
         if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
             self.chrom = self.read_1.reference_name
@@ -45,49 +92,6 @@ class read_paired_fragment:
             self.start, self.end = fragment_ends(self.read_1, self.read_2)
             self.fragment_size = self.end - self.start
             self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
-
-    def generate_fragment(self):
-        if self.pass_filter:
-            self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
-                .format(chrom = self.chrom,
-                        start = self.start, 
-                        end = self.end, 
-                        read_name = self.read_1.query_name,
-                        fragment_size = self.fragment_size,
-                        strand = self.strand)
-            if self.tag: 
-                self.bed_line = self.bed_line + '\t' + self.rt1
-        return self.bed_line
-
-
-class read_fragment:
-
-    def __init__(self, read, tag, max_size, min_size):
-        self.tag = tag
-        self.read = read
-        self.max_size = max_size
-        self.min_size = min_size
-
-        if self.tag:
-            self.rt = self.read.get_tag(self.tag)
-        
-        self.chrom = self.read.reference_name
-        self.strand = '-' if self.read.is_reverse else '+'
-        self.start, self.end = self.read.reference_start, self.read.reference_end
-        self.fragment_size = self.end - self.start
-
-    def generate_fragment(self):
-        if self.min_size < self.fragment_size < self.max_size:
-            self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
-                .format(chrom = self.chrom,
-                        start = self.start, 
-                        end = self.end, 
-                        read_name = self.read_1.query_name,
-                        fragment_size = self.fragment_size,
-                        strand = self.strand)
-            if self.tag: 
-                self.bed_line = self.bed_line + '\t' + self.rt1
-        return self.bed_line
 
 
 def pair_end_iterator(in_bam):
