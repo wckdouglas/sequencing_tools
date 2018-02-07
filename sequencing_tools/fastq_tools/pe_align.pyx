@@ -15,17 +15,26 @@ cdef calibrate_qual(str b1, str b2, str q1, str q2):
     '''
     https://github.com/ExpressionAnalysis/ea-utils/blob/wiki/FastqJoin.md
 
-    if same base, append base and sum of qual
-    else append N and qual of 0 
+    1. if same base, append base and sum of qual
+    2. else use higher qual base
+    3. if same, append N and qual of 0 
     '''
     cdef:
         int qual
         str base 
+        int qq1, qq2
 
+    qq1, qq2 = ord(q1) - 33 , ord(q2) - 33
     if b1==b2:
-        qual = ord(q1) + ord(q2) - 66
+        qual = qq1 + qq2
         qual = 40 if qual > 40 else qual
         base = b1
+    elif qq1 > qq2:
+        base = b1 
+        qual = qq1
+    elif qq2 > qq1:
+        base = b2 
+        qual = qq2
     else:
         base = 'N'
         qual = 0
