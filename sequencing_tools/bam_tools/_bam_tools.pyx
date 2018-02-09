@@ -225,7 +225,7 @@ cpdef str cigar_to_str(str cigar_string):
     cigar_str = ''.join(make_cigar_seq(cigar_numbers, cigar_operator))
     return cigar_str
 
-cpdef str get_strand(AlignedSegment aln):
+cpdef str get_strand(AlignedSegment aln, str direction = 'fr'):
     '''
     get strand of the paired fragment
 
@@ -248,12 +248,22 @@ cpdef str get_strand(AlignedSegment aln):
         bool read1_rvs
         bool read2_rvs
 
+    assert direction in ['fr','rf'], 'Wrong direction: only accept either fr or rf'
     read1_rvs = (aln.is_read1) and (aln.is_reverse)
     read2_rvs = (aln.is_read2) and (not aln.is_reverse)
-    if read1_rvs or read2_rvs:
-        strand = '-'
-    else:
-        strand = '+'
+
+    if direction == 'fr':
+        if read1_rvs or read2_rvs:
+            strand = '-'
+        else:
+            strand = '+'
+
+    elif direction == 'rf':
+        if read1_rvs or read2_rvs:
+            strand = '+'
+        else:
+            strand = '-'
+
     return strand
 
 def remove_insert(sequence, qual_seq, cigar):
