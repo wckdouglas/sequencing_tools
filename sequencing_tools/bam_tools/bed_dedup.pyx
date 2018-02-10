@@ -49,8 +49,8 @@ cdef class fragment_group:
         '''
         if len(self.barcodes_set.keys()) == 1: # for theingular fragment
                                                 # generate a phantom list with the single fragment record 
-            self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode=self.barcodes_set.keys()[0], 
-                                                                count = self.barcodes_set.values()[0])]
+            self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(self.barcodes_set.keys())[0], 
+                                                                count = list(self.barcodes_set.values())[0])]
         else: # for more than 1 unique barcode
             self.unique_barcodes = demultiplex(self.barcodes_set, threshold = threshold)
 

@@ -18,11 +18,11 @@ try:
 except ImportError:
     raise ImportError("Requires pysam to "
             "be installed before running setup.py (pip install pysam)")
-try:
-    import pyBigWig
-except ImportError:
-    raise ImportError("Requires pyBigWig to "
-            "be installed before running setup.py (pip install pyBigWig)")
+#try:
+#    import pyBigWig
+#except ImportError:
+#    raise ImportError("Requires pyBigWig to "
+#            "be installed before running setup.py (pip install pyBigWig)")
 try:
     import ujson
 except ImportError:
@@ -40,6 +40,7 @@ ext_modules=cythonize([
         Extension('*', ['sequencing_tools/*tools/*.pyx'],
             include_dirs = include_path)
 ])
+print('here')
 
 
 setup(

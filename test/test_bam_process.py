@@ -2,6 +2,8 @@
 
 import os
 import filecmp
+from collections import defaultdict
+from sequencing_tools.fastq_tools import readfq 
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
 
@@ -25,16 +27,27 @@ def test_multi():
     os.remove(out_bam)
 
 
+def same_fq(fq1, fq2):
+    id_dict1 = defaultdict(set)
+    for seqid, seq, qual in readfq(fq1):
+        id_dict1[seqid].add(seq+qual)
+
+    id_dict2 = defaultdict(set)
+    for seqid, seq, qual in readfq(fq2):
+        id_dict2[seqid].add(seq+qual)
+    return id_dict1 == id_dict2
+    
+
 def test_correct():
     in_bam = test_data_path + '/tag.bam'
     out_fq = test_data_path + '/tag.fq'
     command = 'bam_read_cluster.py -i  {in_bam} -o {out_fq} -c -t RX'.format(in_bam = in_bam,
                                                                              out_fq = out_fq)
     os.system(command)
-    assert(filecmp.cmp(out_fq, test_data_path + '/corrected.conserve.fq'))
+    assert(same_fq(out_fq, test_data_path + '/corrected.conserve.fq'))
 
     command = 'bam_read_cluster.py -i  {in_bam} -o {out_fq} -t RX'.format(in_bam = in_bam,
                                                                              out_fq = out_fq)
     os.system(command)
-    assert(filecmp.cmp(out_fq, test_data_path + '/corrected.qual.fq'))
+    assert(same_fq(out_fq, test_data_path + '/corrected.qual.fq'))
     os.remove(out_fq)

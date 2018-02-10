@@ -49,7 +49,7 @@ def plot_bc_member(member_count, filename):
 
     sns.set_style('white')
     figurename = filename.split('.')[0] + '.pdf'
-    df = pd.DataFrame(member_count.items(),
+    df = pd.DataFrame(list(member_count.items()),
                     columns=['members','counts']) \
         .assign(log_count = lambda d: np.log(d['counts']))
     with sns.plotting_context('paper', font_scale = 1.3):

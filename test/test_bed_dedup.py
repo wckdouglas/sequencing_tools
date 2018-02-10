@@ -13,7 +13,10 @@ def test_fragment_group():
     fg.demultiplexing_barcodes(0)
     expected = ['chr1\t10000\t20000\tACG_1_members\t10000\t-',
                  'chr1\t10000\t20000\tACT_2_members\t10000\t-']
-    assert(list(fg.output_bed_line()) == expected)
+    expected.sort()
+    out = list(fg.output_bed_line())
+    out.sort()
+    assert(out == expected)
 
     
     

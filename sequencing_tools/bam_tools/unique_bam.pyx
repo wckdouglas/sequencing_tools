@@ -131,8 +131,8 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
         outbam = pysam.Samfile(out_bam,'wb',template = inbam)
         while True:
             try:
-                read1 = inbam.next()
-                read2 = inbam.next()
+                read1 = next(inbam)
+                read2 = next(inbam)
                 pairs = fragment_pairs(read1, read2)
                 pairs.check_flags()
                 assert read1.query_name == read2.query_name, 'Wrong pairs: %s, %s' %(read1.query_name, read2.query_name)
