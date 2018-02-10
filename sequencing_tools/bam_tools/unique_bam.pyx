@@ -100,7 +100,7 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
                         output_count += 1
 
                     elif soft_clipped:
-                        clipped_size_right = check_aln(aln, single_end_thresh)
+                        clipped_size_right, all_clip = check_aln(aln, single_end_thresh)
 
                         inverse_ok = (not clipped_size_right and inverse)
                         non_inverse_ok = (clipped_size_right and not inverse)

@@ -51,3 +51,12 @@ def test_correct():
     os.system(command)
     assert(same_fq(out_fq, test_data_path + '/corrected.qual.fq'))
     os.remove(out_fq)
+
+def test_filter():
+    in_bam = test_data_path + '/tag.bam'
+    out_bam = test_data_path + '/filtered.out'
+    command = 'filter_soft_clip.py  --pe -s 0 -i {in_bam} -o - > {out_bam}'.format(in_bam = in_bam,
+                                                                            out_bam = out_bam)
+    os.system(command)
+    assert(filecmp.cmp(out_bam, test_data_path + '/clipped.bam'))
+    os.remove(out_bam)
