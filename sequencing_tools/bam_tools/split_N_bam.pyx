@@ -13,8 +13,8 @@ cpdef int parse_bam(AlignmentFile inbam,
 
     while True:
         try:
-            read1 = inbam.next()
-            read2 = inbam.next()
+            read1 = next(inbam)
+            read2 = next(inbam)
             if concordant_pairs(read1, read2):
                 if is_split_pair(read1, read2):
                     out_split_bam.write(read1)

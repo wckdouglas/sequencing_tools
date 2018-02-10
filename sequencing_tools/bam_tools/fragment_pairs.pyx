@@ -97,8 +97,8 @@ def pair_end_iterator(in_bam):
 
     while True:
         try:
-            read_1 = in_bam.next()
-            read_2 = in_bam.next()
+            read_1 = next(in_bam)
+            read_2 = next(in_bam)
             if check_concordant(read_1, read_2):
                 yield read_1, read_2
             else:
@@ -140,8 +140,8 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
     with pysam.Samfile(bam_file,'rb') as in_bam:
         while True:
             try:
-                read_1 = in_bam.next()
-                read_2 = in_bam.next()
+                read_1 = next(in_bam)
+                read_2 = next(in_bam)
                 concordant = check_concordant(read_1, read_2)
                 primary_pair = check_primary(read_1, read_2)
                 if concordant and ((primary_pair and only_primary) or not only_primary):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
@@ -157,25 +157,25 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                             if output_all:
                                 if read_2.is_supplementary:
                                     fragment = read_fragment(read_2, tag, max_size, min_size)
-                                    read_2 = in_bam.next()
+                                    read_2 = next(in_bam)
 
                                 else:
                                     fragment = read_fragment(read_1, tag, max_size, min_size)
                                     read_1 = read_2
-                                    read_2 = in_bam.next()
+                                    read_2 = next(in_bam)
 
                                 line = fragment.generate_fragment()
                                 single_count += 1
                                 print(line, file=out_file)
                             else:
                                 read_1 = read_2
-                                read_2 = in_bam.next()
+                                read_2 = next(in_bam)
                         elif read_1.is_secondary:
                             read_1 = read_2
-                            read_2 = in_bam.next()
+                            read_2 = next(in_bam)
 
                         elif read_2.is_secondary:
-                            read_2 = in_bam.next()
+                            read_2 = next(in_bam)
 
                     pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
                                                         max_size = max_size, min_size = min_size)

@@ -56,8 +56,8 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
     is_unique = partial(bowtie2_is_unique) if aligner == 'bowtie2' else partial(hisat2_is_unique)
     while True:
         try:
-            read1 = bam.next()
-            read2 = bam.next()
+            read1 = next(bam)
+            read2 = next(bam)
             pair_count += 1
             assert read1.query_name == read2.query_name, 'Not paired end'
             if not read1.is_unmapped and not read2.is_unmapped:
@@ -109,8 +109,8 @@ cpdef int split_N_bam(AlignmentFile inbam,
 
     while True:
         try:
-            read1 = inbam.next()
-            read2 = inbam.next()
+            read1 = next(inbam)
+            read2 = next(inbam)
             if concordant_pairs(read1, read2):
                 if is_split_pair(read1, read2):
                     out_split_bam.write(read1)
