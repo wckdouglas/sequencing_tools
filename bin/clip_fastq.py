@@ -53,7 +53,6 @@ def main(args):
     constant = args.idxBase.lstrip('X')
     idx_base = len(re.findall('X+', idx_base)[0])
     allow_mismatch = args.mismatch
-    prefix_split = args.prefix_split
     UMI_side = args.read
 
     #print out parameters
@@ -64,13 +63,11 @@ def main(args):
     print('[%s] output file:                       %s' %(programname, out_file), file = sys.stderr)
     print('[%s] using constant regions:            %s' %(programname, constant), file = sys.stderr)
     print('[%s] allowed mismatches:                %i' %(programname, allow_mismatch), file = sys.stderr)
-    print('[%s] Using prefix bases:                %i' %(programname, prefix_split), file = sys.stderr)
     print('[%s] Using UMI side:                    %s' %(programname, UMI_side), file = sys.stderr)
 
     # divide reads into subclusters
     clip_pairs(inFastq1, inFastq2, out_file, idx_base,
-            barcode_cut_off, constant, allow_mismatch, programname,
-            prefix_split, UMI_side)
+            barcode_cut_off, constant, allow_mismatch, programname, UMI_side)
     print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)
     return 0
 
