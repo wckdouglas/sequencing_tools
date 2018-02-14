@@ -29,7 +29,7 @@ def add_umi_tag(in_bam, out_bam, tag):
 
 
 cdef str get_umi_from_tag(str tag, AlignedSegment aln):
-    return aln.get_tags(tag)
+    return aln.get_tag(tag)
 
 cdef str get_umi_from_name(AlignedSegment aln):
     cdef:
