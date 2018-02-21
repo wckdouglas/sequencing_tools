@@ -40,7 +40,6 @@ ext_modules=cythonize([
         Extension('*', ['sequencing_tools/*tools/*.pyx'],
             include_dirs = include_path)
 ])
-print('here')
 
 
 setup(
