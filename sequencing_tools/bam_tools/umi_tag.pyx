@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-
 from __future__ import print_function
-import pysam
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+import pysam
 import sys
 from functools import partial
 import re
