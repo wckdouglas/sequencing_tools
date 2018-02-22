@@ -1,5 +1,5 @@
 from pandas import Series
-from builtins import zip
+from builtins import zip, range
 
 def douglas_palette():
     '''
@@ -95,7 +95,7 @@ def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson'):
 ### COLOR ENCODER ##########
 
 def assert_color_vector(categorical_vector, color_vector):
-    categories = set(categorical_vector)
+    categories = sorted(categorical_vector.unique())
     assert len(categories) <= len(color_vector), 'Not enough colors!! %i colors for %i categories' %(len(color_vector),len(categories))
     return categories
 

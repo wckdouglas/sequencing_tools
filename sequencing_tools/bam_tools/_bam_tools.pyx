@@ -1,4 +1,3 @@
-
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from builtins import map, zip, range
 from cpython cimport bool
