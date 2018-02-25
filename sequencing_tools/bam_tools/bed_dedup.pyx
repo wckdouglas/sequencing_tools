@@ -2,57 +2,63 @@ from __future__ import print_function
 import sys
 import fileinput 
 from operator import itemgetter
-from itertools import combinations
+from itertools import combinations, groupby
 from functools import partial
-from collections import Counter
+from collections import Counter, defaultdict
 from networkx import Graph, connected_components
 from sequencing_tools.fastq_tools.function_clip import hamming_distance
 import sys
+import six
 
 
-cdef class fragment_group:
+class fragment_group:
     '''
     Data structure for storing fragments with same start, end positions and strands
     store barcode as a dictionary with values indicating numbers of same fragment
     '''
 
-    cdef: 
-        str chrom, start, end, strand
-        long fragment_size
-        list unique_barcodes
-        dict barcodes_set
+#    cdef: 
+#        str chrom, start, end, strand
+#        long fragment_size
+#        list unique_barcodes
+#        str cigar
+#        set cigarlist
 
 
-    def __init__(self, chrom, start, end, strand, bc):
+    def __init__(self, chrom, start, end, strand, bc, cigar):
         self.chrom = chrom
         self.start = start
         self.end = end
         self.strand = strand
         self.fragment_size = long(self.end) - long(self.start)
 
-        self.barcodes_set = dict()
+        self.barcodes_set = defaultdict(lambda: defaultdict(int))
         self.unique_barcodes = []
 
         # add first record
-        self.barcodes_set[bc] = 1
+        self.barcodes_set[cigar][bc] = 1
 
-    def add_member(self, bc):
+    def add_member(self, bc, cigar):
         '''
         add a member to the fragment group, add barcode to barcode dictionary
         '''
-        self.barcodes_set[bc] = self.barcodes_set.setdefault(bc, 0) + 1
+        self.barcodes_set[cigar][bc] += 1
 
 
     def demultiplexing_barcodes(self, threshold):
         '''
         Demultiplex the barcode list
         '''
-        if len(self.barcodes_set.keys()) == 1: # for theingular fragment
-                                                # generate a phantom list with the single fragment record 
-            self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(self.barcodes_set.keys())[0], 
-                                                                count = list(self.barcodes_set.values())[0])]
-        else: # for more than 1 unique barcode
-            self.unique_barcodes = demultiplex(self.barcodes_set, threshold = threshold)
+
+        for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
+            if len(barcodes_dict.keys()) == 1: # for theingular fragment
+                                                # generate a phantom list with the single fragment record
+                self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
+                                                                count = list(barcodes_dict.values())[0])]
+            else: # for more than 1 unique barcode
+                self.unique_barcodes = demultiplex(barcodes_dict, threshold = threshold)
+            if cigar:
+                self.unique_barcodes = map(lambda x: x + '_' + cigar, self.unique_barcodes)
 
 
     def output_bed_line(self):
@@ -136,13 +142,14 @@ def demultiplex(barcodes, threshold=1):
     return unique_barcode
 
 
-def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
+def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int ct):
     cdef:
         str line, bc, read_name, chrom, start, end, strand
         str bc_line
         int in_count
         int out_count = 0
-        fragment_group barcode_group
+        #fragment_group barcode_group
+        str cigar = ''
 
     barcode_group = None
     for in_count, line in enumerate(in_file_handle):
@@ -150,17 +157,21 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
         read_name = fields[3]
         bc = read_name.split(delim)[f]
         chrom, start, end, strand = itemgetter(0,1,2,5)(fields)
+
+        if ct > 5:
+            cigar = fields[ct]
+
         if not barcode_group:
             '''
             if no initial barcode group, initilize one
             '''
-            barcode_group = fragment_group(chrom, start, end, strand, bc)
+            barcode_group = fragment_group(chrom, start, end, strand, bc, cigar)
 
         elif barcode_group.check_fragment(chrom, start, end, strand):
             '''
             add member if same chrom, start, end & strand
             '''
-            barcode_group.add_member(bc)
+            barcode_group.add_member(bc, cigar)
 
         else:
             '''
@@ -172,7 +183,7 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f):
                 print(bc_line, file=out_file_handle)
                 out_count += 1
 
-            barcode_group = fragment_group(chrom, start, end, strand, bc)
+            barcode_group = fragment_group(chrom, start, end, strand, bc, cigar)
 
     # output the last group
     barcode_group.demultiplexing_barcodes(threshold)

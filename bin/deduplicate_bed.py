@@ -28,6 +28,9 @@ def get_opt():
     parser.add_argument('-f',
                         help='after splitting read name using {delim}, which fragmnet is UMI? can use -1 as last piece (default: 0)',
                         default=0, type=int)
+    parser.add_argument('--ct',
+                        help='cigar tag field (0-based)? (default: None)',
+                        default=-1, type=int)
     args = parser.parse_args()
     return args
 
@@ -41,20 +44,20 @@ def main():
     ## input
     if in_filename != '-' and in_filename != '/dev/stdin':
         in_file_handle = open(in_filename, 'r')
-        print('Using file %s...' %in_filename, file=sys.stderr)
+        print('[Deduplicate BED] Using file %s...' %in_filename, file=sys.stderr)
     else:
         in_file_handle = sys.stdin
-        print('Using stdin...', file=sys.stderr)
+        print('[Deduplicate BED] Using stdin...', file=sys.stderr)
 
     ## input
     if out_filename != '-' and out_filename != '/dev/stdin':
         out_file_handle = open(out_filename, 'r')
-        print('Writing file %s...' %out_filename, file=sys.stderr)
+        print('[Deduplicate BED] Writing file %s...' %out_filename, file=sys.stderr)
     else:
         out_file_handle = sys.stdout
-        print('Writing to stdout...', file=sys.stderr)
+        print('[Deduplicate BED] Writing to stdout...', file=sys.stderr)
 
-    dedup_bed(in_file_handle, out_file_handle, threshold, args.delim, args.f)
+    dedup_bed(in_file_handle, out_file_handle, threshold, args.delim, args.f, args.ct)
     return 0
 
 
