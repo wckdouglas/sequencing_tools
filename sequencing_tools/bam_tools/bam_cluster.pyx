@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from __future__ import print_function
 from matplotlib import use as mpl_use
 mpl_use('Agg')
