@@ -8,7 +8,7 @@ def test_fragment_group():
     fg = fragment_group('chr1','10000', '20000', '-','ACT','')
     fg.add_member('ACT','')
     fg.add_member('ACG','')
-    assert(not fg.check_fragment('chr1','10000','20000','+',''))
+    assert(not fg.check_fragment('chr1','10000','20000','+'))
 
     fg.demultiplexing_barcodes(0)
     expected = ['chr1\t10000\t20000\tACG_1_members\t10000\t-',
