@@ -52,3 +52,16 @@ def binom_test(success_test, total_test, expected_p = 0.5):
     assert len(success_test)==len(total_test), 'Wrong length of vector!'
     ps = binom.cdf(success_test,n=total_test,p=expected_p)
     return ps
+
+cpdef double cy_mean(xs):
+    cdef:
+        double x
+        int counter = 0
+        double sum_x
+    
+    for x in xs:
+        counter += 1
+        sum_x += x
+
+    return sum_x / counter
+        

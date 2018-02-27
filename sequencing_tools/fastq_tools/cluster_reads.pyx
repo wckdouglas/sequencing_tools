@@ -14,21 +14,9 @@ from cpython cimport bool
 import io
 from sequencing_tools.fastq_tools.function_clip import hamming_distance
 import six
+from sequencing_tools.stats_tools import cy_mean
 
 np_ord = np.vectorize(ord)
-
-cpdef double cy_mean( xs):
-    cdef:
-        double x
-        int counter = 0
-        double sum_x
-    
-    for x in xs:
-        counter += 1
-        sum_x += x
-
-    return sum_x / counter
-        
 
 
 def gzip_open(filename, read_flag = 'r'):
