@@ -1,5 +1,4 @@
 from __future__ import print_function
-from statistics import mean
 import numpy as np
 from matplotlib import use as mpl_use
 mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
@@ -16,6 +15,20 @@ import io
 from sequencing_tools.fastq_tools.function_clip import hamming_distance
 
 np_ord = np.vectorize(ord)
+
+cpdef double cy_mean( xs):
+    cdef:
+        double x
+        int counter = 0
+        double sum_x
+    
+    for x in xs:
+        counter += 1
+        sum_x += x
+
+    return sum_x / counter
+        
+
 
 def gzip_open(filename, read_flag = 'r'):
     if 'r' in read_flag:
@@ -205,7 +218,7 @@ cpdef int readClusteringR2(barcode_dict, idx_base, barcode_cut_off, constant,
     assert id_left.split(' ')[0] == id_right.split(' ')[0], 'Wrongly splitted files!! %s\n%s' %(id_right, id_left)
     barcode = seq_right[:idx_base]
     constant_region = seq_right[idx_base:usable_seq]
-    barcodeQualmean = int(mean(map(ord,qual_right[:idx_base])) - 33)
+    barcodeQualmean = int(cy_mean(map(ord,qual_right[:idx_base])) - 33)
 
     no_N_barcode = 'N' not in barcode
     is_low_complexity_barcode = bool(low_complexity_composition.search(barcode))

@@ -9,7 +9,7 @@ import argparse
 import glob
 import time
 import os
-from sequencing_tools.bam_tools.cluster_reads import (dictToJson,
+from sequencing_tools.fastq_tools.cluster_reads import (dictToJson,
                            writingAndClusteringReads,
                            plotBCdistribution,
                            recordsToDict)
@@ -59,7 +59,7 @@ def clustering(outputprefix, inFastq1, inFastq2, idx_base, min_family_member_cou
                             which_side, programname)
     barcode_dict, read_num, barcode_count, discarded_sequence_count = result
     print('[%s] Extracted: %i barcode group' %(programname,barcode_count + 1), file = sys.stderr)
-    print('[%s] discarded: %i sequences' %(programname, discarded_sequence_count, file = sys.stderr)
+    print('[%s] discarded: %i sequences' %(programname, discarded_sequence_count), file = sys.stderr)
     print('[%s] Parsed:    %i seqeucnes' %(programname, read_num), file = sys.stderr)
 
     barcode_member_counts = list(map(lambda index: len(barcode_dict[index]), barcode_dict.keys()))
