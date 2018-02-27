@@ -42,22 +42,10 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
 
                 ### using pysam count_coverage approach ###
                 crop_end = aln.query_length - crop
-                for aln_pos, ref_pos in aln.get_aligned_pairs(True):
+                for aln_pos, ref_pos in aln.get_aligned_pairs(matches_only = True):
                     qual = aln.query_qualities[aln_pos]
                     base = aln.query_sequence[aln_pos]
                     if ref_pos and aln_pos and crop_end >= aln_pos >= crop and qual >= qual_threshold:
                         base_dict[ref_pos][strand][base] += 1
 
-                '''
-                # old algorithm #
-                positions = aln.get_reference_positions()
-                sequence = aln.query_alignment_sequence
-                cigar_str = cigar_to_str(aln.cigarstring).replace('S','')
-                qual_seq = aln.query_alignment_qualities
-                adjusted_sequence = remove_insert(sequence, qual_seq, cigar_str)
-                crop_end = len(positions) - crop
-                for i, (pos, (base, qual)) in enumerate(zip(positions, adjusted_sequence)):
-                    if crop_end >= i >= crop and qual >= qual_threshold:
-                        base_dict[pos][strand][base] += 1
-                '''
     return aln_count, base_dict

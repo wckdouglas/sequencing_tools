@@ -9,3 +9,4 @@ networkx>=2.0
 pyBigWig
 ujson
 pytest
+six

@@ -14,6 +14,7 @@ from functools import partial
 from cpython cimport bool
 import io
 from sequencing_tools.fastq_tools.function_clip import hamming_distance
+import six
 
 np_ord = np.vectorize(ord)
 
@@ -116,7 +117,7 @@ def concensusPairs(table, float fraction_threshold):
 
 def dictToJson(barcode_dict, json_file):
     with open(json_file,'w') as f:
-        [f.write(ujson.encode(items) + '\n') for items in barcode_dict.iteritems()]
+        [f.write(ujson.encode(items) + '\n') for items in six.iteritems(barcode_dict)]
     print('written %s' %(json_file) + '\n', file = sys.stderr)
     return 0
 
