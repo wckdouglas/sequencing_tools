@@ -5,26 +5,19 @@ mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 import matplotlib.pyplot as plt
 import sys
 import ujson
-import gzip
 import re
 from multiprocessing import Pool
 from builtins import zip, map, range
 from functools import partial
 from cpython cimport bool
-import io
-from sequencing_tools.fastq_tools.function_clip import hamming_distance
 import six
+from sequencing_tools.fastq_tools.function_clip import hamming_distance
 from sequencing_tools.stats_tools import cy_mean
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools import readfq
+from sequencing_tools.io_tools import xopen
 
 np_ord = np.vectorize(ord)
-
-
-def gzip_open(filename, read_flag = 'r'):
-    if 'r' in read_flag:
-        return io.BufferedReader(gzip.open(filename, read_flag))
-    elif 'w' in read_flag:
-        return io.BufferedWriter(gzip.open(filename, read_flag))
-
 
 def voteConcensusBase(arg):
     """Given a list of sequences,
@@ -139,8 +132,8 @@ def errorFreeReads(int min_family_member_count, float fraction_threshold, str js
         str left_record, right_record
 
     record = ujson.decode(json_record)
-    index = record[0]
-    table = np.array(record[1])
+    index = str(record[0])
+    table = np.array(record[1], dtype=str)
     member_count = table.shape[0]
     if member_count >= min_family_member_count:
         sequence_left, quality_left, sequence_right, quality_right = concensusPairs(table, fraction_threshold)
@@ -168,12 +161,12 @@ def writingAndClusteringReads(outputprefix, min_family_member_count, json_file,
 
     read1File = outputprefix + '_R1_001.fastq.gz'
     read2File = outputprefix + '_R2_001.fastq.gz'
-    pool = Pool(threads,maxtasksperchild=1000)
-    with gzip_open(read1File,'wb') as read1, gzip_open(read2File,'wb') as read2, open(json_file,'r') as infile:
+    pool = Pool(threads,maxtasksperchild=10000)
+    with xopen(read1File,'wb') as read1, xopen(read2File,'wb') as read2, open(json_file,'r') as infile:
         error_func = partial(errorFreeReads, min_family_member_count, fraction_threshold)
         write_func = partial(writeSeqToFiles,read1, read2)
-        processes = pool.imap_unordered(error_func, infile, chunksize = 1000)
-        #processes = map(error_func, infile)
+        processes = pool.imap_unordered(error_func, infile, chunksize = 10000)
+        #processes = map(error_func, infile) ## debug
         for result in processes:
             output_cluster_count += write_func(output_cluster_count, result)
             counter += 1
@@ -207,7 +200,7 @@ cpdef int readClusteringR2(barcode_dict, idx_base, barcode_cut_off, constant,
     assert id_left.split(' ')[0] == id_right.split(' ')[0], 'Wrongly splitted files!! %s\n%s' %(id_right, id_left)
     barcode = seq_right[:idx_base]
     constant_region = seq_right[idx_base:usable_seq]
-    barcodeQualmean = int(cy_mean(map(ord,qual_right[:idx_base])) - 33)
+    barcodeQualmean = int(cy_mean(map(ord, qual_right[:idx_base])) - 33)
 
     no_N_barcode = 'N' not in barcode
     is_low_complexity_barcode = bool(low_complexity_composition.search(barcode))
@@ -280,7 +273,7 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
     low_complexity_composition = re.compile('|'.join(low_complexity_base))
 
     failed_reads = outputprefix + '-failed.tsv'
-    with gzip_open(inFastq1,'rb') as fq1, gzip_open(inFastq2,'rb') as fq2, open(failed_reads,'w') as failed_file:
+    with xopen(inFastq1,'rb') as fq1, xopen(inFastq2,'rb') as fq2, open(failed_reads,'w') as failed_file:
 
 
         if which_side == 'read2':
@@ -292,7 +285,7 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
                             constant, constant_length, allow_mismatch, usable_seq,
                             failed_file, low_complexity_composition)
 
-        iterator = enumerate(zip(read_fastq(fq1), read_fastq(fq2)))
+        iterator = enumerate(zip(readfq(fq1), readfq(fq2)))
         for read_num, (read1,read2) in iterator:
             discarded_sequence_count += cluster_reads(read1, read2)
             if read_num % 10000000 == 0:
@@ -302,63 +295,3 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
     return barcode_dict, read_num, barcode_count, discarded_sequence_count
 
 
-
-#### read fq
-### and fastq class
-cdef class fastqRecord:
-    cdef:
-        public id, seq, qual
-
-    def __init__(self, str id, str seq, str qual):
-        self.id, self.seq, self.qual = (id, seq, qual)
-
-
-def read_fastq(file_fq):
-    """
-    takes a fastq file as input
-    yields idSeq, sequence and score
-    for each fastq entry
-    http://codereview.stackexchange.com/questions/32897/efficient-parsing-of-fastq
-    """
-
-    #initialize the idSeq, sequence, score and index
-    cdef:
-        str idSeq = ''
-        str sequence = ''
-        str score = ''
-        str line
-        fastqRecord fastq_record
-
-    while True:
-
-        line = file_fq.readline()
-
-        #break if we hit the end of the file
-        if not line:
-            break
-
-        if line.startswith('@') and sequence != '':
-
-            fastq_record = fastqRecord(idSeq, sequence, score)
-            yield fastq_record
-
-            #reset to default values
-            sequence = ''
-            score = ''
-            idSeq = line.strip().lstrip('@')
-
-
-        elif idSeq == '':
-            #get our first idSeq
-            idSeq = line.strip()
-            continue
-
-        elif sequence == '':
-            sequence = line.strip()
-        elif score == '' and line != '+\n':
-            score = line.strip()
-#            assert len(score) == len(sequence), 'Wrongly parsed Fastq' +'\n'+ sequence + '\n' + score
-
-    #yield our final idSeq, sequence and score
-    fastq_record = fastqRecord(idSeq, sequence, score)
-    yield fastq_record

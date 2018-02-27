@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 cimport numpy as np
 from cython cimport floating
@@ -58,10 +59,13 @@ cpdef double cy_mean(xs):
         double x
         int counter = 0
         double sum_x
+        double res
     
     for x in xs:
         counter += 1
         sum_x += x
 
-    return sum_x / counter
-        
+    res = sum_x / counter
+    return res
+
+       
