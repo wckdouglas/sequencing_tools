@@ -67,7 +67,7 @@ cdef str phred_to_string(double phred):
     return string_phred
 
 
-cdef str prob_to_qual_string(double posterior):
+cpdef str prob_to_qual_string(double posterior):
     '''
     Input a list of probabilities and output quality string
     '''
