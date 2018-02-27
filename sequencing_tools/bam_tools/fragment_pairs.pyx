@@ -19,12 +19,14 @@ cdef class read_fragment:
         str rt1
         str bed_line
         bool pass_filter
+        str cigar_field
 
     def __init__(self, read, tag, max_size, min_size):
         self.tag = tag
         self.read_1 = read
         self.max_size = max_size
         self.min_size = min_size
+        self.cigar_field = self.read_1.cigarstring
 
         if self.tag:
             self.rt1 = self.read_1.get_tag(self.tag)
@@ -35,7 +37,7 @@ cdef class read_fragment:
         self.fragment_size = self.end - self.start
         self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
 
-    def generate_fragment(self):
+    def generate_fragment(self, cigar=False):
         if self.pass_filter:
             self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
                 .format(chrom = self.chrom,
@@ -46,6 +48,8 @@ cdef class read_fragment:
                         strand = self.strand)
             if self.tag: 
                 self.bed_line = self.bed_line + '\t' + self.rt1
+            if cigar:
+                self.bed_line = self.bed_line + '\t' + self.cigar_field
         return self.bed_line
 
 
@@ -83,6 +87,7 @@ cdef class read_paired_fragment(read_fragment):
             self.start, self.end = fragment_ends(self.read_1, self.read_2)
             self.fragment_size = self.end - self.start
             self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
+            self.cigar_field = self.read_1.cigarstring + ':' + self.read_2.cigarstring
 
 
 def pair_end_iterator(in_bam):
@@ -118,7 +123,7 @@ def fragment_iterator(in_bam):
 
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, 
-                str tag, bool output_all, bool only_primary):
+                str tag, bool output_all, bool only_primary, bool add_cigar):
     '''
     Read two alignments at a time,
     assume they are pairs,
@@ -145,7 +150,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                 if concordant and ((primary_pair and only_primary) or not only_primary):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
                     pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
                                                         max_size = max_size, min_size = min_size)
-                    line = pair_fragment.generate_fragment()
+                    line = pair_fragment.generate_fragment(cigar = add_cigar)
                     if line:
                         pair_count += 1
                         print(line, file=out_file)
@@ -162,7 +167,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                                     read_1 = read_2
                                     read_2 = next(in_bam)
 
-                                line = fragment.generate_fragment()
+                                line = fragment.generate_fragment(cigar = add_cigar)
                                 single_count += 1
                                 print(line, file=out_file)
                             else:
@@ -177,7 +182,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
 
                     pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
                                                         max_size = max_size, min_size = min_size)
-                    line = pair_fragment.generate_fragment()
+                    line = pair_fragment.generate_fragment(cigar = add_cigar)
                     if line:
                         pair_count += 1
                         print(line, file=out_file)

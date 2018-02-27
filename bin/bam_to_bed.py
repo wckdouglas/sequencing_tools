@@ -20,6 +20,8 @@ def getopt():
                         help = 'supplementary as single fragment')
     parser.add_argument('-p','--primary', action='store_true',
                         help = 'Only primary')
+    parser.add_argument('-c','--add_cigar', action='store_true',
+                        help = 'Add cigar string on the last field')
 
     return parser.parse_args()
 
@@ -30,7 +32,8 @@ def main():
     tag = args.tag
     if args.max_size <= args.min_size:
         sys.exit('!!!!! Min fragment size > Max fragment size') 
-    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, args.all, args.primary)
+    bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, 
+            args.all, args.primary, args.add_cigar)
     return 0
 
 if __name__ == '__main__':
