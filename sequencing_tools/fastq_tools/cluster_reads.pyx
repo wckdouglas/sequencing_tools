@@ -16,6 +16,7 @@ from sequencing_tools.stats_tools import cy_mean
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools import readfq
 from sequencing_tools.io_tools import xopen
+from sequencing_tools.bam_tools.cluster_reads import vote_concensus_base, prob_to_qual_string
 
 np_ord = np.vectorize(ord)
 
@@ -58,10 +59,10 @@ def concensusSeq(in_seq_list, in_qual_list, float fraction_threshold):
         seq_list = np.array(list(map(list, in_seq_list)))
         qual_list = np.array(list(map(list, in_qual_list)))
         iter_list = ((seq_list[:,pos], qual_list[:,pos], fraction_threshold) for pos in xrange(seq_len))
-        concensus_position = map(voteConcensusBase, iter_list)
+        concensus_position = map(vote_concensus_base, iter_list)
         bases, quals = zip(*concensus_position)
         sequence = ''.join(list(bases))
-        quality = ''.join(list(quals))
+        quality = ''.join(map(prob_to_qual_string, (quals))
     else:
         sequence = str(in_seq_list[0])
         quality = str(in_qual_list[0])

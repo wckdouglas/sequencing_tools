@@ -67,7 +67,7 @@ cdef str phred_to_string(double phred):
     return string_phred
 
 
-cdef str prob_to_qual_string(posterior):
+cdef str prob_to_qual_string(double posterior):
     '''
     Input a list of probabilities and output quality string
     '''
@@ -171,14 +171,17 @@ def vote_concensus_base(arg):
         double log_posterior
         double total_posterior
         double posterior_correct_probability
+        double fraction_threshold
+        int best_vote
+        double best_fraction
 
-    column_bases, in_column_qualities = arg
+    column_bases, in_column_qualities, fraction_threshold = arg
     column_qualities = np_ord(in_column_qualities) - 33
     possible_bases, possible_counts = np.unique(column_bases, return_counts=True)
 
     best_vote = possible_counts.max()
     best_fraction = best_vote/possible_counts.sum()
-    if best_fraction < 0.9:
+    if best_fraction < fraction_threshold:
         concensus_base = 'N'
         posterior_correct_probability = 0
 
@@ -186,7 +189,7 @@ def vote_concensus_base(arg):
         best_index = possible_counts==possible_counts.max()
         concensus_base = possible_bases[best_index][0]
         best_quals = column_qualities[column_bases==concensus_base].sum()
-        posterior_correct_probability = 1 - 10**(-best_quals/10)
+        posterior_correct_probability = min(0.99999999, 1 - 10**(-best_quals/10))
 
     return concensus_base, posterior_correct_probability
 
@@ -214,7 +217,7 @@ def concensus_sequence(conserved, aln_table):
         in_qual_list = in_qual_list[len_filter]
         seq_list = np.array(list(map(list, in_seq_list)))
         qual_list = np.array(list(map(list, in_qual_list)))
-        iter_list = ((seq_list[:,pos], qual_list[:,pos]) for pos in xrange(seq_len))
+        iter_list = ((seq_list[:,pos], qual_list[:,pos], 0.9) for pos in xrange(seq_len))
         if conserved:
             for base, posterior_correct_prob in map(vote_concensus_base, iter_list):
                 sequence += base
