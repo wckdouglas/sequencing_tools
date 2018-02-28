@@ -25,7 +25,7 @@ def okabeito_palette():
     return colors
 
 
-def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson'):
+def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson', **kwargs):
     '''
     given a data frame with columns storing data for each sample,
     output a matplotlib figure object as correlation plots.
@@ -53,7 +53,7 @@ def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson'):
 
             #### Right side plots
             if col < row:
-                ax.scatter(plot_df.iloc[:,col], plot_df.iloc[:,row])
+                ax.scatter(plot_df.iloc[:,col], plot_df.iloc[:,row], **kwargs)
 
                 if diagonal_line:
                     plot_data = plot_df.iloc[:, [col,row]]
@@ -88,7 +88,6 @@ def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson'):
                 label = plot_df.columns[col]
                 ax.set_xlabel(label)        
     sns.despine()
-    return fig
 
 
 
