@@ -50,6 +50,17 @@ cpdef np.ndarray p_adjust(pvalue):
     return adjusted_p[in_order]
 
 def binom_test(success_test, total_test, expected_p = 0.5):
+    '''
+    Vectorized binomial test:
+
+    usage:
+
+        binom_test(success_test, total_test, expected_p = 0.5)
+    
+    return:
+        list of p-values
+        
+    '''
     assert len(success_test)==len(total_test), 'Wrong length of vector!'
     ps = binom.cdf(success_test,n=total_test,p=expected_p)
     return ps
