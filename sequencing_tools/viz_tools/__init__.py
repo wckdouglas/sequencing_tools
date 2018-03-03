@@ -15,6 +15,24 @@ def douglas_palette():
             '#EDAEB5', '#B0BDEA', '#D8BA90', '#7BCBD5', '#87CDA9', '#B1C68D', '#E7C039']
     return colors
 
+
+def simpsons_palette():
+    '''
+    A palette from ggsci R package
+    https://github.com/road2stat/ggsci/blob/master/data-raw/data-generator.R
+    '''
+    colors = [
+        '#FED439', '#709AE1',
+        '#8A9197', '#D2AF81',
+        '#FD7446', '#D5E4A2',
+        '#197EC0', '#F05C3B',
+        '#46732E', '#71D0F5',
+        '#370335', '#075149',
+        '#C80813', '#91331F',
+        '#1A9993', '#FD8CC1']
+    return colors 
+
+
 def okabeito_palette():
     '''
     Color palette proposed by Okabe and Ito
