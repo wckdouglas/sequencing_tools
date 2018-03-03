@@ -55,7 +55,7 @@ def binom_test(success_test, total_test, expected_p = 0.5):
 
     usage:
 
-        binom_test(success_test, total_test, expected_p = 0.5)
+        binom_test(failed_test, total_test, expected_p = 0.5)
     
     return:
         list of p-values
