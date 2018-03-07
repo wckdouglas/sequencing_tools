@@ -7,6 +7,13 @@ import numpy as np
 from builtins import zip, range
 import re
 
+regular_chroms = list(range(1,23))
+regular_chroms.extend(list('XY'))
+regular_chroms.append('MT')
+regular_chroms = list(map(str, regular_chroms))
+regular_chroms.extend(list(map(lambda x: 'chr'+x, regular_chroms)))
+regular_chroms.append('chrM')
+
 
 cdef class read_pairs:
     cdef:
@@ -61,9 +68,10 @@ cdef class read_pairs:
 
         read1 , read2 = map(np.array, [read1_group, read2_group])
 
-        if len(isizes[size_bool]) == 1:
-            self.out_read1 =  read1[size_bool][0]
-            self.out_read2 = read2[size_bool][0]
+        read1, read2 = read1[size_bool], read2[size_bool]
+        if len(read1) == 1:
+            self.out_read1 =  read1[0]
+            self.out_read2 = read2[0]
         elif len(chroms[ribo_bool]) == 1:
             self.out_read1 =  read1[ribo_bool][0]
             self.out_read2 = read2[ribo_bool][0]
@@ -74,6 +82,7 @@ cdef class read_pairs:
             self.out_read1 =  read1[0]
             self.out_read2 = read2[0]
 
+
     def output_read(self):
         if self.is_group:
             read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
@@ -81,9 +90,8 @@ cdef class read_pairs:
         else:
             return None, None
 
-cigar_num = re.compile('\d+')
-cigar_str = re.compile('[A-Z]')
-cdef mapped_length(str cigarstring):
+
+cdef int mapped_length(AlignedSegment read):
     '''
     for cigar string, find sum of number of mapped base
     '''
@@ -91,11 +99,12 @@ cdef mapped_length(str cigarstring):
         str cnum
         int mapped = 0
         str cstr
+        int nt, op
     
+    for op, nt in read.cigartuples:
+        if op == 0: #BAM CMATCH
+            mapped += nt
 
-    for cnum, cstr in zip(cigar_num.findall(cigarstring), cigar_str.findall(cigarstring)):
-        if cstr == 'M':
-            mapped += int(cnum)
     return mapped
 
 class single_read:
@@ -119,7 +128,7 @@ class single_read:
         isizes = []
         read_group = []
         for read in self.reads:
-            isizes.append(mapped_length(read.cigarstring))
+            isizes.append(mapped_length(read))
             chroms.append(read.reference_name)
 
         chroms = np.array(chroms)
@@ -144,14 +153,6 @@ class single_read:
     def output_read(self):
         read_aln = fix_single(self.out_read)
         return read_aln
-
-
-regular_chroms = list(range(1,23))
-regular_chroms.extend(list('XY'))
-regular_chroms.append('MT')
-regular_chroms = list(map(str, regular_chroms))
-regular_chroms.extend(list(map(lambda x: 'chr'+x, regular_chroms)))
-regular_chroms.append('chrM')
 
 def is_regular_chrom(chroms):
     return np.in1d(chroms, regular_chroms)

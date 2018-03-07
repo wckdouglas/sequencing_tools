@@ -236,3 +236,43 @@ cpdef int process_bedpe(bed_iterator, int min_length, int max_length, out_handle
 
 cpdef bool is_split_pair(AlignedSegment read1, AlignedSegment read2):
     return 'N' in read1.cigarstring or 'N' in read2.cigarstring
+
+
+def mate_info(in_bam, out_bam):
+    '''
+    Read two alignments at a time,
+    assume they are pairs,
+    add mate cigar and mate mapq
+    '''
+    cdef:
+        AlignmentFile in_bam_handle, out_bam_handle
+        AlignedSegment read_1, read_2
+        long pair_count
+
+    pair_count = 0
+    with pysam.Samfile(in_bam,'rb') as in_bam_handle:
+        with pysam.Samfile(out_bam,'w', template = in_bam_handle) as out_bam_handle:
+        while True:
+            try:
+                read_1 = next(in_bam_handle)
+                read_2 = next(in_bam_handle)
+                concordant = check_concordant(read_1, read_2)
+                primary_pair = check_primary(read_1, read_2)
+                if concordant:#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
+
+                    # set mate cigar
+                    read_1.set_tag('MC', read_2.cigarstring)
+                    read_2.set_tag('MC', read_1.cigarstring)
+
+                    # set mate mapq
+                    read_1.set_tag('MQ', read_2.mapping_quality)
+                    read_2.set_tag('MQ', read_1.mapping_quality)
+
+                    out_bam_handle.write(read_1)
+                    out_bam_handle.write(read_2)
+
+                    pair_count += 1
+            except StopIteration:
+                break
+    print('Witten %i pair fragments' %(pair_count), file = sys.stderr)
+    return 0 
