@@ -69,6 +69,16 @@ cpdef double cy_mean(xs):
     '''
     Fast numerical mean calculator, works with number generator too
 
+
+    In [1]: from sequencing_tools.stats_tools import cy_mean
+    In [2]: import numpy as np
+    In [3]: a = range(10)
+    In [4]: b = np.array(a)
+    In [5]: %timeit b.mean()
+    6.37 µs ± 323 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+    In [6]: %timeit cy_mean(a)
+    385 ns ± 7.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+
     usage: cy_mean(list_of_numbers)
     return: mean of the list
     '''
