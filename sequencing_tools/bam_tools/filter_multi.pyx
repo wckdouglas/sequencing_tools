@@ -62,8 +62,8 @@ cdef class read_pairs:
         read1, read2 = map(np.array, [read1_group, read2_group])
 
         #start filtering
-        isizes = np.array([abs(r1.isize) for r1 in self.read1])
-        size_bool = (isizes == np.min(isizes))
+        isizes = np.array([abs(r1.isize) for r1 in read1])
+        size_bool = isizes == np.min(isizes)
         read1, read2 = read1[size_bool], read2[size_bool]
 
         if len(read1) == 1:
