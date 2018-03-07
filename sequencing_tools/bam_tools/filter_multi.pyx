@@ -67,10 +67,12 @@ cdef class read_pairs:
         read1, read2 = read1[size_bool], read2[size_bool]
 
         if len(read1) == 1:
+            # output shortest
             self.out_read1 = read1[0]
             self.out_read2 = read2[0]
 
         else:
+            # see if any ribosomal RNA in all shortest fragments
             ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
             new_read1, new_read2 = read1[ribo_bool], read2[ribo_bool]
 
@@ -79,20 +81,30 @@ cdef class read_pairs:
                 self.out_read2 = new_read2[0]
 
             elif len(new_read1) > 1:
-                scale = len(read1)
+                # randomly select one if there are multiple rRNA
+                scale = len(new_read1)
                 selected = fast_random_number(scale)
-                self.out_read1 =  read1[selected]
-                self.out_read2 = read2[selected]
+                self.out_read1 =  new_read1[selected]
+                self.out_read2 = new_read2[selected]
 
             else:
+                # if no rRNA, look at regular chromosome fragments
                 regular_chrom_bool = is_regular_chrom([r.reference_name for r in read1])
                 new_read1, new_read2 = read1[regular_chrom_bool], read2[regular_chrom_bool]
 
                 if len(new_read1) == 1:
                     self.out_read1 = new_read1[0]
                     self.out_read2 = new_read2[0]
+
+                elif len(new_read1) > 1:
+                    # randomly select one if there are multiple regular chrom fragments
+                    scale = len(new_read1)
+                    selected = fast_random_number(scale)
+                    self.out_read1 =  new_read1[selected]
+                    self.out_read2 =  new_read2[selected]
                 
                 else:
+                    # randomly pick one if all are same
                     scale = len(read1)
                     selected = fast_random_number(scale)
                     self.out_read1 =  read1[0] #[selected]
