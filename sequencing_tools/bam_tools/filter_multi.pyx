@@ -72,25 +72,31 @@ cdef class read_pairs:
 
         else:
             ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
-            read1, read2 = read1[ribo_bool], read2[ribo_bool]
+            new_read1, new_read2 = read1[ribo_bool], read2[ribo_bool]
 
-            if len(read1) == 1:
-                self.out_read1 = read1[0]
-                self.out_read2 = read2[0]
+            if len(new_read1) == 1:
+                self.out_read1 = new_read1[0]
+                self.out_read2 = new_read2[0]
+
+            elif len(new_read1) > 1:
+                scale = len(read1)
+                selected = fast_random_number(scale)
+                self.out_read1 =  read1[selected]
+                self.out_read2 = read2[selected]
 
             else:
                 regular_chrom_bool = is_regular_chrom([r.reference_name for r in read1])
-                read1, read2 = read1[regular_chrom_bool], read2[regular_chrom_bool]
+                new_read1, new_read2 = read1[regular_chrom_bool], read2[regular_chrom_bool]
 
-                if len(read1) == 1:
-                    self.out_read1 = read1[0]
-                    self.out_read2 = read2[0]
+                if len(new_read1) == 1:
+                    self.out_read1 = new_read1[0]
+                    self.out_read2 = new_read2[0]
                 
                 else:
                     scale = len(read1)
                     selected = fast_random_number(scale)
-                    self.out_read1 =  read1[selected]
-                    self.out_read2 = read2[selected]
+                    self.out_read1 =  read1[0] #[selected]
+                    self.out_read2 = read2[0] #[selected]
 
 
     def output_read(self):
