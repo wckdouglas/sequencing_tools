@@ -67,7 +67,7 @@ cdef class read_pairs:
         read1, read2 = read1[size_bool], read2[size_bool]
 
         if len(read1) == 1:
-            # output shortest
+            # output shortest fragment
             self.out_read1 = read1[0]
             self.out_read2 = read2[0]
 
