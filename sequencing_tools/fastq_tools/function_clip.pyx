@@ -14,77 +14,8 @@ from sequencing_tools.fastq_tools import readfq, gzopen, reverse_complement
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools.cutadapt_align import locate
 from sequencing_tools.io_tools import xopen
+from sequencing_tools.stats_tools import hamming_distance
 
-
-cpdef int levenshtein_distance(str s1, str s2):
-    '''
-    Calculating Levenshtein distance from two strings
-    algorithm from: http://rosettacode.org/wiki/Levenshtein_distance#Python
-
-    usage: levenshtein_distance(string1, string2)
-    ==============================
-    Parameter:
-
-    string1
-    string2
-
-    return:
-    edit distance: the edit distance between two string
-
-    '''
-
-    cdef:
-        list distance, new_distances
-        int index1, index2
-        str char1, char2
-        int len_s1 = len(s1)
-        int len_s2 = len(s2)
-
-
-    if len_s1 > len_s2:
-        s1, s2 = s2, s1
-    distances = range(len_s1 + 1)
-    for index2, char2 in enumerate(s2):
-        new_distances = [index2+1]
-        for index1, char1 in enumerate(s1):
-            if char1 == char2:
-                new_distances.append(distances[index1])
-            else:
-                new_distances.append(1 + min((distances[index1],
-                                             distances[index1+1],
-                                             new_distances[-1])))
-        distances = new_distances
-    return distances[-1]
-
-
-cpdef int hamming_distance(str s1, str s2):
-    '''
-    Calculating hamming distance from two strings
-
-    usage: hamming_distance(string1, string2)
-    ==============================
-    Parameter:
-
-    string1
-    string2
-
-    has to be same length
-
-    return:
-    edit distance: the edit distance between two string
-    ===============================
-    '''
-
-    cdef:
-        str i, j
-        int hamming = 0
-    assert len(s1) == len(s2), 'Wrong barcode extraction'
-
-    for i, j in zip(s1, s2):
-        if i != j:
-            hamming += 1
-
-    return hamming
 
 def trim_other_read(sequence, qual, barcode, adapter):
 

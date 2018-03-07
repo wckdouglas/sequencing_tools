@@ -6,7 +6,7 @@ from itertools import combinations, groupby
 from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
-from sequencing_tools.fastq_tools.function_clip import hamming_distance
+from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
 import sys
 import six
 
@@ -88,7 +88,7 @@ class fragment_group:
         return chrom_same and start_end_same and strand_same
 
 
-cpdef int hamming_barcode(barcode_pair):
+cpdef int barcode_distance(barcode_pair):
     '''
     calculating hamming distance of a barcode pair
     inpurt is tuple of two barcodes
@@ -96,11 +96,9 @@ cpdef int hamming_barcode(barcode_pair):
     cdef:
         str a, b
         str i, j
-        int hd
 
     a, b = barcode_pair
-    hd = hamming_distance(a, b)
-    return hd
+    return levenshtein_distance(a, b)
 
 def make_graph(comparison, threshold):
     '''
@@ -108,7 +106,7 @@ def make_graph(comparison, threshold):
     '''
     G = Graph()
     for pair in comparison:
-        if hamming_barcode(pair) <= threshold:
+        if barcode_distance(pair) <= threshold:
             G.add_edge(pair[0],pair[1])
         else:
             G.add_node(pair[0])

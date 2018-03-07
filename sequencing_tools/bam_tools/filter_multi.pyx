@@ -47,7 +47,7 @@ cdef class read_pairs:
             self.read1.append(alignment)
 
 
-    def generate_filter_alingments(self):
+    def generate_filtered_alingments(self):
         cdef:
             AlignedSegment r1, r2
             int scale
@@ -63,9 +63,9 @@ cdef class read_pairs:
 
         #start filtering
         isizes = np.array([abs(r1.isize) for r1 in self.read1])
+
         size_bool = (isizes == np.min(isizes))
         read1, read2 = read1[size_bool], read2[size_bool]
-
         if len(read1) == 1:
             # output shortest fragment
             self.out_read1 = read1[0]
@@ -107,8 +107,8 @@ cdef class read_pairs:
                     # randomly pick one if all are same
                     scale = len(read1)
                     selected = fast_random_number(scale)
-                    self.out_read1 =  read1[0] #[selected]
-                    self.out_read2 = read2[0] #[selected]
+                    self.out_read1 = read1[selected]
+                    self.out_read2 = read2[selected]
 
 
     def output_read(self):
@@ -148,7 +148,7 @@ class single_read:
     def put_in_group(self, alignment):
         self.reads.append(alignment)
 
-    def generate_filter_alingments(self):
+    def generate_filtered_alingments(self):
         cdef:
             AlignedSegment read
 
@@ -231,7 +231,7 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                     read_group_count = 1
                 else:
                     if alignment.query_name != read_group.read_id:
-                        read_group.generate_filter_alingments()
+                        read_group.generate_filtered_alingments()
                         read1_aln, read2_aln = read_group.output_read()
                         out_sam.write(read1_aln)
                         out_sam.write(read2_aln)
@@ -241,7 +241,7 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                     else:
                         read_group.put_in_group(alignment)
             #After all reading whole file, clean out memory and output last alignment group
-            read_group.generate_filter_alingments()
+            read_group.generate_filtered_alingments()
             read1_aln, read2_aln = read_group.output_read()
 
             out_sam.write(read1_aln)
@@ -273,7 +273,7 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                     read_group_count = 1
                 else:
                     if alignment.query_name != read_group.read_id:
-                        read_group.generate_filter_alingments()
+                        read_group.generate_filtered_alingments()
                         read_aln = read_group.output_read()
                         out_sam.write(read_aln)
                         out_read_count += 1
@@ -282,7 +282,7 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
                     else:
                         read_group.put_in_group(alignment)
             #After all reading whole file, clean out memory and output last alignment group
-            read_group.generate_filter_alingments()
+            read_group.generate_filtered_alingments()
             read_aln = read_group.output_read()
 
             out_sam.write(read_aln)

@@ -11,39 +11,13 @@ from builtins import zip, map, range
 from functools import partial
 from cpython cimport bool
 import six
-from sequencing_tools.fastq_tools.function_clip import hamming_distance
-from sequencing_tools.stats_tools import cy_mean
+from sequencing_tools.stats_tools import cy_mean, hamming_distance
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools import readfq
 from sequencing_tools.io_tools import xopen
-from sequencing_tools.bam_tools.read_cluster import vote_concensus_base, prob_to_qual_string
+from sequencing_tools.bam_tools.read_cluster import vote_concensus_base, prob_to_qual_string, calculate_concensus_base
 
 np_ord = np.vectorize(ord)
-
-def voteConcensusBase(arg):
-    """Given a list of sequences,
-        a list of quality line and
-        a position,
-    return the maximum likelihood base at the given position,
-        along with the mean quality of these concensus bases.
-    """
-    cdef:
-        int depth
-
-    column_bases, column_qualities, fraction_threshold = arg
-    column_qualities_number = np_ord(column_qualities)-33
-    depth = len(column_bases)
-    bases, counts = np.unique(column_bases, return_counts = True)
-    if counts.max()/float(depth) >= fraction_threshold:
-        base = bases[np.argmax(counts)]
-        qual_num = np.sum(column_qualities_number[column_bases == base[0]])
-        qual = 41 if qual_num > 41 else qual_num
-        qual = chr(qual + 33)
-    else:
-        base = 'N'
-        qual = '!'
-    return base, qual
-
 
 def concensusSeq(in_seq_list, in_qual_list, float fraction_threshold):
     """given a list of sequences, a list of quality and sequence length.
