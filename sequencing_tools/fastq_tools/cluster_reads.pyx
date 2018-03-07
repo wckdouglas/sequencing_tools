@@ -11,8 +11,7 @@ from builtins import zip, map, range
 from functools import partial
 from cpython cimport bool
 import six
-from sequencing_tools.fastq_tools.function_clip import hamming_distance
-from sequencing_tools.stats_tools import cy_mean
+from sequencing_tools.stats_tools import cy_mean, hamming_distance
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools import readfq
 from sequencing_tools.io_tools import xopen
