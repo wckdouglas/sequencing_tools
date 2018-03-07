@@ -63,9 +63,9 @@ cdef class read_pairs:
 
         #start filtering
         isizes = np.array([abs(r1.isize) for r1 in self.read1])
+
         size_bool = (isizes == np.min(isizes))
         read1, read2 = read1[size_bool], read2[size_bool]
-
         if len(read1) == 1:
             self.out_read1 = read1[0]
             self.out_read2 = read2[0]
@@ -89,7 +89,7 @@ cdef class read_pairs:
                 else:
                     scale = len(read1)
                     selected = fast_random_number(scale)
-                    self.out_read1 =  read1[selected]
+                    self.out_read1 = read1[selected]
                     self.out_read2 = read2[selected]
 
 
