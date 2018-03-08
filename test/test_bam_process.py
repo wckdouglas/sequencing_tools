@@ -17,14 +17,14 @@ def test_bam():
     os.remove(out_bed)
 
 
-def test_multi():
-    in_bam = test_data_path + '/multi.bam'
-    out_bam = test_data_path + '/multi.out'
-    command = 'reduce_multi_reads.py -i  {in_bam} -o - > {out_bam}'.format(in_bam = in_bam,
-                                                                            out_bam = out_bam)
-    os.system(command)
-    assert(filecmp.cmp(out_bam, test_data_path + '/multi.result'))
-    os.remove(out_bam)
+#def test_multi():
+#    in_bam = test_data_path + '/multi.bam'
+#    out_bam = test_data_path + '/multi.out'
+#    command = 'reduce_multi_reads.py -i  {in_bam} -o - > {out_bam}'.format(in_bam = in_bam,
+#                                                                            out_bam = out_bam)
+#    os.system(command)
+#    assert(filecmp.cmp(out_bam, test_data_path + '/multi.result'))
+#    os.remove(out_bam)
 
 
 def same_fq(fq1, fq2):
