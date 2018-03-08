@@ -1,7 +1,7 @@
 from sequencing_tools.bam_tools.bed_dedup import *
 
 def test_hamming_barcode():
-    assert(hamming_barcode(('ACTG','ACCC')) == 2)
+    assert(barcode_distance(('ACTG','ACCC')) == 2)
 
 
 def test_fragment_group():
