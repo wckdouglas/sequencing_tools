@@ -94,10 +94,13 @@ cdef class fragment_group:
                     strand= self.strand)
             yield template
 
-    def check_fragment(self, chrom, start, end, strand):
+    def check_fragment(self, str chrom, str start, str end, str strand):
         '''
         check if new fragment belong to this fragment group
         '''
+        cdef:
+            bint chrom_same, start_end_same, strand_same
+
         chrom_same = (chrom == self.chrom)
         start_end_same = (start == self.start and end == self.end)
         strand_same = (strand == self.strand)
@@ -116,7 +119,7 @@ cpdef int barcode_distance(barcode_pair):
     a, b = barcode_pair
     return levenshtein_distance(a, b)
 
-def make_graph(comparison, threshold):
+def make_graph(comparison, int threshold):
     '''
     Using a graph to connect all umi with <= threshold mismatches
     '''
@@ -150,6 +153,7 @@ def demultiplex(barcodes, threshold=1):
     '''
     demultiplexing barcode families
     '''
+
     comparison = combinations(barcodes.keys(),r=2)
     graph = make_graph(comparison, threshold)
     unique_barcode =  unique_barcode_from_graph(graph, barcodes)
@@ -162,7 +166,7 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         str bc_line
         int in_count
         int out_count = 0
-        #fragment_group barcode_group
+        fragment_group barcode_group
         str cigar = ''
 
     barcode_group = None
