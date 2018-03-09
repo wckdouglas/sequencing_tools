@@ -11,18 +11,19 @@ import sys
 import six
 
 
-class fragment_group:
+cdef class fragment_group:
     '''
     Data structure for storing fragments with same start, end positions and strands
     store barcode as a dictionary with values indicating numbers of same fragment
     '''
 
-#    cdef: 
-#        str chrom, start, end, strand
-#        long fragment_size
-#        list unique_barcodes
-#        str cigar
-#        set cigarlist
+    cdef: 
+        str chrom, start, end, strand
+        long fragment_size
+        list unique_barcodes
+        str cigar
+        set cigarlist
+        dict barcodes_set
 
 
     def __init__(self, chrom, start, end, strand, bc, cigar):
@@ -32,33 +33,47 @@ class fragment_group:
         self.strand = strand
         self.fragment_size = long(self.end) - long(self.start)
 
-        self.barcodes_set = defaultdict(lambda: defaultdict(int))
+        self.barcodes_set = dict()
         self.unique_barcodes = []
 
         # add first record
-        self.barcodes_set[cigar][bc] = 1
+        self.barcodes_set[cigar] = self.barcodes_set.setdefault(cigar, dict()) 
+        self.barcodes_set[cigar][bc] = self.barcodes_set[cigar].setdefault(bc, 0) + 1
 
     def add_member(self, bc, cigar):
         '''
         add a member to the fragment group, add barcode to barcode dictionary
         '''
-        self.barcodes_set[cigar][bc] += 1
+        self.barcodes_set[cigar] = self.barcodes_set.setdefault(cigar, dict()) 
+        self.barcodes_set[cigar][bc] = self.barcodes_set[cigar].setdefault(bc, 0) + 1
 
 
-    def demultiplexing_barcodes(self, threshold):
+    def demultiplexing_barcodes(self, int threshold):
         '''
         Demultiplex the barcode list
         '''
 
+        cdef:
+            str cigar
+            dict barcodes_dict
+
         for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
-            if len(barcodes_dict.keys()) == 1: # for theingular fragment
-                                                # generate a phantom list with the single fragment record
-                self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
-                                                                count = list(barcodes_dict.values())[0])]
-            else: # for more than 1 unique barcode
-                self.unique_barcodes = demultiplex(barcodes_dict, threshold = threshold)
-            if cigar:
-                self.unique_barcodes = map(lambda x: x + '_' + cigar, self.unique_barcodes)
+            if threshold > 0:
+                if len(barcodes_dict.keys()) == 1: # for theingular fragment
+                                                    # generate a phantom list with the single fragment record
+                    self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
+                                                                    count = list(barcodes_dict.values())[0])]
+                else: # for more than 1 unique barcode
+                    self.unique_barcodes = demultiplex(barcodes_dict, threshold = threshold)
+                    if cigar: # if no cigarstring, it will be empty string, return false in here
+                        self.unique_barcodes = map(lambda x: x + '_' + cigar, self.unique_barcodes)
+
+            else: # if no error toleration, all unique UMI is their own cluster
+                self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = barcode, count = count) \
+                                        for barcode, count in six.iteritems(barcodes_dict)]
+
+                if cigar: # if no cigarstring, it will be empty string, return false in here
+                    self.unique_barcodes = map(lambda x: x + '_' + cigar, self.unique_barcodes)
 
 
     def output_bed_line(self):
@@ -67,6 +82,7 @@ class fragment_group:
         '''
         cdef:
             str barcode
+            str template
 
         for barcode in self.unique_barcodes:
             template = '{chrom}\t{start}\t{end}\t{barcode}\t{length}\t{strand}' \
