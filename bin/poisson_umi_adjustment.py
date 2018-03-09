@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys
-import poisson_umi
 from sequencing_tools.bam_tools import poisson_umi_tools 
 
 
