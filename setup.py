@@ -14,6 +14,11 @@ except ImportError:
     raise ImportError("Requires numpy to "
             "be installed before running setup.py (pip install numpy)")
 try:
+    import networkx
+except ImportError:
+    raise ImportError("Requires networkx to "
+            "be installed before running setup.py (pip install networkx)")
+try:
     import pysam
 except ImportError:
     raise ImportError("Requires pysam to "
