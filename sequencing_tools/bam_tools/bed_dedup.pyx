@@ -9,7 +9,7 @@ from networkx import Graph, connected_components
 from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
 import sys
 import six
-from libc.stdint import uint32_t
+from libc.stdint cimport uint32_t
 
 
 cdef class fragment_group:
