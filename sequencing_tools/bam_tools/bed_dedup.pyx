@@ -143,7 +143,7 @@ def unique_barcode_from_graph(graph, barcodes):
             barcode_id = barcode_id + '_' + str(member_counts) + '_members'
         else:
             member_counts = sum(barcodes[bc] for bc in subgraph)
-            barcode_id = subgraph[0] + '_' + str(member_counts) + '_members'
+            barcode_id = subgraph_list[0] + '_' + str(member_counts) + '_members'
         unique_barcode.append(barcode_id)
     return unique_barcode
 
