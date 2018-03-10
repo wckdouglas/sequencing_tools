@@ -58,7 +58,7 @@ cdef class fragment_group:
             str cigar
             dict barcodes_dict
             int _max_member_count
-            int max_member_count
+            long max_member_count
 
         for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
             if threshold > 0:
@@ -78,7 +78,7 @@ cdef class fragment_group:
 
 
             if cigar: # if no cigarstring, it will be empty string, return false in here
-                self.unique_barcodes = map(lambda x: x + '_' + cigar, self.unique_barcodes)
+                self.unique_barcodes = list(map(lambda x: x + '_' + cigar, self.unique_barcodes))
 
             max_member_count = max(max_member_count, _max_member_count)
         return max_member_count
@@ -141,7 +141,7 @@ def unique_barcode_from_graph(graph, barcodes):
         str bc, barcode_id
         int member_count
         list unique_barcode = []
-        int max_member_count = 0
+        long max_member_count = 0
 
     for subgraph in connected_components(graph):
         subgraph_list = list(subgraph)
@@ -176,17 +176,17 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         fragment_group barcode_group
         str cigar = ''
         list fields
-        int max_member_count = 0
+        long max_member_count = 0
 
     barcode_group = None
-    assert(ct > 5 and isinstance(ct, int), 'Unacceptable cigar field, needs to be an integer > 5')
+    assert((ct > 5 and isinstance(ct, int)) or ct == -1, 'Unacceptable cigar field, needs to be an integer > 5')
     for in_count, line in enumerate(in_file_handle):
         fields = line.strip().split('\t')
         read_name = fields[3]
         bc = read_name.split(delim)[f]
         chrom, start, end, strand = itemgetter(0,1,2,5)(fields)
 
-        cigar = fields[ct]
+        cigar = fields[ct] if ct > 0 else ''  # only make cigar field when ct is not -1
 
         if not barcode_group:
             '''

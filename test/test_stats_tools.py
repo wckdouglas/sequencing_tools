@@ -1,4 +1,4 @@
-from sequencing_tools.stats_tools import p_adjust
+from sequencing_tools.stats_tools import p_adjust, levenshtein_distance, hamming_distance
 import numpy as np
 
 def test_padjust():
