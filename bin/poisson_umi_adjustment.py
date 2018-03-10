@@ -7,7 +7,8 @@ import argparse
 
 
 def getopt():
-    parser = argparse.ArgumentParser(description = 'Making paired-end bam into bed file for every fragment')
+    parser = argparse.ArgumentParser(description = 'Adjusting fragment count for UMI saturation, '+\
+                                    'see paper: Counting individual DNA molecules by the stochastic attachment of diverse labels. ')
     parser.add_argument('-i', '--in_bed', required=True,
                         help = 'BED file name, or stdin (-) ** name sorted' )
     parser.add_argument('-o','--out_bed', default='-', help = 'BED file output (default: - )')
