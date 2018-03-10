@@ -9,6 +9,7 @@ from networkx import Graph, connected_components
 from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
 import sys
 import six
+from libc.stdint import uint32_t
 
 
 cdef class fragment_group:
@@ -161,7 +162,7 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
     cdef:
         str line, bc, read_name, chrom, start, end, strand
         str bc_line
-        int in_count
+        uint32_t in_count
         int out_count = 0
         fragment_group barcode_group
         str cigar = ''
