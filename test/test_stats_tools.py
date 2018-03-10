@@ -44,3 +44,8 @@ def test_padjust():
 
     padj = p_adjust(test_p)
     assert(np.allclose(np.round(padj,3), expected_p))
+
+
+def test_distance():
+    assert(levenshtein_distance('AACCA','AACCT') == 1)
+    assert(hamming_distance('AACCA','AACCT') == 1)

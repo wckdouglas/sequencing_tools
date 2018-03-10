@@ -3,9 +3,6 @@ from sequencing_tools.bam_tools import bed_dedup
 from sequencing_tools.bam_tools import poisson_umi_tools
 
 
-def test_hamming_barcode():
-    assert(bed_dedup.barcode_distance(('ACTG','ACCC')) == 2)
-
 
 def test_fragment_group():
     fg = bed_dedup.fragment_group('chr1','10000', '20000', '-','ACT','')
