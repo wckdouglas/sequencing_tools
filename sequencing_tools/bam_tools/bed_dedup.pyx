@@ -107,40 +107,37 @@ cdef class fragment_group:
         return chrom_same and start_end_same and strand_same
 
 
-cpdef int barcode_distance(barcode_pair):
-    '''
-    calculating hamming distance of a barcode pair
-    inpurt is tuple of two barcodes
-    '''
-    cdef:
-        str a, b
-        str i, j
-
-    a, b = barcode_pair
-    return levenshtein_distance(a, b)
-
 def make_graph(comparison, int threshold):
     '''
     Using a graph to connect all umi with <= threshold mismatches
     '''
+    cdef:
+        str umi_1, umi_2
+
     G = Graph()
-    for pair in comparison:
-        if barcode_distance(pair) <= threshold:
-            G.add_edge(pair[0],pair[1])
+    for umi_1, umi_2 in comparison:
+        if levenshtein_distance(umi_1, umi_2) <= threshold:
+            G.add_edge(umi_1, umi_2)
         else:
-            G.add_node(pair[0])
-            G.add_node(pair[1])
+            G.add_node(umi_1)
+            G.add_node(umi_2)
     return G
 
 def unique_barcode_from_graph(graph, barcodes):
     '''
     Merging barcode families, using the pre-built network-of-barcode 
     '''
-    unique_barcode = []
+    cdef:
+        set subgraph
+        list subgraph_list
+        str bc, barcode_id
+        int member_counts
+        list unique_barcode = []
+
     for subgraph in connected_components(graph):
-        subgraph = list(subgraph)
-        if len(subgraph) == 1:
-            barcode_id = subgraph[0]
+        subgraph_list = list(subgraph)
+        if len(subgraph_list) == 1:
+            barcode_id = subgraph_list[0]
             member_counts = barcodes[barcode_id]
             barcode_id = barcode_id + '_' + str(member_counts) + '_members'
         else:
@@ -168,6 +165,7 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         int out_count = 0
         fragment_group barcode_group
         str cigar = ''
+        list fields
 
     barcode_group = None
     for in_count, line in enumerate(in_file_handle):
