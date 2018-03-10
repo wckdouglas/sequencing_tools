@@ -60,8 +60,8 @@ cdef class fragment_group:
 
         for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
             if threshold > 0:
-                if len(barcodes_dict.keys()) == 1: # for theingular fragment
-                                                    # generate a phantom list with the single fragment record
+                if len(barcodes_dict.keys()) == 1: # for the singular fragment
+                                                   # generate a phantom list with the single fragment record
                     self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
                                                                     count = list(barcodes_dict.values())[0])]
                 else: # for more than 1 unique barcode
@@ -169,14 +169,14 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         list fields
 
     barcode_group = None
+    assert(ct > 5 and isinstance(ct, int), 'Unacceptable cigar field, needs to be an integer > 5')
     for in_count, line in enumerate(in_file_handle):
         fields = line.strip().split('\t')
         read_name = fields[3]
         bc = read_name.split(delim)[f]
         chrom, start, end, strand = itemgetter(0,1,2,5)(fields)
 
-        if ct > 5:
-            cigar = fields[ct]
+        cigar = fields[ct]
 
         if not barcode_group:
             '''
