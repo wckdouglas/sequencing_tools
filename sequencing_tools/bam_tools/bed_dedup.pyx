@@ -58,7 +58,7 @@ cdef class fragment_group:
             str cigar
             dict barcodes_dict
             int _max_member_count
-            long max_member_count
+            long max_member_count = 0
 
         for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
             if threshold > 0:
