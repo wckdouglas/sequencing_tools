@@ -64,14 +64,15 @@ cdef long correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
     ## applying equation
     cdef:
         double m, modelled
-        long diversity, result
+        long diversity
+        double result
         
     diversity = 4 ** umi_nt 
     m = number_of_unique_umi/diversity
     modelled = - diversity * log(1 - m)
     result = floor(modelled)
 
-    return result
+    return long(result)
 
 
 
