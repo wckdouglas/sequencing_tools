@@ -70,7 +70,7 @@ cdef class fragment_group:
                     _max_member_count = list(barcodes_dict.values())[0]
                     _barcode_name = '{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
                                                                     count = _max_member_count)
-                    _temp_unique_barcodes.append(barcode_name)
+                    _temp_unique_barcodes.append(_barcode_name)
 
                 else: # for more than 1 unique barcode
                     _barcodes, _max_member_count = demultiplex(barcodes_dict, threshold = threshold)
