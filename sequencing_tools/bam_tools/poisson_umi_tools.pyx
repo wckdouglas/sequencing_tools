@@ -40,16 +40,17 @@ cdef class fragment:
 
     
     def output_fragments(self, int umi_nt = 6, out_file = sys.stdout):
-        cdef str line
-        cdef long theoretical 
-        cdef uint32_t i
+        cdef:
+            str line
+            long theoretical 
+            uint32_t i
 
         line = '{chrom}\t{start}\t{end}\tfragment\t0\t{strand}' \
                 .format(chrom = self.chrom,
                         start = self.start,
                         end = self.end, 
                         strand = self.strand)
-        theoretical = long(correct_umi_count(len(self.umi), umi_nt))
+        theoretical = correct_umi_count(len(self.umi), umi_nt)
         #print(len(self.umi), theoretical)
         for i in range(theoretical):
             print(line, file = out_file)
@@ -59,11 +60,11 @@ cdef class fragment:
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
+cdef long correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
     ## applying equation
     cdef:
-        double m, modelled, result
-        long diversity 
+        double m, modelled
+        long diversity, result
         
     diversity = 4 ** umi_nt 
     m = number_of_unique_umi/diversity
