@@ -59,40 +59,50 @@ cdef class fragment_group:
             dict barcodes_dict
             int _max_member_count
             long max_member_count = 0
+            str _barcode_name
+            list _barcodes
+            list _temp_unique_barcodes = []
 
         for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
             if threshold > 0:
                 if len(barcodes_dict.keys()) == 1: # for the singular fragment
                                                    # generate a phantom list with the single fragment record
                     _max_member_count = list(barcodes_dict.values())[0]
-                    self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
-                                                                    count = _max_member_count)]
+                    _barcode_name = '{barcode}_{count}_members'.format(barcode = list(barcodes_dict.keys())[0], 
+                                                                    count = _max_member_count)
+                    _temp_unique_barcodes.append(barcode_name)
+
                 else: # for more than 1 unique barcode
-                    self.unique_barcodes, _max_member_count = demultiplex(barcodes_dict, threshold = threshold)
+                    _barcodes, _max_member_count = demultiplex(barcodes_dict, threshold = threshold)
+                    _temp_unique_barcodes.extend(_barcodes)
 
 
             else: # if no error toleration, all unique UMI is their own cluster
-                self.unique_barcodes = ['{barcode}_{count}_members'.format(barcode = barcode, count = count) \
+                _barcodes = ['{barcode}_{count}_members'.format(barcode = barcode, count = count) \
                                         for barcode, count in six.iteritems(barcodes_dict)]
+                _temp_unique_barcodes.extend(_barcodes)
                 _max_member_count = max(six.itervalues(barcodes_dict))
 
 
             if cigar: # if no cigarstring, it will be empty string, return false in here
-                self.unique_barcodes = list(map(lambda x: x + '_' + cigar, self.unique_barcodes))
+                _temp_unique_barcodes = list(map(lambda x: x + '_' + cigar, _temp_unique_barcodes))
+            
 
+            self.unique_barcodes.extend(_temp_unique_barcodes)
             max_member_count = max(max_member_count, _max_member_count)
         return max_member_count
 
 
-    def output_bed_line(self):
+    def output_bed_line(self, file=sys.stdout):
         '''
         output every unique fragments
         '''
         cdef:
             str barcode
             str template
+            uint32_t i
 
-        for barcode in self.unique_barcodes:
+        for i, barcode in enumerate(self.unique_barcodes):
             template = '{chrom}\t{start}\t{end}\t{barcode}\t{length}\t{strand}' \
                 .format(chrom = self.chrom,
                     start = self.start,
@@ -100,7 +110,9 @@ cdef class fragment_group:
                     barcode = barcode,
                     length = self.fragment_size,
                     strand= self.strand)
-            yield template
+            print(template, file = file)
+        return i + 1
+        
 
     def check_fragment(self, str chrom, str start, str end, str strand):
         '''
@@ -206,19 +218,15 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
             initialize new fragment group if not same coordinate
             '''
             _max_member_count = barcode_group.demultiplexing_barcodes(threshold)
+            out_count += barcode_group.output_bed_line(file = out_file_handle)
             max_member_count = max(max_member_count, _max_member_count)
-            for bc_line in barcode_group.output_bed_line():
-                print(bc_line, file=out_file_handle)
-                out_count += 1
 
             barcode_group = fragment_group(chrom, start, end, strand, bc, cigar)
 
     # output the last group
     _max_member_count = barcode_group.demultiplexing_barcodes(threshold)
+    out_count += barcode_group.output_bed_line(file = out_file_handle)
     max_member_count = max(max_member_count, _max_member_count)
-    for bc_line in barcode_group.output_bed_line():
-        print(bc_line, file=out_file_handle)
-        out_count += 1
 
     print('Iput %i lines, output %i lines with highest duplicate with %i members' %(in_count + 1, out_count, max_member_count), file=sys.stderr)
     return 0
