@@ -20,6 +20,9 @@ cdef class fragment:
         set umi
 
     def __init__(self, str chrom, str start, str end, str strand, str umi):
+        '''
+        Initialize fragment group
+        '''
         self.chrom = chrom
         self.start = start
         self.end = end
@@ -29,6 +32,9 @@ cdef class fragment:
         self.umi.add(umi)
     
     def check_fragment(self, str chrom, str start, str end, str strand):
+        '''
+        check if fragment has same genomic coordination as the fragment group
+        '''
         return self.chrom == chrom and \
                 self.start == start and \
                 self.end == end and \
@@ -36,25 +42,33 @@ cdef class fragment:
 
 
     def add_fragment(self, str umi):
+        '''
+        adding unique UMI
+        '''
         self.umi.add(umi)
 
     
     def output_fragments(self, int umi_nt = 6, out_file = sys.stdout):
+        '''
+        print X fragments according to the predicted number of template
+        '''
         cdef:
             str line
             long theoretical 
-            uint32_t i
+            uint32_t frag_count
+            uint32_t distinct_umi
 
-        line = '{chrom}\t{start}\t{end}\tfragment\t0\t{strand}' \
-                .format(chrom = self.chrom,
-                        start = self.start,
-                        end = self.end, 
-                        strand = self.strand)
-        theoretical = correct_umi_count(len(self.umi), umi_nt)
-        #print(len(self.umi), theoretical)
-        for i in range(theoretical):
+        distinct_umi = len(self.umi)
+        theoretical = correct_umi_count(distinct_umi, umi_nt)
+        for frag_count in range(theoretical):
+            line = '{chrom}\t{start}\t{end}\tUMI_{distinct_umi}_{frag_num}\t0\t{strand}' \
+                    .format(chrom = self.chrom,
+                            start = self.start,
+                            end = self.end, 
+                            distinct_umi = distinct_umi,
+                            frag_num = frag_count + 1,
+                            strand = self.strand)
             print(line, file = out_file)
-
         return theoretical 
 
 

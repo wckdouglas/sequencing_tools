@@ -5,26 +5,29 @@ from sequencing_tools.bam_tools import poisson_umi_tools
 
 
 def test_fragment_group():
-    fg = bed_dedup.fragment_group('chr1','10000', '20000', '-','ACT','')
+    fg = bed_dedup.fragment_group('chr1','10000', '20000', '+','ACT','')
     fg.add_member('ACT','')
     fg.add_member('ACG','')
-    assert(not fg.check_fragment('chr1','10000','20000','+'))
+    assert(not fg.check_fragment('chr1','10000','20000','-'))
 
-    fg.demultiplexing_barcodes(0)
-    expected = ['chr1\t10000\t20000\tACG_1_members\t10000\t-',
-                 'chr1\t10000\t20000\tACT_2_members\t10000\t-']
+    max_c = fg.demultiplexing_barcodes(0)
+    assert(max_c == 2)
+
+    expected = ['chr1\t10000\t20000\tACG_1_members\t10000\t+',
+                 'chr1\t10000\t20000\tACT_2_members\t10000\t+']
     expected.sort()
-    out = list(fg.output_bed_line())
-    out.sort()
-    assert(out == expected)
+    out = fg.output_bed_line()
+    assert(out == (2,3))
 
 
-    max_c = fg.demultiplexing_barcodes(1)
+    max_c =  fg.demultiplexing_barcodes(1)
+    print(fg.get_unique_umi())
+    assert(len(fg.get_unique_umi()) == 1)
     assert(max_c ==3)
-    expected = ['chr1\t10000\t20000\tACT_3_members\t10000\t-', 
-            'chr1\t10000\t20000\tACG_3_members\t10000\t-']
-    out = list(fg.output_bed_line())[0]
-    assert(out in expected)
+    expected = ['chr1\t10000\t20000\tACT_3_members\t10000\t+', 
+            'chr1\t10000\t20000\tACG_3_members\t10000\t+']
+    out = fg.output_bed_line()
+    assert(out == (1,3))
 
 
 

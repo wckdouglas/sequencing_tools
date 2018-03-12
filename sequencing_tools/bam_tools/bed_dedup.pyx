@@ -35,7 +35,7 @@ cdef class fragment_group:
         self.fragment_size = long(self.end) - long(self.start)
 
         self.barcodes_set = dict()
-        self.unique_barcodes = []
+        self.unique_barcodes
 
         # add first record
         self.barcodes_set[cigar] = self.barcodes_set.setdefault(cigar, dict()) 
@@ -63,6 +63,7 @@ cdef class fragment_group:
             list _barcodes
             list _temp_unique_barcodes 
 
+        self.unique_barcodes = []
         for cigar, barcodes_dict in six.iteritems(self.barcodes_set):
             _temp_unique_barcodes = []
             if threshold > 0:
@@ -128,6 +129,10 @@ cdef class fragment_group:
         start_end_same = (start == self.start and end == self.end)
         strand_same = (strand == self.strand)
         return chrom_same and start_end_same and strand_same
+
+    
+    def get_unique_umi(self):
+        return self.unique_barcodes
 
 
 def make_graph(comparison, int threshold):
