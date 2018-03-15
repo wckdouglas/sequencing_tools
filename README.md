@@ -1,4 +1,11 @@
-[![Build Status](https://travis-ci.org/wckdouglas/sequencing_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/sequencing_tools)
+![Build Status](https://travis-ci.org/wckdouglas/sequencing_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/sequencing_tools)
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
 # Sequencing tools #
 
@@ -248,6 +255,37 @@ optional arguments:
                         read 1 fastq output
   -2 READ2, --read2 READ2
                         read 2 fastq output
+```
+
+
+<h3 id='poisson_umi'> Adjust fragment counts for UMI saturations  </h3>
+
+UMI saturation can be a problem for highly-expressed geens, this tool adjust the fragment count by implementing a [poisson model](https://www.ncbi.nlm.nih.gov/pubmed/21562209). 
+
+
+
+\[
+n = -m log(1-\frac{k}{m})
+\]
+
+where $$m$$ is the diversity of UMI ($$4^n$$, $$n$$ is number of bases as UMI), $$k$$ is the number of different UMI being detected for the fragment and $n$ is the true number of fragments that we are interested at.
+
+Input for this tool is a 6-columns BED file with each fragment named as {UMI}_{READ_ID}  
+
+
+```
+usage: poisson_umi_adjustment.py [-h] -i IN_BED [-o OUT_BED] [--umi UMI]
+
+Adjusting fragment count for UMI saturation, see paper: Counting individual
+DNA molecules by the stochastic attachment of diverse labels.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i IN_BED, --in_bed IN_BED
+                        BED file name, or stdin (-) ** name sorted
+  -o OUT_BED, --out_bed OUT_BED
+                        BED file output (default: - )
+  --umi UMI             Number of nucleotide as umi (default: 6)
 ```
 
 ---
