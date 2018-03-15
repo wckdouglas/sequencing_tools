@@ -1,4 +1,4 @@
-![Build Status](https://travis-ci.org/wckdouglas/sequencing_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/sequencing_tools)
+![Build Status](https://travis-ci.org/wckdouglas/sequencing_tools.svg?branch=master)]
 
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
