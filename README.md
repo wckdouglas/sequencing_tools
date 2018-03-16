@@ -50,6 +50,7 @@ Prerequisits:
 * [UMI tagger](#bam_tag)
 * [BED demultiplexer](#dedup_bed)
 * [FastQ deinterleave](#deinterleaved)
+* [Poisson UMI](#poisson_umi)
 
 <h3 id='clip'>  UMI clipper </h3>
 
