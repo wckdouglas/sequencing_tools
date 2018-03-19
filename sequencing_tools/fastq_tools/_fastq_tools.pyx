@@ -1,5 +1,6 @@
 import os
 import string
+import six
 
 # define fastq record type
 cdef class fastqRecord:
@@ -143,8 +144,8 @@ def read_interleaved(infile):
 
     try:
         while True:
-            R1 = fastq_file.next()
-            R2 = fastq_file.next()
+            R1 = six.next(fastq_file)
+            R2 = six.next(fastq_file)
     
             r1_id, r2_id = R1.id.split('/')[0], R2.id.split('/')[0]
             assert r1_id == r2_id, 'Not interleaved'
