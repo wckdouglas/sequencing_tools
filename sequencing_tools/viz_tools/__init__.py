@@ -1,5 +1,6 @@
 from pandas import Series
 from builtins import zip, range
+import re
 
 def douglas_palette():
     '''
@@ -174,3 +175,26 @@ class color_encoder():
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
         colors = self.x.map(self.encoder)
         return colors
+
+
+
+def mixed_sort(list_of_elements):
+    '''
+    https://arcpy.wordpress.com/2012/05/11/sorting-alphanumeric-strings-in-python/
+
+    Args:
+       a list
+    
+    return:
+      a list
+
+    Usage:
+
+    $ a = ['A1','A10','A2','A20']
+    $ mixed_sort(a)
+    ['A1','A2', 'A10', 'A20']
+
+    '''
+    convert = lambda text: int(text) if text.isdigit() else text
+    alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
+    return sorted(list_of_elements, key = alphanum_key)
