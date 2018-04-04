@@ -9,6 +9,15 @@ cdef class fastqRecord:
         self.seq = seq
         self.qual = qual
 
+    def subseq(self, int start, int end):
+        self.seq = self.seq[start:end]
+        self.qual = self.qual[start:end]
+
+    def __str__(self):
+        return '@{id}\n{seq}\n+\n{qual}'.format(id = self.id, 
+                                                seq = self.seq, 
+                                                qual = self.qual)
+
 
 def readfq(fp): # this is a generator function
     '''
