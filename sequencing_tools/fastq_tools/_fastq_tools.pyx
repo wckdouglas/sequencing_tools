@@ -18,6 +18,9 @@ cdef class fastqRecord:
                                                 seq = self.seq, 
                                                 qual = self.qual)
 
+    def to_string(self):
+        return self.__str__()
+
 
 def readfq(fp): # this is a generator function
     '''
