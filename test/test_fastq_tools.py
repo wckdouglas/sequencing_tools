@@ -22,3 +22,25 @@ def test_fastq():
     record.subseq(0,20)
     assert(record.seq == 'AAAAAAAAAAAAAAAAAAAA')
     assert(record.qual=='EAEE6666EEEEEEEEEEEE')
+
+def test_kmer():
+    test_seq = 'ACTGACT'
+    assert(list(extract_kmer(test_seq, 2)) == ['AC','CT','TG','GA','AC', 'CT'])
+
+    d = kmer_bag(test_seq)
+    assert(d == {'A': 2,
+             'AC': 2,
+             'ACT': 2,
+             'ACTG': 1,
+             'C': 2,
+             'CT': 2,
+             'CTG': 1,
+             'CTGA': 1,
+             'G': 1,
+             'GA': 1,
+             'GAC': 1,
+             'GACT': 1,
+             'T': 2,
+             'TG': 1,
+             'TGA': 1,
+             'TGAC': 1})

@@ -1,6 +1,7 @@
 import os
 import string
 import six
+from collections import defaultdict
 
 # define fastq record type
 cdef class fastqRecord:
@@ -165,3 +166,44 @@ def read_interleaved(infile):
 
     except StopIteration:
         pass
+
+from collections import defaultdict
+def extract_kmer(str sequence, int k):
+    '''
+    output kmer
+    '''
+    cdef int i
+
+    for i in range(len(sequence) - k + 1):
+        yield(sequence[i:i+k])
+
+
+
+def kmer_bag(str sequence, k_range = 5):
+    '''
+    K-mer bag method for feature extraction
+
+    ---
+    We used k = 1,2,3,4,5, resulting in 41 + 42 + 43 + 44 + 45 = 1364 features. 
+    For example, the se- quence ACTGG would produce a length-1364 feature vector
+    where the entries corresponding to the k-mers A, C, T, AC, CT, TG, GG, ACT, 
+    CTG, TGG, ACTG, CTGG, and ACTGG would each equal 1, 
+    and the entry corresponding to G would equal 2. 
+    All other entries equal 0.
+    (from Zhang and Kamath. Learning the Language of the Genome using RNNs)
+    '''
+
+    cdef: 
+        int k
+        str kmer
+
+    bag = defaultdict(int)
+    assert k_range > 1 and k_range <= len(sequence), \
+            'Bad k_range being used!!'
+
+    i = 0
+    for k in range(1, k_range):
+        for kmer in extract_kmer(sequence, k):
+            bag[kmer] += 1
+    
+    return bag
