@@ -179,7 +179,7 @@ def extract_kmer(str sequence, int k):
 
 
 
-def kmer_bag(str sequence, k_range = 5):
+def kmer_bag(str sequence, k_start = 1, k_end = 5):
     '''
     K-mer bag method for feature extraction
 
@@ -202,7 +202,7 @@ def kmer_bag(str sequence, k_range = 5):
             'Bad k_range being used!!'
 
     i = 0
-    for k in range(1, k_range):
+    for k in range(k_start, k_end):
         for kmer in extract_kmer(sequence, k):
             bag[kmer] += 1
     
