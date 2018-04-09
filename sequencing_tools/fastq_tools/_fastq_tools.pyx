@@ -198,7 +198,7 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
         str kmer
 
     bag = defaultdict(int)
-    assert k_range > 1 and k_range <= len(sequence), \
+    assert k_start > 1 and k_end <= len(sequence) and k_start < k_end, \
             'Bad k_range being used!!'
 
     i = 0
