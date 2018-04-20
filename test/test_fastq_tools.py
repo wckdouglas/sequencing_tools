@@ -47,6 +47,7 @@ def test_kmer():
 
 def test_onehot():
     import numpy as np
+    dna_encoder = onehot_sequence_encoder(bases = 'ACTGN')
     test_seq = 'ACTGACTGNACTGNACTGN'
 
     onehot = np.array([
@@ -70,4 +71,4 @@ def test_onehot():
        [ 0.,  0.,  0.,  1.,  0.],
        [ 0.,  0.,  0.,  0.,  1.]
     ])
-    assert(np.array_equal(onehot_sequence_encoder(test_seq),onehot))
+    assert(np.array_equal(dna_encoder.fit_transform(test_seq),onehot))
