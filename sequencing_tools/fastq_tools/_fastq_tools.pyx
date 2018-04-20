@@ -202,6 +202,7 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
     
     return bag
 
+import numpy as np
 class onehot_sequence_encoder:
     '''
     A onehot encoder for DNA sequence
@@ -209,13 +210,47 @@ class onehot_sequence_encoder:
     usage:
         dna_encoder = onehot_sequence_encoder()
         onehot_encoded_matrix = dna_encoder.fit_transform(sequence)
+        dna_encoder.base_encoder  # check which base each column represents
     '''
 
     def __init__(self, bases = 'ACTGN'):
-        import numpy as np
         self.bases = bases
         self.base_encoder = {b:i for i, b in enumerate(self.bases)}
         self.acceptable_nuc = set(self.bases)
+        self.column_number = len(self.acceptable_nuc)
+    
+
+    def fit(self, bases='ACTGN'):
+        self.bases = bases
+        self.base_encoder = {b:i for i, b in enumerate(self.bases)}
+        self.acceptable_nuc = set(self.bases)
+        self.column_number = len(self.acceptable_nuc)
+
+    def transform(self, sequence):   
+        '''
+        One hot sequence encoder
+
+        Parameter:
+            sequence: a string of sequence, only accept 'ACTGN'
+
+        return:
+            onehot encoded array:  len(sequence)-by-distinct(base) matrix
+                                    columns represent each base
+                                    rows represent each position along the sequence
+
+        '''
+        cdef:
+            int pos
+            str base
+
+        encoded_mat = np.zeros((len(sequence),self.column_number))
+
+        assert set(sequence).issubset(self.acceptable_nuc),  \
+            'Sequence contain bases other than "ACTGN:"' + sequence
+
+        for pos, base in enumerate(sequence):
+            encoded_mat[pos, self.base_encoder[base]] = 1
+        return encoded_mat
 
     def fit_transform(self, sequence):   
         '''
@@ -225,18 +260,26 @@ class onehot_sequence_encoder:
             sequence: a string of sequence, only accept 'ACTGN'
 
         return:
-            onehot encoded array:  len(sequence)-by-5 matrix
-                                    columns represent: 1 -> A
-                                                    2 -> C
-                                                    3 -> T
-                                                    4 -> G
-                                                    5 -> N
+            onehot encoded array:  len(sequence)-by-distinct(base) matrix
+                                    columns represent each base
                                     rows represent each position along the sequence
 
         '''
-        encoded_mat = np.zeros((len(sequence),5))
-        assert set(sequence).issubset(acceptable_nuc),  \
+        cdef:
+            int pos
+            str base
+
+        self.bases = list(set(sequence))
+        self.bases.sort()
+        self.base_encoder = {b:i for i, b in enumerate(self.bases)}
+        self.acceptable_nuc = set(self.bases)
+        self.column_number = len(self.acceptable_nuc)
+        encoded_mat = np.zeros((len(sequence),self.column_number))
+
+        assert set(sequence).issubset(self.acceptable_nuc),  \
             'Sequence contain bases other than "ACTGN:"' + sequence
+
         for pos, base in enumerate(sequence):
-            encoded_mat[pos, base_encoder[base]] = 1
+            encoded_mat[pos, self.base_encoder[base]] = 1
         return encoded_mat
+ 

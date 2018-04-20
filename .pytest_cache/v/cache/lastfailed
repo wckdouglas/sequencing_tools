@@ -1,1 +1,3 @@
-{}
+{
+  "test/test_fastq_tools.py::test_onehot": true
+}

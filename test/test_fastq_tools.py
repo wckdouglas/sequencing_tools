@@ -45,8 +45,7 @@ def test_kmer():
              'TGA': 1,
              'TGAC': 1})
 
-def test_onehot():
-    import numpy as np
+def test_onehot_default():
     dna_encoder = onehot_sequence_encoder(bases = 'ACTGN')
     test_seq = 'ACTGACTGNACTGNACTGN'
 
@@ -71,4 +70,64 @@ def test_onehot():
        [ 0.,  0.,  0.,  1.,  0.],
        [ 0.,  0.,  0.,  0.,  1.]
     ])
-    assert(np.array_equal(dna_encoder.fit_transform(test_seq),onehot))
+    assert(dna_encoder.base_encoder == {'A': 0, 'C': 1, 'G': 3, 'N': 4, 'T': 2})
+    assert(np.array_equal(dna_encoder.transform(test_seq),onehot))
+
+
+def test_onehot_fit_transform():
+    dna_encoder = onehot_sequence_encoder()
+    test_seq = 'ACTGACTGNACTGNACTGN'
+
+    onehot = np.array([
+       [ 1.,  0.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
+       [ 1.,  0.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
+       [ 0.,  0.,  0.,  1.,  0.],
+       [ 1.,  0.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
+       [ 0.,  0.,  0.,  1.,  0.],
+       [ 1.,  0.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
+       [ 0.,  0.,  0.,  1.,  0.]
+   ])
+
+    out = dna_encoder.fit_transform(test_seq)
+    print(dna_encoder.base_encoder)
+    assert(dna_encoder.base_encoder ==  {'A': 0, 'C': 1, 'G': 2, 'N': 3, 'T': 4})
+    assert(np.array_equal(out, onehot))    
+
+
+def test_onehot_fit():
+    dna_encoder = onehot_sequence_encoder()
+    test_seq = 'ACTGACTGACTGACTG'
+    dna_encoder.fit('ACTG')
+    onehot = np.array([
+       [ 1.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.],
+       [ 0.,  0.,  1.,  0.],
+       [ 0.,  0.,  0.,  1.],
+       [ 1.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.],
+       [ 0.,  0.,  1.,  0.],
+       [ 0.,  0.,  0.,  1.],
+       [ 1.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.],
+       [ 0.,  0.,  1.,  0.],
+       [ 0.,  0.,  0.,  1.],
+       [ 1.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.],
+       [ 0.,  0.,  1.,  0.],
+       [ 0.,  0.,  0.,  1.]
+    ])
+    assert(dna_encoder.base_encoder ==  {'A': 0, 'C': 1, 'G': 3, 'T': 2})
+    assert(np.array_equal(dna_encoder.transform(test_seq), onehot))
+
