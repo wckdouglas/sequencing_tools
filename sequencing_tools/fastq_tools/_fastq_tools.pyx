@@ -202,6 +202,7 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
     
     return bag
 
+import numpy as np
 bases = 'ACTGN'
 base_encoder = {b:i for i, b in enumerate(bases)}
 acceptable_nuc = set(bases)

@@ -46,6 +46,7 @@ def test_kmer():
              'TGAC': 1})
 
 def test_onehot():
+    import numpy as np
     test_seq = 'ACTGACTGNACTGNACTGN'
 
     onehot = np.array([
