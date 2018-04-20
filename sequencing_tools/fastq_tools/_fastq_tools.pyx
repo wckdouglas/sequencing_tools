@@ -198,7 +198,7 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
         str kmer
 
     bag = defaultdict(int)
-    assert k_start > 1 and k_end <= len(sequence) and k_start < k_end, \
+    assert k_start >= 1 and k_end <= len(sequence) and k_start < k_end, \
             'Bad k_range being used!!'
 
     i = 0
@@ -207,3 +207,30 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
             bag[kmer] += 1
     
     return bag
+
+bases = 'ACTGN'
+base_encoder = {b:i for i, b in enumerate(bases)}
+acceptable_nuc = set(bases)
+def onehot_sequence_encoder(sequence):   
+    '''
+    One hot sequence encoder
+
+    Parameter:
+        sequence: a string of sequence, only accept 'ACTGN'
+
+    return:
+        onehot encoded array:  len(sequence)-by-5 matrix
+                                columns represent: 1 -> A
+                                                   2 -> C
+                                                   3 -> T
+                                                   4 -> G
+                                                   5 -> N
+                                rows represent each position along the sequence
+
+    '''
+    encoded_mat = np.zeros((len(sequence),5))
+    assert set(sequence).issubset(acceptable_nuc),  \
+        'Sequence contain bases other than "ACTGN:"' + sequence
+    for pos, base in enumerate(sequence):
+        encoded_mat[pos, base_encoder[base]] = 1
+    return encoded_mat
