@@ -10,7 +10,7 @@ import sys
 from cpython cimport bool
 import io
 import os
-from sequencing_tools.fastq_tools import readfq, gzopen, reverse_complement
+from sequencing_tools.fastq_tools import readfq, reverse_complement
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools.cutadapt_align import locate
 from sequencing_tools.io_tools import xopen
