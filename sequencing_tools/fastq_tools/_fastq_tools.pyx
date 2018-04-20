@@ -78,12 +78,6 @@ def readfq(fp): # this is a generator function
 
 
 
-def gzopen(filename, read_flag = 'rb'):
-    if 'r' in read_flag:
-        return os.popen('zcat '+ filename)
-    elif 'w' in read_flag:
-        return open(filename, read_flag)
-
 # python 3 compatibility
 try:
     complement_seq = string.maketrans('ACTGNactgn','TGACNtgacn')
