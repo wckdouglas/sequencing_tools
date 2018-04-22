@@ -220,8 +220,9 @@ class onehot_sequence_encoder:
         self.column_number = len(self.acceptable_nuc)
     
 
-    def fit(self, bases='ACTGN'):
-        self.bases = bases
+    def fit(self, sequence='ACTGN'):
+        self.bases = list(set(sequence))
+        self.bases.sort()
         self.base_encoder = {b:i for i, b in enumerate(self.bases)}
         self.acceptable_nuc = set(self.bases)
         self.column_number = len(self.acceptable_nuc)
@@ -269,17 +270,7 @@ class onehot_sequence_encoder:
             int pos
             str base
 
-        self.bases = list(set(sequence))
-        self.bases.sort()
-        self.base_encoder = {b:i for i, b in enumerate(self.bases)}
-        self.acceptable_nuc = set(self.bases)
-        self.column_number = len(self.acceptable_nuc)
-        encoded_mat = np.zeros((len(sequence),self.column_number))
-
-        assert set(sequence).issubset(self.acceptable_nuc),  \
-            'Sequence contain bases other than "ACTGN:"' + sequence
-
-        for pos, base in enumerate(sequence):
-            encoded_mat[pos, self.base_encoder[base]] = 1
+        self.fit(sequence)
+        encoded_mat = self.transform(sequence)
         return encoded_mat
  
