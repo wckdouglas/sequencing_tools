@@ -4,7 +4,8 @@ import pyBigWig as pbw
 import numpy as np
 import array
 import sys
-
+import six
+long = six.integer_types[-1]
 
 class chrom_depth:
 

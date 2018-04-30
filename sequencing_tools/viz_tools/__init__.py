@@ -170,10 +170,8 @@ class color_encoder():
         ce = color_encoder()
         encoded_colors = ce.fit_transform(categorical_vector, colors)
         '''
-        self.x = Series(xs)
-        self.categories = assert_color_vector(self.x, colors)
-        self.encoder = {c:col for c, col in zip(self.categories, colors)}
-        colors = self.x.map(self.encoder)
+        self.fit(xs, colors = colors)
+        colors = self.transform(xs)
         return colors
 
 

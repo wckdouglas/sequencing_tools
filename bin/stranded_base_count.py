@@ -12,6 +12,8 @@ import string
 import argparse
 from sequencing_tools.bam_tools.pileup_errors import extract_bases, analyze_region, make_regions
 from operator import itemgetter
+import six
+long = six.integer_types[-1]
 
 def getopt():
     parser = argparse.ArgumentParser(description='Pileup whole genome, only output bases where coverage > 0')
