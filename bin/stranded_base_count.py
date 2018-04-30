@@ -11,6 +11,7 @@ import sys
 import string
 import argparse
 from sequencing_tools.bam_tools.pileup_errors import extract_bases, analyze_region, make_regions
+from sequencing_tools.io_tools import xopen
 from operator import itemgetter
 import six
 long = six.integer_types[-1]
@@ -28,17 +29,19 @@ def getopt():
                     type=int, help='Crop how many bases from ends (defulat: 0)')
     parser.add_argument('-r','--bed', default='', help='bed file for regions (default: whole genome)')
     parser.add_argument('--no_indel', action='store_true', help='Not considering alignments with Indel')
+    parser.add_argument('--min_coverage', default = 0, type = int,
+                        help='Minimum coverage to output')
     args = parser.parse_args()
     return args
 
 def bed_generator(bed_file):
-    bed = sys.stdin if bed_file == '-' else open(bed_file)
+    bed = sys.stdin if bed_file == '-' else xopen(bed_file)
     for line in bed:
         fields = line.split('\t')
         chrom, start, end = itemgetter(0,1,2)(fields)
         yield chrom, long(start), long(end)
 
-def output_table(fa, chromosome, base_dict, start, end):
+def output_table(fa, chromosome, base_dict, start, end, min_cov):
     '''
     output table: chrom, pos, base, A+, C+, G+, T+, A-, C-, G-, T-
     '''
@@ -46,13 +49,13 @@ def output_table(fa, chromosome, base_dict, start, end):
                                       start=start,
                                       end=end)):
         pos = i + start
-        coverage, base_count_string = extract_bases(base_dict, pos)
-        if coverage > 0:
+        coverage_dict, base_count_string = extract_bases(base_dict, pos)
+        if coverage_dict['+'] > min_cov or coverage_dict['-'] > min_cov:
             outline =  '%s\t%i\t%s\t%s' %(chromosome, pos, base, base_count_string)
             print(outline, file = sys.stdout)
     return 0
 
-def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel):
+def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel, min_cov):
     chrom_length = fa.get_reference_length(chromosome)
     get_error = partial(analyze_region, in_bam, chromosome, qual_threshold, crop, no_indel)
     output = partial(output_table, fa, chromosome)
@@ -60,11 +63,12 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, cro
     for i, (start, end) in enumerate(region_generator):
         base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
         aln_count, base_dict = get_error(base_dict, start, end)
-        out = output(base_dict, start, end)
+        out = output(base_dict, start, end, min_cov)
         if i % 10 == 0:
             print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
 
-def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, bed_file, use_bed, no_indel):
+def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, 
+                bed_file, use_bed, no_indel, min_cov):
     chromosomes = fa.references
     header = 'chrom\tpos\tbase\t'
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
@@ -73,10 +77,10 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, bed_file, use_be
         base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
         for chrom, start, end in bed_generator(bed_file):
             aln_count, base_dict = analyze_region(in_bam, chrom, qual_threshold, crop, no_indel, base_dict, start, end)
-            out = output_table(fa, chrom, base_dict, start, end)
+            out = output_table(fa, chrom, base_dict, start, end, min_cov)
     else:
         for chromosome in chromosomes:
-            analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel)
+            analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel, min_cov)
 
 
 def main():
@@ -88,10 +92,11 @@ def main():
     crop = args.crop
     use_bed = True if args.bed != '' else False
     no_indel = args.no_indel
+    min_cov = args.min_coverage
 
     with pysam.Samfile(bam_file, 'rb') as in_bam, \
             pysam.FastaFile(ref_fasta) as fa:
-        analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, args.bed, use_bed, no_indel)
+        analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, args.bed, use_bed, no_indel, min_cov)
 
 
 if __name__ == '__main__':

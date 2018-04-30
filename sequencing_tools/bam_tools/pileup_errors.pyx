@@ -8,15 +8,18 @@ from sequencing_tools.bam_tools import *
 def extract_bases(base_dict, pos):
     cdef:
         str strand, base
+        int coverage 
+        dict coverage_dict = {}
 
     base_counts = []
-    coverage = 0
     for strand in ['+','-']:
+        coverage = 0
         for base in 'ACGT':
             bcount = base_dict[pos][strand][base]
             coverage += bcount
             base_counts.append(str(bcount))
-    return coverage,'\t'.join(base_counts)
+        coverage_dict[strand] = coverage
+    return coverage_dict,'\t'.join(base_counts)
 
 
 
