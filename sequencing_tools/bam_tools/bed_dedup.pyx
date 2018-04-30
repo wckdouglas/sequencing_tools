@@ -10,7 +10,7 @@ from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
 import sys
 import six
 from libc.stdint cimport uint32_t
-
+long = six.integer_types[-1]
 
 cdef class fragment_group:
     '''
