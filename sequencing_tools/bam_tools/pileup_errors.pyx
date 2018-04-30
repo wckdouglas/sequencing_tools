@@ -25,7 +25,8 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
     cdef:
         int aln_count = 0
         AlignedSegment aln
-        int pos, qual, seq_len
+        long pos
+        int qual, seq_len
         str base
         int i, crop_end
         int aln_pos
@@ -34,7 +35,7 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
 
     for aln_count, aln in enumerate(bam.fetch(chromosome, start, end)):
         strand = get_strand(aln)
-        if not aln.is_unmapped and strand:
+        if not aln.is_unmapped and strand not aln.is_duplicate and not aln.is_supplementary:
             with_indel = INDEL.search(str(aln.cigarstring))
             no_indel_condition = (not with_indel and no_indel)
             with_indel_condition = (not no_indel)
