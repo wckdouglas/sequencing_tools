@@ -624,7 +624,8 @@ sns.set_style('white')
 
 d = np.random.rand(100,10)
 d = pd.DataFrame(d)
-fig =cor_plot(d)
+fig = plt.figure()
+cor_plot(d, fig)
 fig.savefig('cor.png',bbox_inches='tight')
 ```
 
