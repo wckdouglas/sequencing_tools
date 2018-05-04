@@ -70,6 +70,7 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, cro
 def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, 
                 bed_file, use_bed, no_indel, min_cov):
     chromosomes = fa.references
+    chromosomes.sort()
     header = 'chrom\tpos\tbase\t'
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)

@@ -137,7 +137,7 @@ def writingAndClusteringReads(outputprefix, min_family_member_count, json_file,
     read1File = outputprefix + '_R1_001.fastq.gz'
     read2File = outputprefix + '_R2_001.fastq.gz'
     pool = Pool(threads,maxtasksperchild=10000)
-    with xopen(read1File,'wb') as read1, xopen(read2File,'wb') as read2, open(json_file,'r') as infile:
+    with xopen(read1File,'w') as read1, xopen(read2File,'w') as read2, open(json_file,'r') as infile:
         error_func = partial(errorFreeReads, min_family_member_count, fraction_threshold)
         write_func = partial(writeSeqToFiles,read1, read2)
         processes = pool.imap_unordered(error_func, infile, chunksize = 10000)
@@ -248,7 +248,7 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
     low_complexity_composition = re.compile('|'.join(low_complexity_base))
 
     failed_reads = outputprefix + '-failed.tsv'
-    with xopen(inFastq1,'rb') as fq1, xopen(inFastq2,'rb') as fq2, open(failed_reads,'w') as failed_file:
+    with xopen(inFastq1,'r') as fq1, xopen(inFastq2,'r') as fq2, open(failed_reads,'w') as failed_file:
 
 
         if which_side == 'read2':
