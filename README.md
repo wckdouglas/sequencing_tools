@@ -256,8 +256,8 @@ optional arguments:
 
 UMI saturation can be a problem for highly-expressed geens, this tool adjust the fragment count by implementing a [poisson model](https://www.ncbi.nlm.nih.gov/pubmed/21562209). 
 
+![](https://raw.githubusercontent.com/wckdouglas/sequencing_tools/master/img/umi_correct.png)
 
-<img src="http://www.sciweavers.org/tex2img.php?eq=n%20%3D%20-m%20log%281-%5Cfrac%7Bk%7D%7Bm%7D%29&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0" align="center" border="0" alt="n = -m log(1-\frac{k}{m})" width="157" height="43" />
 
 where *m* is the diversity of UMI (*4^nt*, *nt* is number of bases as UMI), *k* is the number of different UMI being detected for the fragment and *n* is the true number of fragments that we are interested at.
 
