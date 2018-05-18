@@ -214,16 +214,14 @@ class onehot_sequence_encoder:
     '''
 
     def __init__(self, bases = 'ACTGN'):
-        self.bases = bases
-        self.base_encoder = {b:i for i, b in enumerate(self.bases)}
-        self.acceptable_nuc = set(self.bases)
-        self.column_number = len(self.acceptable_nuc)
+        self.fit(sequence = bases)
     
 
     def fit(self, sequence='ACTGN'):
         self.bases = list(set(sequence))
         self.bases.sort()
         self.base_encoder = {b:i for i, b in enumerate(self.bases)}
+        self.base_decoder = {i:b for b, i in self.base_encoder.items()}
         self.acceptable_nuc = set(self.bases)
         self.column_number = len(self.acceptable_nuc)
 
@@ -271,6 +269,18 @@ class onehot_sequence_encoder:
             str base
 
         self.fit(sequence)
-        encoded_mat = self.transform(sequence)
-        return encoded_mat
+        return self.transform(sequence)
  
+    def decode(self, encoded_mat):
+        '''
+        Parameter:
+            onehot encoded array: len(sequence)-by-distinct(base) matrix
+                                    columns represent each base
+                                    rows represent each position along the sequence
+
+        Return:
+            sequence: a string of sequence, only accept 'ACTGN'
+        '''
+
+        decoded = np.matmul(encoded_mat, np.arange(len(self.bases)))
+        return ''.join([self.base_decoder[i] for i in decoded])

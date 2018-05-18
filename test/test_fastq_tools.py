@@ -129,4 +129,5 @@ def test_onehot_fit():
     
     assert(dna_encoder.base_encoder ==  {'A': 0, 'C': 1, 'G': 2, 'T': 3})
     assert(np.array_equal(dna_encoder.transform(test_seq), onehot))
+    assert(dna_encoder.decode(onehot) == test_seq)
 
