@@ -70,7 +70,7 @@ def test_onehot_default():
        [ 0.,  0.,  0.,  1.,  0.],
        [ 0.,  0.,  0.,  0.,  1.]
     ])
-    assert(dna_encoder.base_encoder == {'A': 0, 'C': 1, 'G': 3, 'N': 4, 'T': 2})
+    assert(dna_encoder.base_encoder == {'A': 0, 'C': 1, 'G': 2, 'N': 3, 'T': 4})
     assert(np.array_equal(dna_encoder.transform(test_seq),onehot))
 
 
