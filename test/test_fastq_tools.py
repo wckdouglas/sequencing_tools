@@ -52,26 +52,27 @@ def test_onehot_default():
     onehot = np.array([
        [ 1.,  0.,  0.,  0.,  0.],
        [ 0.,  1.,  0.,  0.,  0.],
-       [ 0.,  0.,  1.,  0.,  0.],
-       [ 0.,  0.,  0.,  1.,  0.],
-       [ 1.,  0.,  0.,  0.,  0.],
-       [ 0.,  1.,  0.,  0.,  0.],
-       [ 0.,  0.,  1.,  0.,  0.],
-       [ 0.,  0.,  0.,  1.,  0.],
        [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
        [ 1.,  0.,  0.,  0.,  0.],
        [ 0.,  1.,  0.,  0.,  0.],
-       [ 0.,  0.,  1.,  0.,  0.],
-       [ 0.,  0.,  0.,  1.,  0.],
        [ 0.,  0.,  0.,  0.,  1.],
-       [ 1.,  0.,  0.,  0.,  0.],
-       [ 0.,  1.,  0.,  0.,  0.],
        [ 0.,  0.,  1.,  0.,  0.],
        [ 0.,  0.,  0.,  1.,  0.],
-       [ 0.,  0.,  0.,  0.,  1.]
+       [ 1.,  0.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
+       [ 0.,  0.,  0.,  1.,  0.],
+       [ 1.,  0.,  0.,  0.,  0.],
+       [ 0.,  1.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  1.],
+       [ 0.,  0.,  1.,  0.,  0.],
+       [ 0.,  0.,  0.,  1.,  0.]
     ])
     assert(dna_encoder.base_encoder == {'A': 0, 'C': 1, 'G': 2, 'N': 3, 'T': 4})
     assert(np.array_equal(dna_encoder.transform(test_seq),onehot))
+    assert(dna_encoder.decode(onehot) == test_seq)
 
 
 def test_onehot_fit_transform():
@@ -98,11 +99,12 @@ def test_onehot_fit_transform():
        [ 0.,  0.,  0.,  0.,  1.],
        [ 0.,  0.,  1.,  0.,  0.],
        [ 0.,  0.,  0.,  1.,  0.]
-   ])
+    ])
 
     out = dna_encoder.fit_transform(test_seq)
     assert(dna_encoder.base_encoder ==  {'A': 0, 'C': 1, 'G': 2, 'N': 3, 'T': 4})
     assert(np.array_equal(out, onehot))    
+    assert(dna_encoder.decode(onehot) == test_seq)
 
 
 def test_onehot_fit():
