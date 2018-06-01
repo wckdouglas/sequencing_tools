@@ -196,3 +196,40 @@ def mixed_sort(list_of_elements):
     convert = lambda text: int(text) if text.isdigit() else text
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
     return sorted(list_of_elements, key = alphanum_key)
+
+
+import os
+import pandas as pd
+def RNA_cov_from_picard(metrics):
+    '''
+    metrics = glob.glob('*RNA_metrics')
+    RNA_cov_from_picard(metrics)
+
+
+    return dataframe for normalized coverage on normalized positions
+    '''
+    metric_tables = {os.path.basename(met):pd.read_table(met, skiprows=10) for met in metrics}
+    cov_df = pd.concat([df.assign(samplename = sam)for sam, df in metric_tables.items()])
+    return cov_df
+
+
+def RNA_base_from_picard(metrics):
+    '''
+    metrics = glob.glob('*RNA_metrics')
+    RNA_base_from_picard(metrics)
+
+
+    return dataframe for base distribution
+    '''
+    metric_tables = {os.path.basename(met):pd.read_table(met, skiprows=6, nrows=1) \
+                        for met in metrics}
+    return pd.concat([df.assign(samplename = sam) for sam, df in metric_tables.items()]) \
+        .pipe(pd.melt, id_vars=['samplename'],
+                       var_name = 'variable', value_name = 'var_count') \
+        .pipe(lambda d: d[d.variable.str.contains('UTR|CODI|INTRO|INTER')]) \
+        .pipe(lambda d: d[d.variable.str.contains('PCT')])\
+        .assign(variable = lambda d: d.variable.str.replace('_',' ')\
+                                    .str.replace('PCT ','')\
+                                    .str.capitalize())
+
+

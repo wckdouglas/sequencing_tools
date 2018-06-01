@@ -1,5 +1,5 @@
 from __future__ import print_function, division
-from libc.math cimport log, floor
+from libc.math cimport log, ceil, round
 from libc.stdint cimport uint32_t
 from builtins import range
 import fileinput
@@ -84,9 +84,9 @@ cdef long correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
     diversity = 4 ** umi_nt 
     m = number_of_unique_umi/diversity
     modelled = - diversity * log(1 - m)
-    result = floor(modelled)
+    result = round(modelled)
 
-    return long(result)
+    return max(number_of_unique_umi, long(result))
 
 
 
