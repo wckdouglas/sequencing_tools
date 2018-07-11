@@ -11,9 +11,9 @@ def getopt():
                         help = 'BAM file name, or stdin (-) ** name sorted' )
     parser.add_argument('-o','--out_bed', default='-', help = 'BED file output (default: - )')
     parser.add_argument('-m','--min_size', default=10, type=int,
-                        help = 'minimum fragment size to report')
+                        help = 'minimum fragment size to report (default: 10)')
     parser.add_argument('-M','--max_size', default=10000, type=int,
-                        help = 'minimum fragment size to report')
+                        help = 'minimum fragment size to report (default: 10000)')
     parser.add_argument('-t','--tag', default=None,
                         help = 'tag to extract')
     parser.add_argument('-a','--all', action='store_true',
