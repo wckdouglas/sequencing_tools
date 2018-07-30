@@ -27,7 +27,7 @@ def test_kmer():
     test_seq = 'ACTGACT'
     assert(list(extract_kmer(test_seq, 2)) == ['AC','CT','TG','GA','AC', 'CT'])
 
-    d = kmer_bag(test_seq, k_start = 1, k_end = 5)
+    d = kmer_bag(test_seq, k_start = 1, k_end = 4)
     assert(d == {'A': 2,
              'AC': 2,
              'ACT': 2,
