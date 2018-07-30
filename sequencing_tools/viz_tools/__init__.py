@@ -161,7 +161,9 @@ class color_encoder():
             raise ValueError('Call color_encoder.fit() first!!')
 
         if not self.categories.union(set(xs)) == self.categories:
-            raise ValueError('Contain unseen data!!')
+            unseen = self.categories.union(set(xs)) - self.categories
+            unseen = ', '.join(list(unseen))
+            raise ValueError('Contain unseen data!!: %s' %unseen)
 
         return Series(xs).map(self.encoder)
 
