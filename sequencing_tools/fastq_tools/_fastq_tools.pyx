@@ -173,7 +173,7 @@ def extract_kmer(str sequence, int k):
 
 
 
-def kmer_bag(str sequence, k_start = 1, k_end = 5):
+def kmer_bag(str sequence, k_start = 1, k_end = 4):
     '''
     K-mer bag method for feature extraction
 
@@ -185,6 +185,10 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
     and the entry corresponding to G would equal 2. 
     All other entries equal 0.
     (from Zhang and Kamath. Learning the Language of the Genome using RNNs)
+
+
+    usage:
+    kmer_bag(str sequence, k_start = 1, k_end = 4)
     '''
 
     cdef: 
@@ -196,7 +200,7 @@ def kmer_bag(str sequence, k_start = 1, k_end = 5):
             'Bad k_range being used!!'
 
     i = 0
-    for k in range(k_start, k_end):
+    for k in range(k_start, k_end + 1):
         for kmer in extract_kmer(sequence, k):
             bag[kmer] += 1
     
