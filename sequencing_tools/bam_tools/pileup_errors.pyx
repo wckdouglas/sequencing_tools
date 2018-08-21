@@ -21,7 +21,9 @@ def extract_bases(base_dict, pos):
         coverage_dict[strand] = coverage
     return coverage_dict,'\t'.join(base_counts)
 
-
+def test_direction(bam):
+    aln = next(bam)
+    return 'U' if aln.flag in [0,16] else 'fr'
 
 INDEL = re.compile('I\D')
 def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, start, end):
@@ -36,8 +38,9 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
         long ref_pos
         bool no_indel_condition, with_indel_condition
 
+    direction = test_direction(bam)
     for aln_count, aln in enumerate(bam.fetch(chromosome, start, end)):
-        strand = get_strand(aln)
+        strand = get_strand(aln, direction = direction)
         if not aln.is_unmapped and \
                 strand and \
                 not aln.is_duplicate and \

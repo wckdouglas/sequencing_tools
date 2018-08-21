@@ -246,7 +246,7 @@ cpdef str get_strand(AlignedSegment aln, str direction = 'fr'):
         bool read1_rvs
         bool read2_rvs
 
-    assert direction in ['fr','rf'], 'Wrong direction: only accept either fr or rf'
+    assert direction in ['fr','rf', 'U'], 'Wrong direction: only accept either fr or rf'
     read1_rvs = (aln.is_read1) and (aln.is_reverse)
     read2_rvs = (aln.is_read2) and (not aln.is_reverse)
 
@@ -261,6 +261,8 @@ cpdef str get_strand(AlignedSegment aln, str direction = 'fr'):
             strand = '+'
         else:
             strand = '-'
+    elif direction == 'U': #single-end
+        strand = '-' if aln.is_reverse else '+'
 
     return strand
 
