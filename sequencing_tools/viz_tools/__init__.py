@@ -177,6 +177,15 @@ class color_encoder():
         return colors
 
 
+    def show_legend(self, ax = None, **kwargs):
+        '''
+        Adding matplotlib legend
+
+        '''
+        import matplotlib.patches as mpatches
+        pat = [mpatches.Patch(color=col, label=lab) for lab, col in self.encoder.items()]
+        ax.legend(handles=pat, **kwargs)
+
 
 def mixed_sort(list_of_elements):
     '''
