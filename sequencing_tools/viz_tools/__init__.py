@@ -151,7 +151,7 @@ class color_encoder():
         self.x = Series(x)
         self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
-        self.encoder = OrderedDict(self.encoder)
+        self.encoder = OrderedDict(self.encoder, key=lambda x: x[0])
 
     def transform(self, xs):
         '''
