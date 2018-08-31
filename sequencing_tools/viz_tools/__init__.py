@@ -185,7 +185,7 @@ class color_encoder():
         '''
         import matplotlib.patches as mpatches
         if sort:
-            self.encoder = OrderedDict(self.encoder.items(), key=lambda x: x[0])
+            self.encoder = OrderedDict(sorted(self.encoder.items(), key=lambda x: x[0]))
         pat = [mpatches.Patch(color=col, label=lab) for lab, col in self.encoder.items()]
         lgd = ax.legend(handles=pat, **kwargs)
         return lgd
