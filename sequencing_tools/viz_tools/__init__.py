@@ -1,6 +1,7 @@
 from pandas import Series
 from builtins import zip, range
 import re
+from collections import OrderedDict
 
 def douglas_palette():
     '''
@@ -150,6 +151,7 @@ class color_encoder():
         self.x = Series(x)
         self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
+        self.encoder = OrderedDict(self.encoder)
 
     def transform(self, xs):
         '''
@@ -184,7 +186,8 @@ class color_encoder():
         '''
         import matplotlib.patches as mpatches
         pat = [mpatches.Patch(color=col, label=lab) for lab, col in self.encoder.items()]
-        ax.legend(handles=pat, **kwargs)
+        lgd = ax.legend(handles=pat, **kwargs)
+        return lgd
 
 
 def mixed_sort(list_of_elements):
