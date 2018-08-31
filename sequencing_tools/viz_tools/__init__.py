@@ -151,7 +151,6 @@ class color_encoder():
         self.x = Series(x)
         self.categories = assert_color_vector(self.x, colors)
         self.encoder = {c:col for c, col in zip(self.categories, colors)}
-        self.encoder = OrderedDict(self.encoder.items(), key=lambda x: x[0])
 
     def transform(self, xs):
         '''
@@ -179,12 +178,14 @@ class color_encoder():
         return colors
 
 
-    def show_legend(self, ax = None, **kwargs):
+    def show_legend(self, ax = None, sort=False, **kwargs):
         '''
         Adding matplotlib legend
 
         '''
         import matplotlib.patches as mpatches
+        if sort:
+            self.encoder = OrderedDict(self.encoder.items(), key=lambda x: x[0])
         pat = [mpatches.Patch(color=col, label=lab) for lab, col in self.encoder.items()]
         lgd = ax.legend(handles=pat, **kwargs)
         return lgd
