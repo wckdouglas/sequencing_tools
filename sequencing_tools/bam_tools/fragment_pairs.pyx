@@ -16,8 +16,8 @@ cdef class read_fragment:
         long start, end
         int fragment_size
         AlignedSegment read_1
-        str rt1
         str bed_line
+        str rt1
         bool pass_filter
         str cigar_field
 
@@ -79,7 +79,10 @@ cdef class read_paired_fragment(read_fragment):
         if self.tag:
             self.rt1 = str(self.read_1.get_tag(self.tag))
             self.rt2 = str(self.read_2.get_tag(self.tag))
-            assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
+            try:
+                self.rt1 = str(max(float(self.rt1), float(self.rt2)))
+            except ValueError:
+                assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
 
         if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
             self.chrom = self.read_1.reference_name
