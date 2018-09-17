@@ -29,7 +29,7 @@ cdef class read_fragment:
         self.cigar_field = self.read_1.cigarstring
 
         if self.tag:
-            self.rt1 = self.read_1.get_tag(self.tag)
+            self.rt1 = str(self.read_1.get_tag(self.tag))
         
         self.chrom = self.read_1.reference_name
         self.strand = '-' if self.read_1.is_reverse else '+'
@@ -77,8 +77,8 @@ cdef class read_paired_fragment(read_fragment):
             self.read_2 = read1
 
         if self.tag:
-            self.rt1 = self.read_1.get_tag(self.tag)
-            self.rt2 = self.read_2.get_tag(self.tag)
+            self.rt1 = str(self.read_1.get_tag(self.tag))
+            self.rt2 = str(self.read_2.get_tag(self.tag))
             assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
 
         if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
