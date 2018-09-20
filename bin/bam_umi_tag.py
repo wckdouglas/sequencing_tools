@@ -9,7 +9,6 @@ def getopt():
                         help = 'BAM file name, or stdin (-)' )
     parser.add_argument('-o','--out_bam', default='-', help = 'BAM file output (default: - )')
     parser.add_argument('-t','--tag', default='RX', help = 'Tag id (default: RX )')
-    parser.add_argument('-t','--prefix', default='Sample', help = 'Read predix to add to each fragment (default: Sample')
 
     return parser.parse_args()
 
