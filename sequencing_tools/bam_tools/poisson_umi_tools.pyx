@@ -61,7 +61,7 @@ cdef class fragment:
         distinct_umi = len(self.umi)
         theoretical = correct_umi_count(distinct_umi, umi_nt)
         for frag_count in range(theoretical):
-            line = '{chrom}\t{start}\t{end}\t{read_prefix}_UMI_{distinct_umi}_{frag_num}\t0\t{strand}' \
+            line = '{chrom}\t{start}\t{end}\t{read_prefix}:UMI_{distinct_umi}_{frag_num}\t0\t{strand}' \
                     .format(chrom = self.chrom,
                             start = self.start,
                             end = self.end, 

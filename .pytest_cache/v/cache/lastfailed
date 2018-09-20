@@ -1,0 +1,3 @@
+{
+  "test/test_bed_dedup.py::test_hamming_barcode": true
+}
