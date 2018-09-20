@@ -29,8 +29,6 @@ def test_fragment_group():
     out = fg.output_bed_line()
     assert(out == (1,3))
 
-
-
     
 
 def test_umi():
