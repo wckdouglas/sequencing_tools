@@ -34,7 +34,7 @@ cdef str get_umi_from_name(AlignedSegment aln):
         str aln_id = aln.query_name
     return  aln_id.split('_')[0]
 
-def filter_umi(inbam, outbam, threshold, tag):
+def filter_umi(inbam, outbam, threshold, tag, prefix):
     cdef:
         int out_count = 0
         int aln_count = 0
