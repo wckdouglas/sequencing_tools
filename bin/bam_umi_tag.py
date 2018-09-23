@@ -14,7 +14,7 @@ def getopt():
 
 def main():
     args = getopt()
-    add_umi_tag(args.in_bam, args.out_bam, args.tag, args.predix)
+    add_umi_tag(args.in_bam, args.out_bam, args.tag)
     return 0
 
 if __name__ == '__main__':
