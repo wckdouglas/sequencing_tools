@@ -7,6 +7,7 @@ from operator import itemgetter
 import sys
 import cython
 from itertools import groupby
+from sequencing_tools.bam_tools.bed_dedup import fragment_coordinates
 
 
 '''
@@ -32,9 +33,6 @@ cpdef long correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
     return max(number_of_unique_umi, long(result))
 
 
-cdef fragment_coordinates(str bedline):
-    fields = bedline.split('\t')
-    return  itemgetter(0,1,2,5)(fields)
 
 
 @cython.boundscheck(False)
