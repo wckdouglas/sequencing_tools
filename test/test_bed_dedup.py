@@ -28,7 +28,7 @@ def test_fragment_group():
     assert(max_member_count == 4)
     assert(mc == len(expected))
     assert(uc == 2)
-    assert(set(barcode_group.unique_barcodes) == set(['ACG_4_members', 'GGG_2_members']))
+    assert(set(barcode_group.unique_barcodes).issubset(['ACT_4_members','ACG_4_members', 'GGG_2_members']))
 
 
     max_member_count = barcode_group.demultiplexing_barcodes(threshold = 0)
