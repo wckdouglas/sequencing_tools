@@ -217,7 +217,7 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
     cdef:
         str bc, read_name, chrom, start, end, strand
         str bc_line
-        uint32_t in_count, _out_count, _member_count
+        uint32_t in_count = 0 , _out_count, _member_count
         long out_count = 0, total_member_count = 0
         str cigar = ''
         list fields
