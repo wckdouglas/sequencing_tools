@@ -84,8 +84,8 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
         AlignmentFile inbam, outbam
         AlignedSegment aln
         ndarray cigar_array, all_soft_clipped
-        int aln_count
-        int output_count
+        int aln_count = 0
+        int output_count = 0
         bool flag_qualify_ok, soft_clipped, clipped_size_right
         bool inverse_ok, non_inverse_ok
 
@@ -122,7 +122,7 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
         AlignedSegment read1, read2
         ndarray cigar_array, all_soft_clipped
         int pair_count = 0
-        int output_count
+        int output_count = 0
         bool flag_qualify_ok, soft_clipped, clipped_size_right
         bool inverse_ok, non_inverse_ok
         fragment_pairs pairs
