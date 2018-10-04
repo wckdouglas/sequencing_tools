@@ -19,7 +19,7 @@ cpdef add_umi_tag(str in_bam, str out_bam, str tag, str delim, int frag):
                 id = aln.query_name
                 splitted_id = id.split(delim)
                 umi = splitted_id[frag]
-                aln.query_name = splitted_id[1]
+                aln.query_name = id.replace(umi + delim, '').replace(delim+umi, '')
                 aln.tags += [(tag,umi)]
                 outbam.write(aln)
     print('Parsed %i alignments from %s to %s' %(aln_count, in_bam, out_bam), file = sys.stderr)
