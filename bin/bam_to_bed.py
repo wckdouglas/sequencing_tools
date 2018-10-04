@@ -22,6 +22,8 @@ def getopt():
                         help = 'Only primary')
     parser.add_argument('-c','--add_cigar', action='store_true',
                         help = 'Add cigar string on the last field')
+    parser.add_argument('--prefix', default=None,
+                        help = 'Prefix for read fragment name')
 
     return parser.parse_args()
 
@@ -33,7 +35,7 @@ def main():
     if args.max_size <= args.min_size:
         sys.exit('!!!!! Min fragment size > Max fragment size') 
     bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, 
-            args.all, args.primary, args.add_cigar)
+            args.all, args.primary, args.add_cigar, args.prefix)
     return 0
 
 if __name__ == '__main__':

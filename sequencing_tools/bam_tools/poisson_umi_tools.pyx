@@ -26,7 +26,7 @@ cpdef long correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
         double result
         
     diversity = 4 ** umi_nt 
-    m = number_of_unique_umi/diversity
+    m = number_of_unique_umi/diversity if number_of_unique_umi < diversity else (diversity-1)/diversity
     modelled = - diversity * log(1 - m)
     result = round(modelled)
 

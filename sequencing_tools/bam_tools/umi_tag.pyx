@@ -5,7 +5,7 @@ import sys
 from functools import partial
 import re
 
-def add_umi_tag(in_bam, out_bam, tag):
+cpdef add_umi_tag(str in_bam, str out_bam, str tag, str delim, int frag):
     cdef:
         AlignmentFile inbam, outbam
         AlignedSegment aln
@@ -17,8 +17,8 @@ def add_umi_tag(in_bam, out_bam, tag):
         with pysam.Samfile(out_bam,'wb', template=inbam) as outbam:
             for aln_count, aln in enumerate(inbam):
                 id = aln.query_name
-                splitted_id = id.split('_')
-                umi = splitted_id[0]
+                splitted_id = id.split(delim)
+                umi = splitted_id[frag]
                 aln.query_name = splitted_id[1]
                 aln.tags += [(tag,umi)]
                 outbam.write(aln)
