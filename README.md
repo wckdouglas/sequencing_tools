@@ -57,15 +57,14 @@ Prerequisits:
 Clipping UMI from paired end fastq
 
 ```
-usage: clip_fastq.py [-h] [-o OUTPUTPREFIX] -1 FASTQ1 -2 FASTQ2 [-x IDXBASE]
-                     [-q BARCODECUTOFF] [-a MISMATCH] [-s {0,1,2,3,4}]
-                     [-r {read1,read2}]
+usage: clip_fastq.py [-h] [-o OUT_FILE] -1 FASTQ1 -2 FASTQ2 [-x IDXBASE]
+                     [-q BARCODECUTOFF] [-a MISMATCH] [-r {read1,read2}]
 
 Clip the barcode sequence and attached to the front of seq id
 
 optional arguments:
   -h, --help            show this help message and exit
-  -o OUTPUTPREFIX, --outputprefix OUTPUTPREFIX
+  -o OUT_FILE, --out_file OUT_FILE
                         Interleaved Fastq files (default: -)
   -1 FASTQ1, --fastq1 FASTQ1
                         Paired end Fastq file 1 with four line/record
@@ -73,21 +72,17 @@ optional arguments:
                         Paired end Fastq file 2 with four line/record
   -x IDXBASE, --idxBase IDXBASE
                         how many base in 5' end as index? (default:
-                        XXXXXXXXXXXXX) X as umi bases can add constant regions
-                        add back, such as XXXXCATGC
+                        XXXXXXXXXXXXX) X as umi bases, can also add constant
+                        regions at the back, such as XXXXCATGC, if CATGC is
+                        the constant region
   -q BARCODECUTOFF, --barcodeCutOff BARCODECUTOFF
                         Average base calling quality for barcode sequence
                         (default=20)
   -a MISMATCH, --mismatch MISMATCH
                         Allow how many mismatch in constant region (deflaut:
                         1)
-  -s {0,1,2,3,4}, --prefix_split {0,1,2,3,4}
-                        Using how many bases on the barcode to split the
-                        fastq? A choice of 3 will generate 4^3 = 64 files
-                        (deflaut: 4)
   -r {read1,read2}, --read {read1,read2}
                         Which read is the UMI on?
-
 ```
 
 <h3 id='merge_pe'> Paired end fastq merger </h3>
