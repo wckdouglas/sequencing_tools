@@ -1,45 +1,53 @@
+
 from __future__ import print_function
 from sequencing_tools.bam_tools import bed_dedup 
 from sequencing_tools.bam_tools import poisson_umi_tools
+from itertools import groupby
 
 
 
 def test_fragment_group():
-    fg = bed_dedup.fragment_group('chr1','10000', '20000', '+','ACT','')
-    fg.add_member('ACT','')
-    fg.add_member('ACG','')
-    assert(not fg.check_fragment('chr1','10000','20000','-'))
-
-    max_c = fg.demultiplexing_barcodes(0)
-    assert(max_c == 2)
-
-    expected = ['chr1\t10000\t20000\tACG_1_members\t10000\t+',
-                 'chr1\t10000\t20000\tACT_2_members\t10000\t+']
-    expected.sort()
-    out = fg.output_bed_line()
-    assert(out == (2,3))
+    expected = ['chr1\t10000\t20000\tACG_name\t10000\t+',
+                'chr1\t10000\t20000\tGGG_name\t10000\t+',
+                'chr1\t10000\t20000\tACT_name\t10000\t+',
+                'chr1\t10000\t20000\tGGG_name\t10000\t+',
+                'chr1\t10000\t20000\tACT_name\t10000\t+',
+                 'chr1\t10000\t20000\tACT_name\t10000\t+']
 
 
-    max_c =  fg.demultiplexing_barcodes(1)
-    print(fg.get_unique_umi())
-    assert(len(fg.get_unique_umi()) == 1)
-    assert(max_c ==3)
-    expected = ['chr1\t10000\t20000\tACT_3_members\t10000\t+', 
-            'chr1\t10000\t20000\tACG_3_members\t10000\t+']
-    out = fg.output_bed_line()
-    assert(out == (1,3))
+    member_count = 0
+    for coordinates, fragments in groupby(expected, bed_dedup.fragment_coordinates):
+        barcode_group = bed_dedup.fragment_group(coordinates, 
+                                fragments, 
+                                umi_delim = '_', 
+                                umi_f = 0, 
+                                ct = -1)
+        barcode_group.resolve_fragments()
+        max_member_count = barcode_group.demultiplexing_barcodes(threshold = 1)
+        uc, mc = barcode_group.print_demultiplexed()
+    assert(max_member_count == 4)
+    assert(mc == len(expected))
+    assert(uc == 2)
+    assert(set(barcode_group.unique_barcodes).issubset(['ACT_4_members','ACG_4_members', 'GGG_2_members']))
 
-    
+
+    max_member_count = barcode_group.demultiplexing_barcodes(threshold = 0)
+    assert(max_member_count == 3)
+    assert(set(barcode_group.unique_barcodes) == set(['ACG_1_members', 'GGG_2_members', 'ACT_3_members']))
+
 
 def test_umi():
     import os
     import sys
     import string
-    f = open(os.devnull, 'w')
-    test_fragment = poisson_umi_tools.fragment('chr1','1000','2000','-', 'AAA')
+
+    template = 'chr1\t100\t200\t{umi}_1_member\t0\t+'
+    test_f = []
     for s in string.ascii_letters:
-        test_fragment.add_fragment(s * 3)
-    assert(test_fragment.output_fragments(umi_nt = 3, out_file = f) == 107)
-    assert(test_fragment.output_fragments(umi_nt = 5, out_file = f) == 53)
+        test_f += [template.format(umi = (s * 3))]
+
+    outfile = open(os.devnull, 'w')
+    ic, oc = poisson_umi_tools.parse_dedup(test_f, outfile, umi_nt = 3, read_prefix=None)
+    assert(ic == 107 and oc == 52)
 
 

@@ -23,7 +23,7 @@ def trim_other_read(sequence, qual, barcode, adapter):
         int seq_start, seq_end, clip_start, clip_end, matched, error
 
     clip_seq = reverse_complement(barcode) + adapter
-    located = locate(sequence ,clip_seq, 0.2)
+    located = locate(sequence, clip_seq, 0.15)
     if located:
         seq_start, seq_end, clip_start, clip_end, matched, error = located
         if clip_start == 0:
@@ -54,7 +54,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation,
     barcode_mean_qual = np.mean(list(map(ord, barcode_qual))) - 33
 
     no_N_barcode = 'N' not in barcode
-    hiQ_barcode = barcode_mean_qual > barcode_cut_off
+    hiQ_barcode = barcode_mean_qual >= barcode_cut_off
     accurate_constant = True if constant_no_evaluation else  hamming_distance(constant, constant_region) <= hamming_threshold
 
     if no_N_barcode and hiQ_barcode and accurate_constant:
@@ -91,7 +91,7 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation,
     barcode_mean_qual = np.mean(list(map(ord, barcode_qual))) - 33
 
     no_N_barcode = 'N' not in barcode
-    hiQ_barcode = barcode_mean_qual > barcode_cut_off
+    hiQ_barcode = barcode_mean_qual >= barcode_cut_off
     accurate_constant = True if constant_no_evaluation else  hamming_distance(constant, constant_region) <= hamming_threshold
 
     if no_N_barcode and hiQ_barcode and accurate_constant:

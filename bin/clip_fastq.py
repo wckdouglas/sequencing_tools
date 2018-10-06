@@ -23,7 +23,7 @@ def getOptions():
         help='Paired end Fastq file 2 with four line/record')
     parser.add_argument("-x", "--idxBase", default='XXXXXXXXXXXXX',
         help="how many base in 5' end as index? (default: XXXXXXXXXXXXX) "+\
-            "X as umi bases can add constant regions add back, such as XXXXCATGC")
+            "X as umi bases, can also add constant regions at the back, such as XXXXCATGC, if CATGC is the constant region")
     parser.add_argument('-q', '--barcodeCutOff', type=int, default=20,
         help="Average base calling quality for barcode sequence (default=20)")
     parser.add_argument("-a", "--mismatch", type=int,default=1,

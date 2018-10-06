@@ -16,17 +16,19 @@ cdef class read_fragment:
         long start, end
         int fragment_size
         AlignedSegment read_1
-        str rt1
         str bed_line
+        str rt1
         bool pass_filter
         str cigar_field
+        str prefix
 
-    def __init__(self, read, tag, max_size, min_size):
+    def __init__(self, read, tag, max_size, min_size, prefix=None):
         self.tag = tag
         self.read_1 = read
         self.max_size = max_size
         self.min_size = min_size
         self.cigar_field = self.read_1.cigarstring
+        self.prefix = prefix
 
         if self.tag:
             self.rt1 = str(self.read_1.get_tag(self.tag))
@@ -38,12 +40,14 @@ cdef class read_fragment:
         self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
 
     def generate_fragment(self, cigar=False):
+        read_name = self.read_1.query_name 
+        read_name = read_name if not self.prefix else self.prefix + ':' + read_name
         if self.pass_filter:
             self.bed_line = '{chrom}\t{start}\t{end}\t{read_name}\t{fragment_size}\t{strand}'\
                 .format(chrom = self.chrom,
                         start = self.start, 
                         end = self.end, 
-                        read_name = self.read_1.query_name,
+                        read_name = read_name,
                         fragment_size = self.fragment_size,
                         strand = self.strand)
             if self.tag: 
@@ -59,7 +63,7 @@ cdef class read_paired_fragment(read_fragment):
         AlignedSegment read_2
         str rt2
 
-    def __init__(self, read1, read2, tag=None, min_size=0, max_size=1000000):
+    def __init__(self, read1, read2, tag=None, min_size=0, max_size=1000000, prefix=None):
         self.tag = tag
         self.min_size = min_size
         self.max_size = max_size
@@ -79,15 +83,18 @@ cdef class read_paired_fragment(read_fragment):
         if self.tag:
             self.rt1 = str(self.read_1.get_tag(self.tag))
             self.rt2 = str(self.read_2.get_tag(self.tag))
-            assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
+            try:
+                self.rt1 = str(max(float(self.rt1), float(self.rt2)))
+            except ValueError:
+                assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
 
-        if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
-            self.chrom = self.read_1.reference_name
-            self.strand = '-' if self.read_1.is_reverse else '+'
-            self.start, self.end = fragment_ends(self.read_1, self.read_2)
-            self.fragment_size = self.end - self.start
-            self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
-            self.cigar_field = self.read_1.cigarstring + ':' + self.read_2.cigarstring
+        #if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
+        self.chrom = self.read_1.reference_name
+        self.strand = '-' if self.read_1.is_reverse else '+'
+        self.start, self.end = fragment_ends(self.read_1, self.read_2)
+        self.fragment_size = self.end - self.start
+        self.pass_filter =  self.min_size <= self.fragment_size <= self.max_size
+        self.cigar_field = self.read_1.cigarstring + ':' + self.read_2.cigarstring
 
 
 def pair_end_iterator(in_bam):
@@ -123,7 +130,8 @@ def fragment_iterator(in_bam):
 
 
 def bam_to_bed(bam_file, out_file, int min_size, int max_size, 
-                str tag, bool output_all, bool only_primary, bool add_cigar):
+                str tag, bool output_all, bool only_primary, bool add_cigar,
+               prefix = None):
     '''
     Read two alignments at a time,
     assume they are pairs,
@@ -149,43 +157,44 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                 primary_pair = check_primary(read_1, read_2)
                 if concordant and ((primary_pair and only_primary) or not only_primary):#, 'Paired not stored together: %s, %s'  %(read_1.query_name , read_2.query_name)
                     pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
-                                                        max_size = max_size, min_size = min_size)
+                                                        max_size = max_size, min_size = min_size,
+                                                        prefix = prefix)
                     line = pair_fragment.generate_fragment(cigar = add_cigar)
                     if line:
                         pair_count += 1
                         print(line, file=out_file)
-                else:
-                    while not check_concordant(read_1, read_2):
-                        if not read_1.is_secondary and not read_2.is_secondary:
-                            if output_all:
-                                if read_2.is_supplementary:
-                                    fragment = read_fragment(read_2, tag, max_size, min_size)
-                                    read_2 = next(in_bam)
-
-                                else:
-                                    fragment = read_fragment(read_1, tag, max_size, min_size)
-                                    read_1 = read_2
-                                    read_2 = next(in_bam)
-
-                                line = fragment.generate_fragment(cigar = add_cigar)
-                                single_count += 1
-                                print(line, file=out_file)
-                            else:
-                                read_1 = read_2
-                                read_2 = next(in_bam)
-                        elif read_1.is_secondary:
-                            read_1 = read_2
-                            read_2 = next(in_bam)
-
-                        elif read_2.is_secondary:
-                            read_2 = next(in_bam)
-
-                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
-                                                        max_size = max_size, min_size = min_size)
-                    line = pair_fragment.generate_fragment(cigar = add_cigar)
-                    if line:
-                        pair_count += 1
-                        print(line, file=out_file)
+#                else:
+#                    while not check_concordant(read_1, read_2):
+#                        if not read_1.is_secondary and not read_2.is_secondary:
+#                            if output_all:
+#                                if read_2.is_supplementary:
+#                                    fragment = read_fragment(read_2, tag, max_size, min_size)
+#                                    read_2 = next(in_bam)
+#
+#                                else:
+#                                    fragment = read_fragment(read_1, tag, max_size, min_size)
+#                                    read_1 = read_2
+#                                    read_2 = next(in_bam)
+#
+#                                line = fragment.generate_fragment(cigar = add_cigar)
+#                                single_count += 1
+#                                print(line, file=out_file)
+#                            else:
+#                                read_1 = read_2
+#                                read_2 = next(in_bam)
+#                        elif read_1.is_secondary:
+#                            read_1 = read_2
+#                            read_2 = next(in_bam)
+#
+#                        elif read_2.is_secondary:
+#                            read_2 = next(in_bam)
+#
+#                    pair_fragment = read_paired_fragment(read_1, read_2, tag = tag, 
+#                                                        max_size = max_size, min_size = min_size)
+#                    line = pair_fragment.generate_fragment(cigar = add_cigar)
+#                    if line:
+#                        pair_count += 1
+#                        print(line, file=out_file)
             except StopIteration:
                 break
     print('Witten %i pair fragments and %i multiple jump fragments' %(pair_count, single_count), file = sys.stderr)

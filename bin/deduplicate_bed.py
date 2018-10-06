@@ -16,7 +16,7 @@ def get_opt():
                         help ='input bedfile, can be "-" or "/dev/stdin" for stdin (default: -).' +\
                                 'Format should be sorted BED: ' + \
                                 '\n1. chrom\n2. start\n3. end\n4. {barcode}_{id}\n6. strand',
-                        default = '-')
+                        required=True)
     parser.add_argument('-o','--outfile',
                         help ='output bedfile, can be "-" or "/dev/stdout" for stdin (default: -).', default= '-')
     parser.add_argument('-t','--threshold',

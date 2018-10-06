@@ -10,8 +10,12 @@ test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
 def test_bam():
     in_bam = test_data_path + '/test.bam' 
     out_bed = test_data_path + '/out.bed' 
-    command = 'bam_to_bed.py -i {in_bam} | sort -k1,1 -k2,2n |  deduplicate_bed.py -i -  > {out_bed}'.format(in_bam = in_bam,
-                                                                                                               out_bed = out_bed)
+    command = 'bam_to_bed.py -i {in_bam} --primary  '\
+            '| sort -k1,1 -k2,2n -k3,3n '\
+            '|  deduplicate_bed.py -i - '\
+            '> {out_bed}'\
+            .format(in_bam = in_bam,
+                    out_bed = out_bed)
     os.system(command)
     assert(filecmp.cmp(out_bed, test_data_path + '/test.bed'))
     os.remove(out_bed)
