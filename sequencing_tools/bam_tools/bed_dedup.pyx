@@ -154,67 +154,6 @@ class fragment_group:
         return self.unique_barcodes
 
 
-<<<<<<< HEAD
-=======
-def make_graph(comparison, int threshold):
-    '''
-    Using a graph to connect all umi with <= threshold mismatches
-    '''
-    cdef:
-        str umi_1, umi_2
-
-    G = Graph()
-    for umi_1, umi_2 in comparison:
-        if levenshtein_distance(umi_1, umi_2) <= threshold:
-            G.add_edge(umi_1, umi_2)
-        else:
-            G.add_node(umi_1)
-            G.add_node(umi_2)
-    return G
-
-
-def unique_barcode_from_graph(graph, barcodes):
-    '''
-    Merging barcode families, using the pre-built network-of-barcode 
-    '''
-    cdef:
-        set subgraph
-        list subgraph_list
-        str bc, barcode_id
-        int member_count
-        list unique_barcode = []
-        long max_member_count = 0
-
-    for subgraph in connected_components(graph):
-        subgraph_list = list(subgraph)
-        if len(subgraph_list) == 1:
-            barcode_id = subgraph_list[0]
-            member_count = barcodes[barcode_id]
-            barcode_id = barcode_id + '_' + str(member_count) + '_members'
-        else:
-            member_count = sum(barcodes[bc] for bc in subgraph)
-            barcode_id = subgraph_list[0] + '_' + str(member_count) + '_members'
-        unique_barcode.append(barcode_id)
-        max_member_count = max(max_member_count, member_count)
-    return unique_barcode, max_member_count
-
-
-def demultiplex(barcodes, threshold=1):
-    '''
-    demultiplexing barcode families
-    '''
-
-    comparison = combinations(barcodes.keys(),r=2)
-    graph = make_graph(comparison, threshold)
-    unique_barcode, max_member_count =  unique_barcode_from_graph(graph, barcodes)
-    return unique_barcode, max_member_count
-
-cpdef fragment_coordinates(str bedline):
-    fields = bedline.strip().split('\t')
-    return  itemgetter(0,1,2,5)(fields)
-
-
->>>>>>> ecac3187ae0d509e32a39e50c7fed558643b7c48
 def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int ct):
     cdef:
         str bc, read_name, chrom, start, end, strand
