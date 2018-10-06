@@ -154,6 +154,11 @@ class fragment_group:
         return self.unique_barcodes
 
 
+cpdef fragment_coordinates(str bedline):
+    fields = bedline.strip().split('\t')
+    return  itemgetter(0,1,2,5)(fields)
+
+
 def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int ct):
     cdef:
         str bc, read_name, chrom, start, end, strand
