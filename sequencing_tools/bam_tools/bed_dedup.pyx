@@ -7,6 +7,7 @@ from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
 from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
+from sequencing_tools.bam_tools.umi_network import demultiplex_directional, demultiplex_adj
 import sys
 import six
 from libc.stdint cimport uint32_t
@@ -75,7 +76,8 @@ cdef class fragment_group:
                     _temp_unique_barcodes.append(_barcode_name)
 
                 else: # for more than 1 unique barcode
-                    _barcodes, _max_member_count = demultiplex(barcodes_dict, threshold = threshold)
+                    #_barcodes, _max_member_count = demultiplex_adj(barcodes_dict, threshold = threshold)
+                    _barcodes, _max_member_count = demultiplex_directional(barcodes_dict, threshold = threshold)
                     _temp_unique_barcodes.extend(_barcodes)
 
 
@@ -133,58 +135,6 @@ cdef class fragment_group:
     
     def get_unique_umi(self):
         return self.unique_barcodes
-
-
-def make_graph(comparison, int threshold):
-    '''
-    Using a graph to connect all umi with <= threshold mismatches
-    '''
-    cdef:
-        str umi_1, umi_2
-
-    G = Graph()
-    for umi_1, umi_2 in comparison:
-        if levenshtein_distance(umi_1, umi_2) <= threshold:
-            G.add_edge(umi_1, umi_2)
-        else:
-            G.add_node(umi_1)
-            G.add_node(umi_2)
-    return G
-
-def unique_barcode_from_graph(graph, barcodes):
-    '''
-    Merging barcode families, using the pre-built network-of-barcode 
-    '''
-    cdef:
-        set subgraph
-        list subgraph_list
-        str bc, barcode_id
-        int member_count
-        list unique_barcode = []
-        long max_member_count = 0
-
-    for subgraph in connected_components(graph):
-        subgraph_list = list(subgraph)
-        if len(subgraph_list) == 1:
-            barcode_id = subgraph_list[0]
-            member_count = barcodes[barcode_id]
-            barcode_id = barcode_id + '_' + str(member_count) + '_members'
-        else:
-            member_count = sum(barcodes[bc] for bc in subgraph)
-            barcode_id = subgraph_list[0] + '_' + str(member_count) + '_members'
-        unique_barcode.append(barcode_id)
-        max_member_count = max(max_member_count, member_count)
-    return unique_barcode, max_member_count
-
-def demultiplex(barcodes, threshold=1):
-    '''
-    demultiplexing barcode families
-    '''
-
-    comparison = combinations(barcodes.keys(),r=2)
-    graph = make_graph(comparison, threshold)
-    unique_barcode, max_member_count =  unique_barcode_from_graph(graph, barcodes)
-    return unique_barcode, max_member_count
 
 
 def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int ct):

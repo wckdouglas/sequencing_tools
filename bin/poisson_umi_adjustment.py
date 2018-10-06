@@ -23,7 +23,7 @@ def main():
     out_bed = sys.stdout if args.out_bed in ['-','/dev/stdout'] else open(args.out_bed, 'w')
     nt = args.umi
     read_prefix = args.prefix
-    poisson_umi_tools.parse_dedup(in_bed, out_bed, nt, read_prefix)
+    res = poisson_umi_tools.parse_dedup(in_bed, out_bed, nt, read_prefix)
 
 if __name__ == '__main__':
     main()
