@@ -18,10 +18,8 @@ def iter_nearest_neighbours(umis, substr_idx):
     cdef:
         int i 
         str u
-        list nbr
+        str nbr
         set neighbours 
-        str idx
-        
 
     for i, u in enumerate(umis, 1):
         neighbours = set()
@@ -97,8 +95,11 @@ def get_adj_list_directional(umis, counts, threshold=1):
 
 
 def breadth_first_search(node, adj_list):
-    searched = set()
-    queue = set()
+    cdef:
+        set searched = set()
+        set queue = set()
+        str next_node
+
     queue.update((node,))
     searched.update((node,))
 
@@ -123,8 +124,10 @@ def get_connected_components_adjacency(umis, graph, counts):
     # else:
     #    self.search = breadth_first_search
 
-    found = set()
-    components = list()
+    cdef:
+        set found = set()
+        list components = list()
+        str node
 
     for node in sorted(graph, key=lambda x: counts[x], reverse=True):
         if node not in found:
@@ -139,8 +142,13 @@ def get_connected_components_adjacency(umis, graph, counts):
 def group_directional(clusters, adj_list, counts):
     ''' return groups for directional method'''
 
-    observed = set()
-    groups = []
+    cdef:
+        set observed = set()
+        list groups = []
+        str node
+        set cluster
+        list temp_cluster
+
     for cluster in clusters:
         if len(cluster) == 1:
             groups.append(list(cluster))
