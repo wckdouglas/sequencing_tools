@@ -23,7 +23,7 @@ def iter_nearest_neighbours(umis, substr_idx):
 
     for i, u in enumerate(umis, 1):
         neighbours = set()
-        for idx, substr_map in substr_idx.items():
+        for idx, substr_map in six.iteritems(substr_idx):
             u_sub = u[slice(*idx)]
             neighbours = neighbours.union(substr_map[u_sub])
         neighbours.difference_update(umis[:i])
@@ -146,7 +146,6 @@ def group_directional(clusters, adj_list, counts):
         set observed = set()
         list groups = []
         str node
-        set cluster
         list temp_cluster
 
     for cluster in clusters:
