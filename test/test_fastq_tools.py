@@ -1,5 +1,6 @@
 from sequencing_tools.fastq_tools import *
 import six
+import random
 
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
@@ -132,4 +133,22 @@ def test_onehot_fit():
     assert(dna_encoder.base_encoder ==  {'A': 0, 'C': 1, 'G': 2, 'T': 3})
     assert(np.array_equal(dna_encoder.transform(test_seq), onehot))
     assert(dna_encoder.decode(onehot) == test_seq)
+
+
+def test_insert_trimmer():
+
+    constant = ''.join(random.choices(list('ACTG'), k = 70))
+    seq1 = constant + 'TATATATA' 
+    seq2 = reverse_complement(seq1) + 'ACTGACTG'
+    qual1 = len(seq1) * 'A'
+    qual2 = len(seq2) * 'A'
+    assert(seq2 != reverse_complement(seq1))
+    seq1, seq2, qual1, qual2 = insert_trimmer(seq1, seq2, qual1, qual2)
+
+    #assert(seq1 == constant)
+    assert(seq2 == reverse_complement(seq1))
+    assert(len(seq1) == len(seq2) == len(qual1) == len(qual2))
+
+
+
 

@@ -10,14 +10,46 @@ import sys
 from cpython cimport bool
 import io
 import os
-from sequencing_tools.fastq_tools import readfq, reverse_complement
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools import readfq, reverse_complement
 from sequencing_tools.fastq_tools.cutadapt_align import locate
 from sequencing_tools.io_tools import xopen
 from sequencing_tools.stats_tools import hamming_distance
 
 
+
+def insert_trimmer(str seq1, str seq2, str qual1, str qual2):
+    '''
+    aligned two reads, remove extensions
+    only return overlapping regions
+    '''
+    cdef:
+        int r1_start, r1_end, r2_start, r2_end, match
+        double err
+
+    seq2 = reverse_complement(seq2)
+    qual2 = qual2[::-1]
+    aligned = locate(seq1, seq2, 0.1)
+
+    if aligned:
+        r1_start, r1_end, r2_start, r2_end, match, err = aligned 
+        if match >= 15:
+
+            # read1
+            seq1 = seq1[r1_start:r1_end]
+            qual1 = qual1[r1_start:r1_end]
+
+            # read2
+            seq2 = seq2[r2_start:r2_end]
+            qual2 = qual2[r2_start:r2_end]
+
+    return seq1, reverse_complement(seq2), qual1, qual2[::-1]
+
 def trim_other_read(sequence, qual, barcode, adapter):
+    '''
+    append UMI (barcode) onto adapter,
+    and trim the read without UMI
+    '''
 
     cdef:
         int seq_start, seq_end, clip_start, clip_end, matched, error
@@ -26,7 +58,7 @@ def trim_other_read(sequence, qual, barcode, adapter):
     located = locate(sequence, clip_seq, 0.15)
     if located:
         seq_start, seq_end, clip_start, clip_end, matched, error = located
-        if clip_start == 0:
+        if clip_start == 0 and matched >= 4:
             sequence, qual = sequence[:seq_start], qual[:seq_start]
     return sequence, qual
 
@@ -61,6 +93,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation,
         seq_left = read1.seq[usable_seq:]
         qual_left = read1.qual[usable_seq:]
         seq_right, qual_right = trim_other_read(read2.seq, read2.qual, barcode, adapter)
+        seq_left, seq_right, qual_left, qual_right = insert_trimmer(seq_left, seq_right, qual_left, qual_right)
         seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
                     '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
         return 1, seq_record
@@ -98,6 +131,7 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation,
         seq_right = read2.seq[usable_seq:]
         qual_right = read2.qual[usable_seq:]
         seq_left, qual_left = trim_other_read(read1.seq, read1.qual, barcode, adapter)
+        seq_left, seq_right, qual_left, qual_right = insert_trimmer(seq_left, seq_right, qual_left, qual_right)
         seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
                     '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
         return 1, seq_record
