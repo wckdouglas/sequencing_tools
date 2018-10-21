@@ -39,9 +39,9 @@ cdef class read_pairs:
 
         for read in reads:
             if read.is_read1:
-                read1.append(read)
+                self.read1.append(read)
             elif read.is_read2:
-                read2.append(read)
+                self.read2.append(read)
 
 
     def generate_filtered_alingments(self):
@@ -109,11 +109,8 @@ cdef class read_pairs:
 
 
     def output_read(self):
-        if self.is_group:
-            read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
-            return read1_aln, read2_aln
-        else:
-            return None, None
+        read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
+        return read1_aln, read2_aln
 
 
 cdef int mapped_length(AlignedSegment read):

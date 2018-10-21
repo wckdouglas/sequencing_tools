@@ -10,7 +10,7 @@ from functools import partial
 def getopt():
     parser = argparse.ArgumentParser(description='Process multiply mapped bam and get either shortest insert size or ribosomal reads')
     parser.add_argument('-i','--infile', required=True, help = 'Input bam/sam file (use < - > for stdin)')
-    parser.add_argument('-o','--outfile', required=True, help = 'Output bam/sam file (use < - > for stdout)' )
+    parser.add_argument('-o','--outfile', required=True, help = 'Output bam/sam file (use < - > for stdout)', default='-' )
     parser.add_argument('-b','--bam_in', action='store_true', help = 'Provide this flag if bam instead of sam is used as input' )
     parser.add_argument('-z','--bam_out', action='store_true', help = 'Provide this flag if bam is needed for output')
     parser.add_argument('-s','--single_end', action='store_true', help = 'For single end bam files')
