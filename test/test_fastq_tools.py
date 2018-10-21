@@ -1,4 +1,5 @@
 from sequencing_tools.fastq_tools import *
+from sequencing_tools.fastq_tools.function_clip import insert_trimmer
 import six
 import random
 
@@ -146,8 +147,22 @@ def test_insert_trimmer():
     seq1, seq2, qual1, qual2 = insert_trimmer(seq1, seq2, qual1, qual2)
 
     #assert(seq1 == constant)
-    assert(seq2 == reverse_complement(seq1))
+    assert(seq1 == reverse_complement(seq2))
     assert(len(seq1) == len(seq2) == len(qual1) == len(qual2))
+
+
+
+    constant = ''.join(random.choices(list('ACTG'), k = 10))
+    seq1 = constant + 'TATATATA' 
+    seq2 = reverse_complement(constant) + 'ACTGACTG'
+    qual1 = len(seq1) * 'A'
+    qual2 = len(seq2) * 'A'
+    assert(seq2 != reverse_complement(seq1))
+    new_seq1, new_seq2, qual1, qual2 = insert_trimmer(seq1, seq2, qual1, qual2)
+
+    #assert(seq1 == constant)
+    assert(seq2 == new_seq2)
+    assert(seq1 == new_seq1)
 
 
 
