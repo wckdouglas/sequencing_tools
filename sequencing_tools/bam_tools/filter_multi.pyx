@@ -7,6 +7,7 @@ import numpy as np
 from builtins import zip, range
 import re
 from libc.stdlib cimport rand
+from itertools import groupby
 
 regular_chroms = list(range(1,23))
 regular_chroms.extend(list('XY'))
@@ -26,25 +27,21 @@ cdef class read_pairs:
         AlignedSegment out_read1, out_read2
         str read_id
         bool is_group
+        object reads
 
-    def __init__(self):
+    def __init__(self, read_id, reads):
         self.read1 = []
         self.read2 = []
         self.out_read1 = None
         self.out_read2 = None
-        self.read_id = None
+        self.read_id = read_id
         self.is_group = None
 
-    def initiate_group(self, alignment):
-        self.read_id = alignment.query_name
-        self.put_in_group(alignment)
-        self.is_group = True
-
-    def put_in_group(self, alignment):
-        if alignment.is_read2:
-            self.read2.append(alignment)
-        else:
-            self.read1.append(alignment)
+        for read in reads:
+            if read.is_read1:
+                read1.append(read)
+            elif read.is_read2:
+                read2.append(read)
 
 
     def generate_filtered_alingments(self):
@@ -136,17 +133,11 @@ cdef int mapped_length(AlignedSegment read):
     return mapped
 
 class single_read:
-    def __init__(self):
-        self.reads = []
+    def __init__(self, read_id, reads):
+        self.reads = list(reads)
         self.out_read = None
-        self.read_id = None
+        self.read_id = read_id
 
-    def initiate_group(self, alignment):
-        self.read_id = alignment.query_name
-        self.put_in_group(alignment)
-
-    def put_in_group(self, alignment):
-        self.reads.append(alignment)
 
     def generate_filtered_alingments(self):
         cdef:
@@ -211,10 +202,9 @@ def fix_flag(read1, read2):
 def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
 
     cdef:
-        AlignedSegment alignment, read1_aln, read2_aln
-        int read_count
+        AlignedSegment read1_aln, read2_aln
+        int in_read_count
         int out_read_count = 0
-        int read_group_count = 0
         read_pairs read_group
 
     read_flag = 'rb' if bam_in_bool else 'r'
@@ -223,40 +213,23 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
     print('Writing to: %s' %(out_bam), file = sys.stderr)
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
-            for read_count, alignment in enumerate(in_sam):
-                if read_group_count == 0:
-                    # initial group for first alignment
-                    read_group = read_pairs()
-                    read_group.initiate_group(alignment)
-                    read_group_count = 1
-                else:
-                    if alignment.query_name != read_group.read_id:
-                        read_group.generate_filtered_alingments()
-                        read1_aln, read2_aln = read_group.output_read()
-                        out_sam.write(read1_aln)
-                        out_sam.write(read2_aln)
-                        out_read_count += 1
-                        read_group = read_pairs()
-                        read_group.initiate_group(alignment)
-                    else:
-                        read_group.put_in_group(alignment)
-            #After all reading whole file, clean out memory and output last alignment group
-            read_group.generate_filtered_alingments()
-            read1_aln, read2_aln = read_group.output_read()
-
-            out_sam.write(read1_aln)
-            out_sam.write(read2_aln)
-            out_read_count += 1
-    print('Writting %i read pairs' %(out_read_count), file = sys.stderr)
+            for in_read_count, (read_id, alignments) in enumerate(groupby(in_sam, lambda aln: aln.query_name)):
+                # initial group for first alignment
+                read_group = read_pairs(read_id, alignments)
+                read_group.generate_filtered_alingments()
+                read1_aln, read2_aln = read_group.output_read()
+                out_sam.write(read1_aln)
+                out_sam.write(read2_aln)
+                out_read_count += 1
+    print('Writting %i read pairs from %i groups' %(out_read_count, in_read_count), file = sys.stderr)
     return 0
 
 def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
 
     cdef:
         AlignedSegment alignment, read_aln
-        int read_count
+        int in_read_count
         int out_read_count = 0
-        int read_group_count = 0
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'
@@ -265,27 +238,11 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
     read_group = single_read()
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
-            for read_count, alignment in enumerate(in_sam):
-                if read_group_count == 0:
-                    # initial group for first alignment
-                    read_group = single_read()
-                    read_group.initiate_group(alignment)
-                    read_group_count = 1
-                else:
-                    if alignment.query_name != read_group.read_id:
-                        read_group.generate_filtered_alingments()
-                        read_aln = read_group.output_read()
-                        out_sam.write(read_aln)
-                        out_read_count += 1
-                        read_group = single_read()
-                        read_group.initiate_group(alignment)
-                    else:
-                        read_group.put_in_group(alignment)
-            #After all reading whole file, clean out memory and output last alignment group
-            read_group.generate_filtered_alingments()
-            read_aln = read_group.output_read()
-
-            out_sam.write(read_aln)
-            out_read_count += 1
-    print('Writting %i reads' %(out_read_count), file = sys.stderr)
+            for in_read_count, (read_id, alignments) in enumerate(in_sam, lambda aln: aln.query_name):
+                read_group = single_read(read_id, alignments)
+                read_group.generate_filtered_alingments()
+                read_aln = read_group.output_read()
+                out_sam.write(read_aln)
+                out_read_count += 1
+    print('Writting %i reads from %i groups' %(out_read_count, in_read_count), file = sys.stderr)
     return 0
