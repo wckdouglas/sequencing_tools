@@ -1,7 +1,7 @@
 from sequencing_tools.fastq_tools import *
 from sequencing_tools.fastq_tools.function_clip import insert_trimmer
 import six
-import random
+import numpy.random as random
 
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
@@ -138,7 +138,7 @@ def test_onehot_fit():
 
 def test_insert_trimmer():
 
-    constant = ''.join(random.choices(list('ACTG'), k = 70))
+    constant = ''.join(random.choice(list('ACTG'), size = 70))
     seq1 = constant + 'TATATATA' 
     seq2 = reverse_complement(seq1) + 'ACTGACTG'
     qual1 = len(seq1) * 'A'
@@ -152,7 +152,7 @@ def test_insert_trimmer():
 
 
 
-    constant = ''.join(random.choices(list('ACTG'), k = 10))
+    constant = ''.join(random.choice(list('ACTG'), size = 10))
     seq1 = constant + 'TATATATA' 
     seq2 = reverse_complement(constant) + 'ACTGACTG'
     qual1 = len(seq1) * 'A'
