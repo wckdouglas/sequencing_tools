@@ -17,7 +17,6 @@ from sequencing_tools.io_tools import xopen
 from sequencing_tools.stats_tools import hamming_distance
 
 
-
 def insert_trimmer(str seq1, str seq2, str qual1, str qual2):
     '''
     aligned two reads, remove extensions
@@ -45,7 +44,7 @@ def insert_trimmer(str seq1, str seq2, str qual1, str qual2):
 
     return seq1, reverse_complement(seq2), qual1, qual2[::-1]
 
-def trim_other_read(sequence, qual, barcode, adapter):
+def trim_other_read(sequence, qual, barcode, adapter, barcode_size = 6):
     '''
     append UMI (barcode) onto adapter,
     and trim the read without UMI
@@ -58,7 +57,7 @@ def trim_other_read(sequence, qual, barcode, adapter):
     located = locate(sequence, clip_seq, 0.15)
     if located:
         seq_start, seq_end, clip_start, clip_end, matched, error = located
-        if clip_start == 0 and matched >= 4:
+        if clip_start == 0 and matched > barcode_size:
             sequence, qual = sequence[:seq_start], qual[:seq_start]
     return sequence, qual
 
@@ -92,7 +91,7 @@ def clip_read1(barcode_cut_off, constant, constant_no_evaluation,
     if no_N_barcode and hiQ_barcode and accurate_constant:
         seq_left = read1.seq[usable_seq:]
         qual_left = read1.qual[usable_seq:]
-        seq_right, qual_right = trim_other_read(read2.seq, read2.qual, barcode, adapter)
+        seq_right, qual_right = trim_other_read(read2.seq, read2.qual, barcode, adapter, barcode_size = idx_base)
         seq_left, seq_right, qual_left, qual_right = insert_trimmer(seq_left, seq_right, qual_left, qual_right)
         seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
                     '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
@@ -130,7 +129,7 @@ def clip_read2(barcode_cut_off, constant, constant_no_evaluation,
     if no_N_barcode and hiQ_barcode and accurate_constant:
         seq_right = read2.seq[usable_seq:]
         qual_right = read2.qual[usable_seq:]
-        seq_left, qual_left = trim_other_read(read1.seq, read1.qual, barcode, adapter)
+        seq_left, qual_left = trim_other_read(read1.seq, read1.qual, barcode, adapter, barcode_size = idx_base)
         seq_left, seq_right, qual_left, qual_right = insert_trimmer(seq_left, seq_right, qual_left, qual_right)
         seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
                     '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
