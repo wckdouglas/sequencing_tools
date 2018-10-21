@@ -32,10 +32,10 @@ def insert_trimmer(str seq1, str seq2, str qual1, str qual2):
 
     if aligned:
         r1_start, r1_end, r2_start, r2_end, match, err = aligned 
-        if match >= 15:
+        if match >= 15 and r1_start == 0 and r2_end == len(seq2):
 
             # read1
-            seq1 = seq1[r1_start:r1_end]
+            seq1 = seq1[:r1_end]
             qual1 = qual1[r1_start:r1_end]
 
             # read2
