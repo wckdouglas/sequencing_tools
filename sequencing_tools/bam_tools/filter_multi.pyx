@@ -11,10 +11,8 @@ from itertools import groupby
 
 regular_chroms = list(range(1,23))
 regular_chroms.extend(list('XY'))
-regular_chroms.append('MT')
 regular_chroms = list(map(str, regular_chroms))
 regular_chroms.extend(list(map(lambda x: 'chr'+x, regular_chroms)))
-regular_chroms.append('chrM')
 
 
 cpdef int fast_random_number(int scale):
@@ -69,7 +67,7 @@ cdef class read_pairs:
             self.out_read2 = read2[0]
 
         else:
-            # see if any ribosomal RNA in all shortest fragments
+            # see if any ribosomal RNA or MT-RNA in all shortest fragments
             ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
             new_read1, new_read2 = read1[ribo_bool], read2[ribo_bool]
 
@@ -173,8 +171,9 @@ class single_read:
 def is_regular_chrom(chroms):
     return np.in1d(chroms, regular_chroms)
 
+ribo_mt = re.compile('^gi|^chrM|^MT')
 def is_ribo_chrom(chroms):
-    return np.array([True if 'gi' in chrom else False for chrom in chroms])
+    return np.array([True if ribo_mt.search(chrom) else False for chrom in chroms])
 
 def fix_single(read):
     read.flag = 16 if read.is_reverse else 0
