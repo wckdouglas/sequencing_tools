@@ -28,6 +28,8 @@ def getOptions():
         help="Average base calling quality for barcode sequence (default=20)")
     parser.add_argument("-a", "--mismatch", type=int,default=1,
         help="Allow how many mismatch in constant region (deflaut: 1)")
+    parser.add_argument("-m", "--min_length", type=int,default=15,
+        help="Minimum length to report (deflaut: 15)")
 #    parser.add_argument("-s", "--prefix_split", type=int,default=0, choices = range(5),
 #        help="Using how many bases on the barcode to split the fastq? A choice of 3 will generate 4^3 = 64 files (deflaut: 4)")
     parser.add_argument("-r", "--read", default='read1',choices = ['read1','read2'],
@@ -64,10 +66,11 @@ def main(args):
     print('[%s] using constant regions:            %s' %(programname, constant), file = sys.stderr)
     print('[%s] allowed mismatches:                %i' %(programname, allow_mismatch), file = sys.stderr)
     print('[%s] Using UMI side:                    %s' %(programname, UMI_side), file = sys.stderr)
+    print('[%s] Using min-length:                  %i' %(programname, args.min_length), file = sys.stderr)
 
     # divide reads into subclusters
     clip_pairs(inFastq1, inFastq2, out_file, idx_base,
-            barcode_cut_off, constant, allow_mismatch, programname, UMI_side)
+            barcode_cut_off, constant, allow_mismatch, programname, UMI_side, args.min_length)
     print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)
     return 0
 
