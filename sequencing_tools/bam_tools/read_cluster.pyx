@@ -7,6 +7,7 @@ import sys
 from cpython cimport bool
 from scipy.misc import logsumexp
 from sequencing_tools.fastq_tools import reverse_complement
+from six.moves import xrange
 
 np_len = np.vectorize(len,otypes=[np.int32])
 np_ord = np.vectorize(ord, otypes=[np.int16])
@@ -142,7 +143,7 @@ def calculate_concensus_base(arg):
         double log_posterior
         double total_posterior
         double posterior_correct_probability
-    column_bases, in_column_qualities = arg
+    column_bases, in_column_qualities, _ = arg
     column_qualities = np_ord(in_column_qualities) - 33
     possible_bases = np.unique(column_bases)
     number_possible_bases = len(possible_bases)
