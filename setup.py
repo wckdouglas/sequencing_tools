@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup, Extension
+import os
 #from distutils.core import setup, Extension
 import glob
 
@@ -41,10 +42,11 @@ except ImportError:
 
 include_path = [np.get_include()]
 include_path.extend(pysam.get_include())
+include_path.extend(os.environ['INCLUDE_PATH'].split(':'))
+include_path = filter(lambda x: x!= '', include_path)
 ext_modules=cythonize([
         Extension('*', ['sequencing_tools/*tools/*.pyx'],
-            include_dirs = include_path)
-])
+                  include_dirs = list(include_path))])
 
 
 setup(

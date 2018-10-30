@@ -57,30 +57,33 @@ cdef class read_pairs:
         read1, read2 = map(np.array, [read1_group, read2_group])
 
         #start filtering
-        isizes = np.array([abs(r1.isize) for r1 in self.read1])
 
-        size_bool = (isizes == np.min(isizes))
-        read1, read2 = read1[size_bool], read2[size_bool]
-        if len(read1) == 1:
+
+
+        ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
+        new_read1, new_read2 = read1[ribo_bool], read2[ribo_bool]
+
+        if len(new_read1) == 1:
             # output shortest fragment
-            self.out_read1 = read1[0]
-            self.out_read2 = read2[0]
+            self.out_read1 = new_read1[0]
+            self.out_read2 = new_read2[0]
+
+        elif len(new_read1) > 1:
+            scale = len(new_read1)
+            selected = fast_random_number(scale)
+            self.out_read1 =  new_read1[selected]
+            self.out_read2 = new_read2[selected]
+
 
         else:
             # see if any ribosomal RNA or MT-RNA in all shortest fragments
-            ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
-            new_read1, new_read2 = read1[ribo_bool], read2[ribo_bool]
+            isizes = np.array([abs(r1.isize) for r1 in read1])
+            size_bool = (isizes == np.min(isizes))
+            new_read1, new_read2 = read1[size_bool], read2[size_bool]
 
             if len(new_read1) == 1:
                 self.out_read1 = new_read1[0]
                 self.out_read2 = new_read2[0]
-
-            elif len(new_read1) > 1:
-                # randomly select one if there are multiple rRNA
-                scale = len(new_read1)
-                selected = fast_random_number(scale)
-                self.out_read1 =  new_read1[selected]
-                self.out_read2 = new_read2[selected]
 
             else:
                 # if no rRNA, look at regular chromosome fragments
