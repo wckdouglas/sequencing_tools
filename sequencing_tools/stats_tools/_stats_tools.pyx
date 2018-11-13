@@ -181,7 +181,7 @@ def normalize_count(count_mat, return_sf = False):
     '''
 
     cols = count_mat.columns.tolist()
-    log_row_geomean = count_mat.transform(np.log).mean(axis=1)
+    log_row_geomean = count_mat.transform(np.log).mean(axis=1, skipna=True)
     finite_mean = np.isfinite(log_row_geomean)
     
     
