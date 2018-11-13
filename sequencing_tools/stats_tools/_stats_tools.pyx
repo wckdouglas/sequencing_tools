@@ -3,6 +3,7 @@ import numpy as np
 cimport numpy as np
 from cython cimport floating
 from scipy.stats import binom
+import pandas as pd
 
 cpdef np.ndarray p_adjust(pvalue):
     '''
@@ -181,7 +182,9 @@ def normalize_count(count_mat, return_sf = False):
     '''
 
     cols = count_mat.columns.tolist()
-    log_row_geomean = count_mat.transform(np.log).mean(axis=1, skipna=True)
+    log_row_geomean = count_mat.transform(np.log)\
+            .pipe(lambda d: d[pd.isfinite(d)])\
+            .mean(axis=1, skipna=True)
     finite_mean = np.isfinite(log_row_geomean)
     
     
