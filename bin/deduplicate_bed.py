@@ -51,7 +51,7 @@ def main():
 
     ## input
     if out_filename != '-' and out_filename != '/dev/stdin':
-        out_file_handle = open(out_filename, 'r')
+        out_file_handle = open(out_filename, 'w')
         print('[Deduplicate BED] Writing file %s...' %out_filename, file=sys.stderr)
     else:
         out_file_handle = sys.stdout
