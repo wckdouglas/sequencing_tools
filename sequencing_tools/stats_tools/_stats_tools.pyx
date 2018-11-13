@@ -165,3 +165,36 @@ cpdef int hamming_distance(str s1, str s2):
             hamming += 1
 
     return hamming
+
+
+def normalize_count(count_mat, return_sf = False):
+    '''
+    DESeq2 size factor:
+        https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106#Sec22
+
+    input:
+        pandas dataframe with shape(m,n): m is gene count, n is sample number
+        return_sf: return size factors (n)
+
+    output:
+        np.ndarray(m,n)
+    '''
+
+    cols = count_mat.columns.tolist()
+    log_row_geomean = count_mat.transform(np.log).mean(axis=1)
+    finite_mean = np.isfinite(log_row_geomean)
+    
+    
+    def get_size_factor(sample_cnts):
+        ratio = np.log(sample_cnts) - log_row_geomean
+        ratio = ratio[(finite_mean) & (sample_cnts>0)]
+        ratio = np.median(ratio)
+        return ratio
+    
+    sf = np.apply_along_axis(get_size_factor, 0, count_mat)
+    sf = np.exp(sf)
+    norm_count = count_mat/sf
+    if return_sf:
+        return norm_count, sf
+    else:
+        return norm_count

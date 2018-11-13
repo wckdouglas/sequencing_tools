@@ -41,7 +41,9 @@ except ImportError:
             "be installed before running setup.py (pip install scipy)")
 
 include_path = [np.get_include()]
+include_path.append('/usr/include')
 include_path.extend(pysam.get_include())
+include_path.append('/stor/work/Lambowitz/cdw2854/src/miniconda3/envs/python2/include')
 #include_path.extend(os.environ['INCLUDE_PATH'].split(':'))
 #include_path = filter(lambda x: x!= '', include_path)
 ext_modules=cythonize([
