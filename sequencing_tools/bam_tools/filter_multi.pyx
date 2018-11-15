@@ -49,64 +49,84 @@ cdef class read_pairs:
 
         read1_group = []
         read2_group = []
+        scores = []
         for r1, r2 in zip(self.read1, self.read2):
             if r1.reference_name == r2.reference_name and abs(r1.isize) == abs(r2.isize):
                 read1_group.append(r1)
                 read2_group.append(r2)
+                score = read1.get_tag('AS') + read2.get_tag('AS')
+                scores.append(score)
 
-        read1, read2 = map(np.array, [read1_group, read2_group])
+        read1, read2, scores = map(np.array, [read1_group, read2_group, scores])
 
         #start filtering
+        '''
+        1. best score?
+        2. ribo or mt?
+        3. shortest isize
+        4. regular chrom
+        5. random picked
 
-
-
-        ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
-        new_read1, new_read2 = read1[ribo_bool], read2[ribo_bool]
+        if it is a condition that will definitely yield an output 
+        (smallese isize, best scores vs mt/ribo chrom), 
+        use read1 as filtered, otherwise use new_read1
+        '''
+        best_score_bool = (scores == scores.max())
+        read1, read2 = read1[best_score_bool], read2[best_score_bool]
 
         if len(new_read1) == 1:
-            # output shortest fragment
-            self.out_read1 = new_read1[0]
-            self.out_read2 = new_read2[0]
-
-        elif len(new_read1) > 1:
-            scale = len(new_read1)
-            selected = fast_random_number(scale)
-            self.out_read1 =  new_read1[selected]
-            self.out_read2 = new_read2[selected]
-
-
+            self.out_read1 = read1[0]
+            self.out_read2 = read2[0]
+        
         else:
-            # see if any ribosomal RNA or MT-RNA in all shortest fragments
-            isizes = np.array([abs(r1.isize) for r1 in read1])
-            size_bool = (isizes == np.min(isizes))
-            new_read1, new_read2 = read1[size_bool], read2[size_bool]
+            # ribo mt reads?
+            ribo_bool = is_ribo_chrom([r.reference_name for r in read1])
+            new_read1 = read1[ribo_bool]
+            new_read2 = read2[ribo_bool]
 
             if len(new_read1) == 1:
                 self.out_read1 = new_read1[0]
                 self.out_read2 = new_read2[0]
 
+            elif len(new_read1) > 1:
+                scale = len(new_read1)
+                selected = fast_random_number(scale)
+                self.out_read1 =  new_read1[selected]
+                self.out_read2 = new_read2[selected]
+
+
             else:
-                # if no rRNA, look at regular chromosome fragments
-                regular_chrom_bool = is_regular_chrom([r.reference_name for r in read1])
-                new_read1, new_read2 = read1[regular_chrom_bool], read2[regular_chrom_bool]
+                # isize ?
+                isizes = np.array([abs(r1.isize) for r1 in read1])
+                size_bool = (isizes == np.min(isizes))
+                read1, read2 = read1[size_bool], read2[size_bool]
 
-                if len(new_read1) == 1:
-                    self.out_read1 = new_read1[0]
-                    self.out_read2 = new_read2[0]
+                if len(read1) == 1:
+                    self.out_read1 = read1[0]
+                    self.out_read2 = read2[0]
 
-                elif len(new_read1) > 1:
-                    # randomly select one if there are multiple regular chrom fragments
-                    scale = len(new_read1)
-                    selected = fast_random_number(scale)
-                    self.out_read1 =  new_read1[selected]
-                    self.out_read2 =  new_read2[selected]
-                
                 else:
-                    # randomly pick one if all are same
-                    scale = len(read1)
-                    selected = fast_random_number(scale)
-                    self.out_read1 = read1[selected]
-                    self.out_read2 = read2[selected]
+                    # if no rRNA, look at regular chromosome fragments
+                    regular_chrom_bool = is_regular_chrom([r.reference_name for r in read1])
+                    new_read1, new_read2 = read1[regular_chrom_bool], read2[regular_chrom_bool]
+
+                    if len(new_read1) == 1:
+                        self.out_read1 = new_read1[0]
+                        self.out_read2 = new_read2[0]
+
+                    elif len(new_read1) > 1:
+                        # randomly select one if there are multiple regular chrom fragments
+                        scale = len(new_read1)
+                        selected = fast_random_number(scale)
+                        self.out_read1 =  new_read1[selected]
+                        self.out_read2 =  new_read2[selected]
+                    
+                    else:
+                        # randomly pick one if all are same
+                        scale = len(read1)
+                        selected = fast_random_number(scale)
+                        self.out_read1 = read1[selected]
+                        self.out_read2 = read2[selected]
 
 
     def output_read(self):
