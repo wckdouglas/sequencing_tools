@@ -54,7 +54,7 @@ cdef class read_pairs:
             if r1.reference_name == r2.reference_name and abs(r1.isize) == abs(r2.isize):
                 read1_group.append(r1)
                 read2_group.append(r2)
-                score = read1.get_tag('AS') + read2.get_tag('AS')
+                score = r1.get_tag('AS') + r2.get_tag('AS')
                 scores.append(score)
 
         read1, read2, scores = map(np.array, [read1_group, read2_group, scores])
@@ -74,7 +74,7 @@ cdef class read_pairs:
         best_score_bool = (scores == scores.max())
         read1, read2 = read1[best_score_bool], read2[best_score_bool]
 
-        if len(new_read1) == 1:
+        if len(read1) == 1:
             self.out_read1 = read1[0]
             self.out_read2 = read2[0]
         
