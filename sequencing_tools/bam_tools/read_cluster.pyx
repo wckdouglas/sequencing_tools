@@ -126,8 +126,8 @@ cdef double calculatePosterior(column_bases, column_qualities, guess_base):
     correct_base = column_bases==guess_base
     qual_missed = column_qualities[~correct_base]
     qual_hit = column_qualities[correct_base]
-    hit = sum(log10(1 - q) for q in qual_to_prob(qual_hit))
-    missed = sum(log10(q/3.0) for q in qual_to_prob(qual_missed))
+    hit = sum(log(1 - q) for q in qual_to_prob(qual_hit))
+    missed = sum(log(q/3.0) for q in qual_to_prob(qual_missed))
     log_posterior = missed + hit
     return log_posterior
 
@@ -143,6 +143,7 @@ def calculate_concensus_base(arg):
         double log_posterior
         double total_posterior
         double posterior_correct_probability
+
     column_bases, in_column_qualities, _ = arg
     column_qualities = np_ord(in_column_qualities) - 33
     possible_bases = np.unique(column_bases)
