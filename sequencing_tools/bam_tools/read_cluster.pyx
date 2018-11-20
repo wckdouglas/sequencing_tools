@@ -2,7 +2,7 @@ from __future__ import division, print_function
 import numpy as np
 import pysam
 from builtins import zip, map
-from libc.math cimport log10, exp
+from libc.math cimport log10, exp, log
 import sys
 from cpython cimport bool
 from scipy.misc import logsumexp
