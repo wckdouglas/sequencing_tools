@@ -23,8 +23,3 @@ split_uniq_bam.py -h
 stranded_base_count.py -h
 pe_fq_merge.py -h
 filter_umi.py -h
-for SAM in test/data/*sam
-do
-	samtools view -b $SAM > ${SAM%.sam}.bam
-done
-pytest

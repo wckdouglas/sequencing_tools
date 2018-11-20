@@ -5,9 +5,28 @@ python:
     - "3.6"
 # command to install dependencies
 install: 
-    - pip install -r requirements.txt
+    - sudo apt-get update
+    # We do this conditionally because it saves us some downloading if the
+    # version is the same.
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - hash -r
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    # Useful for debugging any issues with conda
+    - conda info -a
+    - conda config --add channels r
+    - conda config --add channels bioconda
+
+
+    - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+        cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy 
+        matplotlib samtools future
+    - source activate test-environment
     - pip install .
+    - for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done
 # # command to run tests
 script: 
-    - bash test_script.sh
     - pytest
+    - bash test_script.sh
