@@ -94,13 +94,13 @@ def qual_to_prob(base_qual):
     return [10**(-q/10) for q in base_qual]
 
 
-def cumulative_product_qual(qs, hit=True):
-    '''
-    cythonize numpy.prod
-    '''
-    if hit:
-        result = np.log10(sum(1-q for q in qs))
-    return result
+#def cumulative_product_qual(qs, hit=True):
+#    '''
+#    cythonize numpy.prod
+#    '''
+#    if hit:
+#        result = np.log(sum(1-q for q in qs))
+#    return result
 
 cdef double cumulative_product(qs):
     '''
