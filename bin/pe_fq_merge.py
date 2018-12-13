@@ -22,6 +22,9 @@ def getOptions():
             help='Maximum error rate of alignment (default: 0.1)')
     parser.add_argument('-a','--all',action='store_true',
         help='Output all bases (default: only overlapping regions)')
+    parser.add_argument('-c','--conserved', action='store_true', 
+                        help = 'Use of a voting algorithm, '\
+                        'otherwise use posterior error from qualit')
     return parser.parse_args()
 
 def main():
@@ -29,7 +32,7 @@ def main():
     outfile=args.outfile
     outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else xopen(outfile,mode = 'w')
     merge_interleaved(args.interleaved, outfile_handle,
-            args.min_len, args.error, args.all)
+            args.min_len, args.error, args.all, args.conserved)
 
 
 if __name__ == '__main__':
