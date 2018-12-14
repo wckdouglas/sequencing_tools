@@ -8,6 +8,7 @@ from builtins import zip
 from functools import partial
 from cpython cimport bool
 from sequencing_tools.bam_tools.read_cluster import calculate_concensus_base, prob_to_qual_string
+import numpy as np
 cdef:
     double EPSILON = 0.999999
 
@@ -49,7 +50,9 @@ cdef posterior_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
     
     iterator = zip(r1_seq, r1_qual, r2_seq, r2_qual)
     for b1, q1, b2, q2 in iterator:
-        b, correct_prob = calculate_concensus_base(([b1, b2], [q1,q2], 0))
+        b, correct_prob = calculate_concensus_base((np.array([b1, b2]), 
+                                                    np.array([q1,q2]), 
+                                                    0))
         seq += b
         qual += prob_to_qual_string(correct_prob)
     return seq, qual
