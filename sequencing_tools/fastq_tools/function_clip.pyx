@@ -81,7 +81,7 @@ class clip_read:
 
 
 
-            if fmin(len(umi_seq), len(opposite_seq)) >= min_length:
+            if fmin(len(umi_seq), len(opposite_seq)) >= self.min_length:
                 umi_out_read = self.template.format(UMI = umi,
                                                     READNAME = seq_name,
                                                     SEQ = umi_seq,
@@ -94,7 +94,7 @@ class clip_read:
         return ret_code, umi_out_read, opposite_out_read
 
 
-    def __insert_trimmer__(str seq1, str seq2, str qual1, str qual2):
+    def __insert_trimmer__(self, str seq1, str seq2, str qual1, str qual2):
         '''
         aligned two reads, remove extensions
         only return overlapping regions
@@ -122,7 +122,7 @@ class clip_read:
         return seq1, reverse_complement(seq2), qual1, qual2[::-1]
 
 
-    def __trim_other_read__(sequence, qual, umi):
+    def __trim_other_read__(self, sequence, qual, umi):
         '''
         append UMI (barcode) onto adapter,
         and trim the read without UMI
@@ -179,7 +179,7 @@ def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
                     print(umi_read + opposite_read, file = out_handle)
                 if read == "read2":
                     print(opposite_read + umi_read, file = out_handle)
-                    
+
             if count % 10000000 == 0 and count != 0:
                 print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
 
