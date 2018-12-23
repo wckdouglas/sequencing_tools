@@ -62,7 +62,7 @@ class clip_read:
 
         umi_qual = umi_read.qual[:self.umi_bases]
         constant_region = umi_read.seq[self.umi_bases:self.usable_seq]
-        barcode_mean_qual = sum(map(ord, self.umi_qual))/self.umi_bases - 33
+        barcode_mean_qual = sum(map(ord, umi_qual))/self.umi_bases - 33
 
         no_N_barcode = 'N' not in umi
         hiQ_barcode = barcode_mean_qual >= self.barcode_cut_off
@@ -85,11 +85,11 @@ class clip_read:
                 umi_out_read = self.template.format(UMI = umi,
                                                     READNAME = seq_name,
                                                     SEQ = umi_seq,
-                                                    qual = umi_qual)
+                                                    QUAL = umi_qual)
                 opposite_out_read = self.template.format(UMI = umi,
                                                     READNAME = seq_name,
                                                     SEQ = opposite_seq,
-                                                    qual = opposite_qual)
+                                                    QUAL = opposite_qual)
                 ret_code = 1
         return ret_code, umi_out_read, opposite_out_read
 
