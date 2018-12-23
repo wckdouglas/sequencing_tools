@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function, division
 from itertools import product
 from builtins import zip, map
 from multiprocessing import Pool
@@ -10,6 +10,7 @@ import sys
 from cpython cimport bool
 import io
 import os
+from libc.math cimport fmin
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools import readfq, reverse_complement
 from sequencing_tools.fastq_tools.cutadapt_align import locate
@@ -17,152 +18,126 @@ from sequencing_tools.io_tools import xopen
 from sequencing_tools.stats_tools import hamming_distance
 
 
-def insert_trimmer(str seq1, str seq2, str qual1, str qual2):
+class adapters():
+    R1 = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
+    R2 = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+
+class clip_read:
     '''
-    aligned two reads, remove extensions
-    only return overlapping regions
+    implement read trimmer
     '''
-    cdef:
-        int r1_start, r1_end, r2_start, r2_end, match
-        double err
+    def __init__(self, 
+                barcode_cut_off = 20, 
+                constant = '', 
+                constant_no_evaluation = True,
+                umi_bases = 6, 
+                usable_seq = 6, 
+                hamming_threshold = 6, 
+                adapter = adapters.R1, 
+                min_length = 12):
 
-    seq2 = reverse_complement(seq2)
-    qual2 = qual2[::-1]
-    aligned = locate(seq1, seq2, 0.1)
+        self.barcode_cut_off = barcode_cut_off
+        self.constant = constant 
+        self.constant_no_evaluation = constant_no_evaluation
+        self.umi_bases = umi_bases 
+        self.usable_seq = usable_seq
+        self.hamming_threshold = hamming_threshold
+        self.adapter = adapter 
+        self.min_length = min_length
+        self.template = '@{UMI}_{READNAME}/1\n{SEQ}\n+\n{QUAL}\n'
 
-    if aligned:
-        r1_start, r1_end, r2_start, r2_end, match, err = aligned 
-        if match >= 15 and r1_start == 0 and r2_end == len(seq2):
+    def trim_reads(self, umi_read, opposite_read):
+        """
+        from each read1, clipped barcode and constant regions and make it as ID
+        only when 1. barcode quality > cutoff and
+                2. constant region matched
+        """
 
-            # read1
-            seq1 = seq1[:r1_end]
-            qual1 = qual1[r1_start:r1_end]
+        ret_code = 0
+        umi_out_read = ''
+        opposite_out_read = ''
 
-            # read2
-            seq2 = seq2[r2_start:r2_end]
-            qual2 = qual2[r2_start:r2_end]
+        seq_name = umi_read.id.split(' ')[0]
+        umi =  umi_read.seq[:self.umi_bases]
 
-    return seq1, reverse_complement(seq2), qual1, qual2[::-1]
+        umi_qual = umi_read.qual[:self.umi_bases]
+        constant_region = umi_read.seq[self.umi_bases:self.usable_seq]
+        barcode_mean_qual = sum(map(ord, umi_qual))/self.umi_bases - 33
 
-def trim_other_read(sequence, qual, barcode, adapter, barcode_size = 6):
-    '''
-    append UMI (barcode) onto adapter,
-    and trim the read without UMI
-    '''
+        no_N_barcode = 'N' not in umi
+        hiQ_barcode = barcode_mean_qual >= self.barcode_cut_off
+        hamming_qual_pass = hamming_distance(self.constant, constant_region) <= self.hamming_threshold
+        accurate_constant = self.constant_no_evaluation or hamming_qual_pass
 
-    cdef:
-        int seq_start, seq_end, clip_start, clip_end, matched, error
-
-    clip_seq = reverse_complement(barcode) + adapter
-    located = locate(sequence, clip_seq, 0.15)
-    if located:
-        seq_start, seq_end, clip_start, clip_end, matched, error = located
-        if clip_start == 0 and matched > barcode_size:
-            sequence, qual = sequence[:seq_start], qual[:seq_start]
-    return sequence, qual
-
-
-def clip_read1(barcode_cut_off, constant, constant_no_evaluation,
-            idx_base, usable_seq, int hamming_threshold, str adapter, int min_length,
-            fastqRecord read1, fastqRecord read2):
-    """
-    from each read1, clipped barcode and constant regions and make it as ID
-    only when 1. barcode quality > cutoff and
-              2. constant region matched
-    """
-
-    cdef:
-        float barcode_mean_qual
-        bool no_N_barcode, hiQ_barcode, accurate_constant
-        str seq_record = '', seq_left, qual_left, seq_right, qual_right
-        int ret_code = 0
+        if no_N_barcode and hiQ_barcode and accurate_constant:
 
 
-    seq_name = read1.id.split(' ')[0]
-#    assert seq_name == id_right.split(' ')[0], 'Wrongly splitted files!! %s\n%s' %(id_right, id_left)
-    barcode =  read1.seq[:idx_base]
-    barcode_qual = read1.qual[:idx_base]
-    constant_region = read1.seq[idx_base:usable_seq]
-    barcode_mean_qual = np.mean(list(map(ord, barcode_qual))) - 33
+            umi_seq = umi_read.seq[self.usable_seq:]
+            umi_qual = umi_read.qual[self.usable_seq:]
 
-    no_N_barcode = 'N' not in barcode
-    hiQ_barcode = barcode_mean_qual >= barcode_cut_off
-    accurate_constant = True if constant_no_evaluation else  hamming_distance(constant, constant_region) <= hamming_threshold
-
-    if no_N_barcode and hiQ_barcode and accurate_constant:
-        seq_left = read1.seq[usable_seq:]
-        qual_left = read1.qual[usable_seq:]
-        seq_right, qual_right = trim_other_read(read2.seq, read2.qual, barcode, adapter, barcode_size = idx_base)
-        seq_left, seq_right, qual_left, qual_right = insert_trimmer(seq_left, seq_right, qual_left, qual_right)
+            opposite_seq, opposite_qual = self.__trim_other_read__(opposite_read.seq, opposite_read.qual, umi)
+            umi_seq, opposite_seq, umi_qual, opposite_qual = self.__insert_trimmer__(umi_seq, opposite_seq, 
+                                                                            umi_qual, opposite_qual)
 
 
-        if len(seq_left) >= min_length and len(seq_right) >= min_length:
-            seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
-                        '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
-            ret_code = 1
-    return ret_code, seq_record
+
+            if fmin(len(umi_seq), len(opposite_seq)) >= self.min_length:
+                umi_out_read = self.template.format(UMI = umi,
+                                                    READNAME = seq_name,
+                                                    SEQ = umi_seq,
+                                                    QUAL = umi_qual)
+                opposite_out_read = self.template.format(UMI = umi,
+                                                    READNAME = seq_name,
+                                                    SEQ = opposite_seq,
+                                                    QUAL = opposite_qual)
+                ret_code = 1
+        return ret_code, umi_out_read, opposite_out_read
 
 
-def clip_read2(barcode_cut_off, constant, constant_no_evaluation,
-            idx_base, usable_seq, int hamming_threshold, str adapter, int min_length,
-            fastqRecord read1, fastqRecord read2):
-    """
-    from each read1, clipped barcode and constant regions and make it as ID
-    only when 1. barcode quality > cutoff and
-              2. constant region matched
-    """
+    def __insert_trimmer__(self, str seq1, str seq2, str qual1, str qual2):
+        '''
+        aligned two reads, remove extensions
+        only return overlapping regions
+        '''
+        cdef:
+            int r1_start, r1_end, r2_start, r2_end, match
+            double err
 
-    cdef:
-        float barcode_mean_qual
-        bool no_N_barcode, hiQ_barcode, accurate_constant
-        str seq_record = '', seq_left, qual_left, seq_right, qual_right
-        int ret_code = 0
+        seq2 = reverse_complement(seq2)
+        qual2 = qual2[::-1]
+        aligned = locate(seq1, seq2, 0.1)
 
+        if aligned:
+            r1_start, r1_end, r2_start, r2_end, match, err = aligned 
+            if match >= 15 and r1_start == 0 and r2_end == len(seq2):
 
-    seq_name = read2.id.split(' ')[0]
-#    assert seq_name == id_right.split(' ')[0], 'Wrongly splitted files!! %s\n%s' %(id_right, id_left)
-    barcode =  read2.seq[:idx_base]
-    barcode_qual = read1.qual[:idx_base]
-    constant_region = read2.seq[idx_base:usable_seq]
-    barcode_mean_qual = np.mean(list(map(ord, barcode_qual))) - 33
+                # read1
+                seq1 = seq1[:r1_end]
+                qual1 = qual1[r1_start:r1_end]
 
-    no_N_barcode = 'N' not in barcode
-    hiQ_barcode = barcode_mean_qual >= barcode_cut_off
-    accurate_constant = True if constant_no_evaluation else  hamming_distance(constant, constant_region) <= hamming_threshold
+                # read2
+                seq2 = seq2[r2_start:r2_end]
+                qual2 = qual2[r2_start:r2_end]
 
-    if no_N_barcode and hiQ_barcode and accurate_constant:
-        seq_right = read2.seq[usable_seq:]
-        qual_right = read2.qual[usable_seq:]
-        seq_left, qual_left = trim_other_read(read1.seq, read1.qual, barcode, adapter, barcode_size = idx_base)
-        seq_left, seq_right, qual_left, qual_right = insert_trimmer(seq_left, seq_right, qual_left, qual_right)
-
-        if len(seq_right) >= min_length and len(seq_left) >= min_length:
-            seq_record = '@%s_%s/1\n%s\n+\n%s\n' %(barcode, seq_name, seq_left, qual_left) +\
-                        '@%s_%s/2\n%s\n+\n%s' %(barcode, seq_name, seq_right, qual_right)
-            ret_code = 1
-
-    return ret_code, seq_record
+        return seq1, reverse_complement(seq2), qual1, qual2[::-1]
 
 
-def clip_funtion(read, barcode_cut_off, constant,
-                constant_no_evaluation, idx_base,
-                usable_seq, hamming_threshold, min_length):
-    if read == 'read1':
-        adapter = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
-        clipping = partial(clip_read1, barcode_cut_off, constant,
-                        constant_no_evaluation, idx_base,
-                        usable_seq, hamming_threshold, adapter, min_length)
+    def __trim_other_read__(self, sequence, qual, umi):
+        '''
+        append UMI (barcode) onto adapter,
+        and trim the read without UMI
+        '''
 
-    elif read == 'read2':
-        adapter = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
-        clipping = partial(clip_read2, barcode_cut_off, constant,
-                        constant_no_evaluation, idx_base,
-                        usable_seq, hamming_threshold, adapter, min_length)
-
-    return clipping
+        clip_seq = reverse_complement(umi) + self.adapter
+        located = locate(sequence, clip_seq, 0.15)
+        if located:
+            seq_start, seq_end, clip_start, clip_end, matched, error = located
+            if clip_start == 0 and matched > self.umi_bases:
+                sequence, qual = sequence[:seq_start], qual[:seq_start]
+        return sequence, qual
 
 
-def clip_pairs(inFastq1, inFastq2, out_file, idx_base,
+def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
             barcode_cut_off, constant, allow_mismatch, programname, read, min_length):
     '''
     Feed in paried end fastq file
@@ -179,19 +154,32 @@ def clip_pairs(inFastq1, inFastq2, out_file, idx_base,
     constant_length = len(constant)
     constant_no_evaluation = constant_length < 1
     hamming_threshold = allow_mismatch if not constant_no_evaluation else 0
-    usable_seq = idx_base if constant_no_evaluation else idx_base + constant_length
+    usable_seq = umi_bases if constant_no_evaluation else umi_bases + constant_length
 
     out_handle = sys.stdout if out_file in ['/dev/stdout','-'] else xopen(out_file, 'w')
     with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
-        clipping = clip_funtion(read, barcode_cut_off, constant,
-                constant_no_evaluation, idx_base,
-                usable_seq, hamming_threshold, min_length)
+        if read == 'read1':
+            adapter = adapters().R1
+            iterable = zip(readfq(in1), readfq(in2))
 
-        for count, (read1, read2) in enumerate(zip(readfq(in1), readfq(in2))):
-            out, seq_record = clipping(read1, read2)
+        else:
+            adapter = adapters().R2
+            iterable = zip(readfq(in2), readfq(in1))
+
+        clipping = clip_read(barcode_cut_off, constant,
+                    constant_no_evaluation, umi_bases,
+                    usable_seq, hamming_threshold, adapter, 
+                    min_length)
+
+        for count, (umi_read, opposite_read) in enumerate(iterable):
+            out, umi_read, opposite_read = clipping.trim_reads(umi_read, opposite_read)
             out_count += out
             if out == 1:
-                print(seq_record, file = out_handle)
+                if read == "read1":
+                    print(umi_read + opposite_read, file = out_handle)
+                if read == "read2":
+                    print(opposite_read + umi_read, file = out_handle)
+
             if count % 10000000 == 0 and count != 0:
                 print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
 
