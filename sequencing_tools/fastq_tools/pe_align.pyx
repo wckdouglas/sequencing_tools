@@ -42,7 +42,7 @@ cdef calibrate_qual(str b1, str b2, str q1, str q2):
         qual = 0
     return base, chr(qual + 33)
 
-cdef posterior_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
+cpdef posterior_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
     cdef:
         str seq='', qual=''
         str b1, b2, q1, q2
@@ -92,7 +92,7 @@ cdef correct_error(str r1_seq, str r1_qual, str r2_seq, str r2_qual):
     return seq, qual
 
 
-cdef make_concensus(float error_toleration, int min_len, 
+cpdef str make_concensus(float error_toleration, int min_len, 
                 bool report_all, concensus_function, 
                 fastqRecord R1, fastqRecord R2):
     '''
@@ -145,6 +145,7 @@ def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_
         fastqRecord R1, R2
         int record_count = 0
         int out_count = 0
+        str out_line
 
     infile_handle = sys.stdin if infile == '-' or infile == '/dev/stdin' else xopen(infile,mode = 'r')
 
