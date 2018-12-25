@@ -114,7 +114,7 @@ cdef double cumulative_product(qs):
     return result
 
 
-cdef double calculatePosterior(column_bases, column_qualities, guess_base):
+def calculatePosterior(column_bases, column_qualities, guess_base):
     '''
     From each column of the sequence alignemnt (base position),
     extract the probabilty of being the guess_base

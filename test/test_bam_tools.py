@@ -1,6 +1,7 @@
 from sequencing_tools.bam_tools import *
+from sequencing_tools.bam_tools.read_cluster import calculate_concensus_base, calculatePosterior
 from pysam import AlignedRead
-
+import numpy as np
 
 
 def artificial_read(flag=163):
@@ -77,3 +78,23 @@ def test_check_concordant():
 def test_check_primary():
     assert(check_primary(artificial_read(flag=83), artificial_read(flag=163)))
     assert(check_primary(artificial_read(flag=339), artificial_read(flag=163))==False)
+
+
+def test_error_correction():
+    column_bases = np.array(list('CCAAAAAGT'))
+    column_qualities = np.array(list(')))A--A)A'))
+    base, loglikelihoods = calculate_concensus_base( (column_bases, column_qualities, '') )
+    assert(np.isclose(loglikelihoods, 0.9999999929642414))
+    assert(base == "A")
+
+
+    column_qualities = np.array([ 8,  8,  8, 32, 12, 12, 32,  8, 32])
+    possible_bases = np.unique(column_bases)
+    log_posteriors = [calculatePosterior(column_bases, column_qualities, guess_base) for guess_base in possible_bases]
+
+    pos_res = [-17.593092907715462,
+                -39.35055643122346,
+                -42.118680221372976,
+                -36.420550581755265]
+    assert(np.all(np.isclose(log_posteriors, pos_res)))
+
