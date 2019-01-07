@@ -4,6 +4,7 @@ from cpython cimport bool
 import pysam
 import re
 from operator import itemgetter
+import six
 
 numbers = re.compile(r'[0-9]+')
 strings = re.compile(r'[MIS]')
@@ -338,3 +339,16 @@ cpdef check_primary(AlignedSegment read_1, AlignedSegment read_2):
     '''
     return not read_1.is_secondary and not read_2.is_secondary
  
+def paired_bam(bam_handle):
+    while True:
+        #try:
+            read1 = six.next(bam_handle)
+            read2 = six.next(bam_handle)
+
+            assert(read1.is_read1 and read2.is_read2)
+            assert(read1.query_name.split('/')[0] == read2.query_name.split('/')[0])
+            yield read1, read2
+
+        #except StopIteration:
+        #    pass
+

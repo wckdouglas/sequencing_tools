@@ -1,8 +1,10 @@
 from sequencing_tools.bam_tools import *
 from sequencing_tools.bam_tools.read_cluster import calculate_concensus_base, calculatePosterior
-from pysam import AlignedRead
 import numpy as np
+import pysam
+from pysam import AlignedRead
 from scipy.special import logsumexp
+import os
 
 
 def artificial_read(flag=163):
@@ -102,3 +104,13 @@ def test_error_correction():
     base, loglikelihood = calculate_concensus_base( (column_bases, column_qualities_str, '') )
     assert(np.isclose(loglikelihood, np.exp(loglik).max() ) )
     assert(base == "A")
+
+
+def test_read_pairs():
+    test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
+    bam = test_data_path + '/clipped.bam'
+    bam = pysam.Samfile(bam)
+    pairs = 0
+    for read1, read2 in paired_bam(bam):
+        pairs += 1
+    assert(pairs == 218)
