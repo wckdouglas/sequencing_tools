@@ -339,16 +339,21 @@ cpdef check_primary(AlignedSegment read_1, AlignedSegment read_2):
     '''
     return not read_1.is_secondary and not read_2.is_secondary
  
-def paired_bam(bam_handle):
-    while True:
-        #try:
-            read1 = six.next(bam_handle)
-            read2 = six.next(bam_handle)
+def paired_bam(AlignmentFile bam_handle):
+    cdef:
+        AlignedSegment read1
+        AlignedSegment read2
 
-            assert(read1.is_read1 and read2.is_read2)
-            assert(read1.query_name.split('/')[0] == read2.query_name.split('/')[0])
-            yield read1, read2
+    try:
+        while True:
+            #try:
+                read1 = six.next(bam_handle)
+                read2 = six.next(bam_handle)
 
-        #except StopIteration:
-        #    pass
+                assert(read1.is_read1 and read2.is_read2)
+                assert(read1.query_name.split('/')[0] == read2.query_name.split('/')[0])
+                yield read1, read2
+
+    except StopIteration:
+        pass
 
