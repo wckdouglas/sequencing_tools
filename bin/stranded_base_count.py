@@ -101,7 +101,7 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop,
                                     end = end,
                                     strand = strand,
                                     seq = fa_dict[strand])
-                print(seq_record, con_fa)
+                print(seq_record, file = con_fa)
         if con_fa:
             con_fa.close()
     else:
