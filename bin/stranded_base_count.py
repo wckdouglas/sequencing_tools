@@ -102,6 +102,8 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop,
                                     strand = strand,
                                     seq = fa_dict[strand])
                 print(seq_record, con_fa)
+        if con_fa:
+            con_fa.close()
     else:
         for chromosome in chromosomes:
             analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel, min_cov)
