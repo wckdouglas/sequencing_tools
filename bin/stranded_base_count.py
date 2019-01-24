@@ -87,7 +87,7 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop,
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)
     if use_bed:
-        con_fa = open(concensus_fasta) if concensus_fasta else None
+        con_fa = xopen(concensus_fasta,'w') if concensus_fasta else None
         base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int))) #ref pos//strand//base
         for chrom, start, end in bed_generator(bed_file):
             aln_count, base_dict = analyze_region(in_bam, chrom, qual_threshold, crop, no_indel, base_dict, start, end)
