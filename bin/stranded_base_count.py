@@ -31,6 +31,7 @@ def getopt():
     parser.add_argument('--no_indel', action='store_true', help='Not considering alignments with Indel')
     parser.add_argument('--min_coverage', default = 0, type = int,
                         help='Minimum coverage to output')
+    parser.add_argument('--concensus_fasta', help = 'Generate concensus fasta (only work if bed file is provided)')
     args = parser.parse_args()
     return args
 
@@ -40,6 +41,17 @@ def bed_generator(bed_file):
         fields = line.split('\t')
         chrom, start, end = itemgetter(0,1,2)(fields)
         yield chrom, long(start), long(end)
+    
+def base_dict_to_fa(base_dict):
+    fa_dict = defaultdict(str)
+    for pos, pos_dict in six.iteritems(base_dict):
+        for strand, strand_dict in six.iteritems(pos_dict):
+            base = np.array(list(strand_dict.keys())
+            base_count = np.array(list(strand_dict.values()))
+            concensus_base = base[base_count.argmax()] if base_count.max() / base_count.sum() * 0.7 else 'N'
+            fa_dict[strand] += concensus_base
+    return fa_dict
+
 
 def output_table(fa, chromosome, base_dict, start, end, min_cov):
     '''
@@ -61,24 +73,35 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, cro
     output = partial(output_table, fa, chromosome)
     region_generator = make_regions(chrom_length, bases_region)
     for i, (start, end) in enumerate(region_generator):
-        base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+        base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int))) #ref pos//strand//base
         aln_count, base_dict = get_error(base_dict, start, end)
         out = output(base_dict, start, end, min_cov)
         if i % 10 == 0:
             print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
 
 def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, 
-                bed_file, use_bed, no_indel, min_cov):
+                bed_file, use_bed, no_indel, min_cov, concensus_fasta):
     chromosomes = fa.references
     chromosomes.sort()
     header = 'chrom\tpos\tbase\t'
     header = header + 'A+\tC+\tG+\tT+\tA-\tC-\tG-\tT-'
     print(header, file=sys.stdout)
     if use_bed:
-        base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int)))
+        con_fa = open(concensus_fasta) if concensus_fasta else None
+        base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int))) #ref pos//strand//base
         for chrom, start, end in bed_generator(bed_file):
             aln_count, base_dict = analyze_region(in_bam, chrom, qual_threshold, crop, no_indel, base_dict, start, end)
             out = output_table(fa, chrom, base_dict, start, end, min_cov)
+            if con_fa:
+                fa_dict = base_dict_to_fa(base_dict)
+                for strand in ['+','-']:
+                    seq_record = '>{chrom}:{start}-{end}({strand})\n{seq}' \
+                            .format(chrom = chrom, 
+                                    start = start, 
+                                    end = end,
+                                    strand = strand,
+                                    seq = fa_dict[strand])
+                print(seq_record, con_fa)
     else:
         for chromosome in chromosomes:
             analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel, min_cov)
@@ -94,10 +117,11 @@ def main():
     use_bed = True if args.bed != '' else False
     no_indel = args.no_indel
     min_cov = args.min_coverage
+    concensus_fasta = args.concensus_fasta
 
     with pysam.Samfile(bam_file, 'rb') as in_bam, \
             pysam.FastaFile(ref_fasta) as fa:
-        analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, args.bed, use_bed, no_indel, min_cov)
+        analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, args.bed, use_bed, no_indel, min_cov, concensus_fasta)
 
 
 if __name__ == '__main__':
