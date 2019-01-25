@@ -95,13 +95,15 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop,
             if con_fa:
                 fa_dict = base_dict_to_fa(base_dict)
                 for strand in ['+','-']:
+                    seq = fa_dict[strand]
+                    seq = seq[::-1] if strand == '-' else seq
                     seq_record = '>{chrom}:{start}-{end}({strand})\n{seq}' \
                             .format(chrom = chrom, 
                                     start = start, 
                                     end = end,
                                     strand = strand,
-                                    seq = fa_dict[strand])
-                print(seq_record, file = con_fa)
+                                    seq = seq)
+                    print(seq_record, file = con_fa)
         if con_fa:
             con_fa.close()
     else:
