@@ -48,7 +48,7 @@ def base_dict_to_fa(base_dict):
         for strand, strand_dict in six.iteritems(pos_dict):
             base = np.array(list(strand_dict.keys()))
             base_count = np.array(list(strand_dict.values()))
-            concensus_base = base[base_count.argmax()] if base_count.max() / base_count.sum() > 0.7 else 'N'
+            concensus_base = base[base_count.argmax()] 
             fa_dict[strand] += concensus_base
     return fa_dict
 
