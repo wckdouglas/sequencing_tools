@@ -44,7 +44,7 @@ class clip_read:
         self.hamming_threshold = hamming_threshold
         self.adapter = adapter 
         self.min_length = min_length
-        self.template = '@{UMI}_{READNAME}/1\n{SEQ}\n+\n{QUAL}\n'
+        self.template = '@{UMI}_{READNAME}/1\n{SEQ}\n+\n{QUAL}'
 
     def trim_reads(self, umi_read, opposite_read):
         """
@@ -176,9 +176,9 @@ def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
             out_count += out
             if out == 1:
                 if read == "read1":
-                    print(umi_read + opposite_read, file = out_handle)
+                    print(umi_read +'\n' + opposite_read, file = out_handle)
                 if read == "read2":
-                    print(opposite_read + umi_read, file = out_handle)
+                    print(opposite_read +'\n' + umi_read, file = out_handle)
 
             if count % 10000000 == 0 and count != 0:
                 print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
