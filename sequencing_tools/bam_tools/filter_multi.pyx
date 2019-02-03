@@ -283,5 +283,5 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
                 read_aln = read_group.output_read()
                 out_sam.write(read_aln)
                 out_read_count += 1
-    print('Writting %i reads from %i groups' %(out_read_count, in_read_count), file = sys.stderr)
+    print('Writting %i reads from %i groups' %(out_read_count, in_read_count + 1), file = sys.stderr)
     return 0
