@@ -14,6 +14,7 @@ def getopt():
     parser.add_argument('-b','--bam_in', action='store_true', help = 'Provide this flag if bam instead of sam is used as input' )
     parser.add_argument('-z','--bam_out', action='store_true', help = 'Provide this flag if bam is needed for output')
     parser.add_argument('-s','--single_end', action='store_true', help = 'For single end bam files')
+    parser.add_argument('--gene_model', help = 'gene bed for prioritize gene fragments (tabix file)')
     return parser.parse_args()
 
 def main():
@@ -23,7 +24,7 @@ def main():
     bam_in_bool = args.bam_in
     bam_out_bool = args.bam_out
     processBam = partial(process_pair_bam) if not args.single_end else partial(process_single_bam)
-    processBam(in_bam, out_bam, bam_in_bool, bam_out_bool)
+    processBam(in_bam, out_bam, bam_in_bool, bam_out_bool, args.gene_model)
     return 0
 
 if __name__ == '__main__':

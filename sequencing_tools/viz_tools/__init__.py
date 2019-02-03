@@ -18,6 +18,18 @@ def douglas_palette():
     return colors
 
 
+def maximum_palette():
+    '''
+    modified from:
+    https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/
+    '''
+    colors = ['#f58231','#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#911eb4', 
+            '#03A8FB', '#F8BF6C', '#CAF5CB', '#fabebe', 
+            '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', 
+            '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000']
+    return colors 
+
+
 def simpsons_palette():
     '''
     A palette from ggsci R package

@@ -3,6 +3,7 @@ import pysam
 from cpython cimport bool
 import sys
 from pysam.libcalignmentfile cimport AlignedSegment
+from pysam.libctabix cimport TabixFile
 import numpy as np
 from builtins import zip, range
 import re
@@ -19,21 +20,22 @@ cpdef int fast_random_number(int scale):
     return rand() % scale
 
 
-cdef class read_pairs:
-    cdef:
-        list read1, read2
-        AlignedSegment out_read1, out_read2
-        str read_id
-        bool is_group
-        object reads
+class read_pairs:
+#    cdef:
+#        list read1, read2
+#        AlignedSegment out_read1, out_read2
+#        str read_id
+#        bool is_group
+#        object reads
 
-    def __init__(self, read_id, reads):
+    def __init__(self, read_id, reads, gene_tab):
         self.read1 = []
         self.read2 = []
         self.out_read1 = None
         self.out_read2 = None
         self.read_id = read_id
         self.is_group = None
+        self.gene_tabix = gene_tab
 
         for read in reads:
             if read.is_read1:
@@ -44,7 +46,7 @@ cdef class read_pairs:
 
     def generate_filtered_alingments(self):
         cdef:
-            AlignedSegment r1, r2
+            AlignedSegment r1, r2, r
             int scale
 
         read1_group = []
@@ -96,6 +98,13 @@ cdef class read_pairs:
 
 
             else:
+                #is on gene?
+                if self.gene_tabix:
+                    gene_bool = np.array(list(map(self.is_gene, read1, read2)))
+                    if any(gene_bool):
+                        read1 = read1[gene_bool]
+                        read2 = read2[gene_bool]
+
                 # isize ?
                 isizes = np.array([abs(r1.isize) for r1 in read1])
                 size_bool = (isizes == np.min(isizes))
@@ -132,6 +141,16 @@ cdef class read_pairs:
     def output_read(self):
         read1_aln, read2_aln = fix_flag(self.out_read1, self.out_read2)
         return read1_aln, read2_aln
+
+
+    def is_gene(self, read1, read2):
+        frag_start = min(read1.pos, read2.pos)
+        frag_end = max(read1.pos + read1.pos + read1.alen,
+                        read2.pos + read2.pos + read2.alen)
+        genes = self.gene_tabix.fetch(read1.reference_name, frag_start, frag_end)
+        return True if list(genes) else False
+        
+
 
 
 cdef int mapped_length(AlignedSegment read):
@@ -218,23 +237,23 @@ def fix_flag(read1, read2):
     read2.is_secondary = False
     return read1, read2
 
-def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
+def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
 
     cdef:
         AlignedSegment read1_aln, read2_aln
         int in_read_count
         int out_read_count = 0
-        read_pairs read_group
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'
     print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
     print('Writing to: %s' %(out_bam), file = sys.stderr)
+    gene_tabix = pysam.Tabixfile(gene_file) if gene_file else None
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
             for in_read_count, (read_id, alignments) in enumerate(groupby(in_sam, lambda aln: aln.query_name)):
                 # initial group for first alignment
-                read_group = read_pairs(read_id, alignments)
+                read_group = read_pairs(read_id, alignments, gene_tabix)
                 read_group.generate_filtered_alingments()
                 read1_aln, read2_aln = read_group.output_read()
                 out_sam.write(read1_aln)
@@ -243,7 +262,7 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
     print('Writting %i read pairs from %i groups' %(out_read_count, in_read_count), file = sys.stderr)
     return 0
 
-def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
+def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
 
     cdef:
         AlignedSegment alignment, read_aln
@@ -255,6 +274,7 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool):
     print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
     print('Writing to: %s' %(out_bam), file = sys.stderr)
     read_group = single_read()
+
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
             for in_read_count, (read_id, alignments) in enumerate(in_sam, lambda aln: aln.query_name):
