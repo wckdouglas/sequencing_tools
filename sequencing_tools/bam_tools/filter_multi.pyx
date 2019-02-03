@@ -147,9 +147,16 @@ class read_pairs:
         frag_start = min(read1.pos, read2.pos)
         frag_end = max(read1.pos + read1.pos + read1.alen,
                         read2.pos + read2.pos + read2.alen)
-        genes = self.gene_tabix.fetch(read1.reference_name, frag_start, frag_end)
-        return True if list(genes) else False
+        genes = search_gene(self.gene_tabix, read1.reference_name, frag_start, frag_end)
+        return True if genes else False
         
+
+def search_gene(tabix, chrom, start, end):
+    try:
+        return list(tabix.fetch(chrom, start, end))
+    except ValueError:
+        return []
+
 
 
 
