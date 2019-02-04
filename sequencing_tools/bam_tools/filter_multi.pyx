@@ -65,9 +65,10 @@ class read_pairs:
         '''
         1. best score?
         2. ribo or mt?
-        3. shortest isize
-        4. regular chrom
-        5. random picked
+        3. overlapped gene?
+        4. shortest isize
+        5. regular chrom
+        6. random picked
 
         if it is a condition that will definitely yield an output 
         (smallese isize, best scores vs mt/ribo chrom), 
@@ -100,7 +101,7 @@ class read_pairs:
             else:
                 #is on gene?
                 if self.gene_tabix:
-                    gene_bool = np.array(list(map(self.is_gene, read1, read2)))
+                    gene_bool = np.array([self.is_gene(r1, r2) for r1, r2 in zip(read1, read2)])
                     if any(gene_bool):
                         read1 = read1[gene_bool]
                         read2 = read2[gene_bool]
@@ -153,9 +154,9 @@ class read_pairs:
 
 def search_gene(tabix, chrom, start, end):
     try:
-        return list(tabix.fetch(chrom, start, end))
+        return any(tabix.fetch(chrom, start, end))
     except ValueError:
-        return []
+        return None
 
 
 
