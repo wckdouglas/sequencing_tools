@@ -153,7 +153,7 @@ class read_pairs:
 
 def search_gene(tabix, chrom, start, end):
     try:
-        return list(tabix.fetch(chrom, start, end))
+        return next(tabix.fetch(chrom, start, end))
     except ValueError:
         return []
 
