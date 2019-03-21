@@ -10,6 +10,7 @@ import sys
 import io
 import os
 import time
+import pandas as pd
 from subprocess import Popen, PIPE
 
 __version__ = '0.3.2'
@@ -223,3 +224,24 @@ def xopen(filename, mode='r', compresslevel=6):
 		# with io.open() is 100 times slower (!) on Python 2.6, and still about
 		# three times slower on Python 2.7 (tested with "for _ in io.open(path): pass")
 		return open(filename, mode)
+
+
+
+
+def read_tbl(tbl_file):
+    '''
+    read HMM tblout files
+    '''
+    with open(tbl_file) as infile:
+        records = []
+        header, field_starts, field_ends = define_table(infile)
+        line_parser = partial(parse_line, field_starts, field_ends)
+        for line_count, line in enumerate(infile):
+            if not line.startswith('#'):
+                fields = line_parser(line)
+                if fields:
+                    record = {h:f for f, h in zip(fields, header)}
+                    records.append(record)
+    return pd.DataFrame(records) \
+            .assign(score = lambda d: d.score.str.extract('([0-9]+\.[0-9]+)$', expand=False)) \
+            .assign(score=lambda d: d.score.fillna('0').astype(float))
