@@ -227,21 +227,27 @@ def xopen(filename, mode='r', compresslevel=6):
 
 
 
-
 def read_tbl(tbl_file):
     '''
-    read HMM tblout files
+    read infernal table
     '''
+    lines = []
+    header = ['target name',
+            'accession',
+            'query name',
+            'accession strand',
+            'mdl',
+            'mdl from',
+            'mdl to',
+            'seq from',
+            'seq to',
+            'strand',
+            'trunc',
+            'pass', 'gc','bias',
+            'score','E-value','inc', 'description of target']
     with open(tbl_file) as infile:
-        records = []
-        header, field_starts, field_ends = define_table(infile)
-        line_parser = partial(parse_line, field_starts, field_ends)
-        for line_count, line in enumerate(infile):
+        for line in infile:
             if not line.startswith('#'):
-                fields = line_parser(line)
-                if fields:
-                    record = {h:f for f, h in zip(fields, header)}
-                    records.append(record)
-    return pd.DataFrame(records) \
-            .assign(score = lambda d: d.score.str.extract('([0-9]+\.[0-9]+)$', expand=False)) \
-            .assign(score=lambda d: d.score.fillna('0').astype(float))
+                line = line.strip('#').strip()
+                lines.append(re.sub('\s+','\t', line))
+    return pd.read_table(io.StringIO('\n'.join(lines)), names = header)
