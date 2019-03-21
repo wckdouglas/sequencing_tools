@@ -146,8 +146,8 @@ class read_pairs:
 
     def is_gene(self, read1, read2):
         frag_start = min(read1.pos, read2.pos)
-        frag_end = max(read1.pos + read1.pos + read1.alen,
-                        read2.pos + read2.pos + read2.alen)
+        frag_end = max(read1.pos + read1.alen,
+                        read2.pos  + read2.alen)
         genes = search_gene(self.gene_tabix, read1.reference_name, frag_start, frag_end)
         return True if genes else False
         
@@ -285,7 +285,7 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
 
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
-            for in_read_count, (read_id, alignments) in enumerate(in_sam, lambda aln: aln.query_name):
+            for in_read_count, (read_id, alignments) in enumerate(groupby(in_sam, lambda aln: aln.query_name)):
                 read_group = single_read(read_id, alignments)
                 read_group.generate_filtered_alingments()
                 read_aln = read_group.output_read()
