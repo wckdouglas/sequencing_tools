@@ -9,6 +9,7 @@ import gzip
 import sys
 import io
 import os
+import re
 import time
 import pandas as pd
 from subprocess import Popen, PIPE
