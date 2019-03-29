@@ -15,33 +15,7 @@ from sequencing_tools.stats_tools import cy_mean, hamming_distance
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from sequencing_tools.fastq_tools import readfq
 from sequencing_tools.io_tools import xopen
-from sequencing_tools.bam_tools.read_cluster import vote_concensus_base, prob_to_qual_string, calculate_concensus_base
-
-np_ord = np.vectorize(ord)
-
-def concensusSeq(in_seq_list, in_qual_list, float fraction_threshold):
-    """given a list of sequences, a list of quality and sequence length.
-        assertion: all seq in seqlist should have same length (see function: selectSeqLength)
-    return a consensus sequence and the mean quality line (see function: calculateConcensusBase)
-    """
-    cdef:
-        int seq_len, pos
-        str sequence, quality
-
-    if len(in_seq_list) > 1:
-        seq_len = len(in_seq_list[0])
-        seq_list = np.array(list(map(list, in_seq_list)))
-        qual_list = np.array(list(map(list, in_qual_list)))
-        iter_list = ((seq_list[:,pos], qual_list[:,pos], fraction_threshold) for pos in xrange(seq_len))
-        concensus_position = map(vote_concensus_base, iter_list)
-        bases, quals = zip(*concensus_position)
-        sequence = ''.join(list(bases))
-        quality = ''.join(map(prob_to_qual_string, quals))
-    else:
-        sequence = str(in_seq_list[0])
-        quality = str(in_qual_list[0])
-    return sequence, quality
-
+from sequencing_tools.consensus_tools import ErrorCorrection
 
 
 def plotBCdistribution(barcode_family_count, outputprefix):
@@ -64,25 +38,7 @@ def plotBCdistribution(barcode_family_count, outputprefix):
     print('Plotted %s.' %figurename, file = sys.stderr)
     return 0
 
-def concensusPairs(table, float fraction_threshold):
-    """ given a pair of reads as defined as the class: seqRecord
-    return concensus sequence and mean quality of the pairs,
-        as well as the number of reads that supports the concnesus pairs
-    see function: concensusSeq, calculateConcensusBase
-    """
-    #extract table
-    cdef:
-        str sequence_left, quality_left
-        str sequence_right, quality_right
 
-    seq_left_list, qual_left_list = table[:,0], table[:,2]
-    seq_right_list, qual_right_list = table[:,1], table[:,3]
-
-    # get concensus left reads first
-    sequence_left, quality_left = concensusSeq(seq_left_list, qual_left_list, fraction_threshold)
-    # get concensus right reads
-    sequence_right, quality_right = concensusSeq(seq_right_list, qual_right_list, fraction_threshold)
-    return sequence_left, quality_left, sequence_right, quality_right
 
 def dictToJson(barcode_dict, json_file):
     with open(json_file,'w') as f:
@@ -90,33 +46,6 @@ def dictToJson(barcode_dict, json_file):
     print('written %s' %(json_file) + '\n', file = sys.stderr)
     return 0
 
-def errorFreeReads(int min_family_member_count, float fraction_threshold, str json_record):
-    """
-    main function for getting concensus sequences from read clusters.
-    return  a pair of concensus reads with a 4-line fastq format
-    see functions: 1. filterRead,
-                  2. concensusPairs,
-                  3. calculateConcensusBase
-    """
-    # skip if not enough sequences to perform voting
-    cdef:
-        str index
-        int member_count
-        str sequence_left, quality_left
-        str sequence_right, quality_right
-        str left_record, right_record
-
-    record = ujson.decode(json_record)
-    index = str(record[0])
-    table = np.array(record[1], dtype=str)
-    member_count = table.shape[0]
-    if member_count >= min_family_member_count:
-        sequence_left, quality_left, sequence_right, quality_right = concensusPairs(table, fraction_threshold)
-        left_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_left, quality_left)
-        right_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_right, quality_right)
-        return left_record, right_record
-    else:
-        return 'No'
 
 def writeSeqToFiles(read1, read2, output_cluster_count, result):
     if result!='No':
@@ -126,31 +55,92 @@ def writeSeqToFiles(read1, read2, output_cluster_count, result):
     else:
         return 0
 
-def writingAndClusteringReads(outputprefix, min_family_member_count, json_file,
-                            threads, fraction_threshold):
+
+class Clustering():
+    def __init__(self, outputprefix, min_family_member_count, json_file,
+                        threads, fraction_threshold):
     # From index library, generate error free reads
     # using multicore to process read clusters
-    cdef:
-        int counter = 0
-        int output_cluster_count = 0
 
-    read1File = outputprefix + '_R1_001.fastq.gz'
-    read2File = outputprefix + '_R2_001.fastq.gz'
-    pool = Pool(threads,maxtasksperchild=10000)
-    with xopen(read1File,'w') as read1, xopen(read2File,'w') as read2, open(json_file,'r') as infile:
-        error_func = partial(errorFreeReads, min_family_member_count, fraction_threshold)
-        write_func = partial(writeSeqToFiles,read1, read2)
-        processes = pool.imap_unordered(error_func, infile, chunksize = 10000)
-        #processes = map(error_func, infile) ## debug
-        for result in processes:
-            output_cluster_count += write_func(output_cluster_count, result)
-            counter += 1
-            if counter % 1000000 == 0:
-                print('Processed %i read clusters.' %(counter), file = sys.stderr)
-    pool.close()
-    pool.join()
-    return output_cluster_count, read1File, read2File
+        self.read1File = outputprefix + '_R1_001.fastq.gz'
+        self.read2File = outputprefix + '_R2_001.fastq.gz'
+        self.min_family_member_count = min_family_member_count
+        self.json_file = json_file
+        self.threads = threads
+        self.fraction_threshold = fraction_threshold
+        self.correction_module = ErrorCorrection(correction_mode = 'vote', 
+                                vote_threshold = fraction_threshold)
+    
+    def run(self):
+        cdef:
+            int counter = 0
+            int output_cluster_count = 0
 
+        pool = Pool(self.threads,maxtasksperchild=10000)
+        with xopen(self.read1File,'w') as read1, \
+                xopen(self.read2File,'w') as read2, 
+                open(self.json_file,'r') as infile:
+            write_func = partial(writeSeqToFiles,read1, read2)
+            processes = pool.imap_unordered(self.__ErrorFreeReads__, infile, chunksize = 10000)
+            #processes = map(error_func, infile) ## debug
+            for result in processes:
+                output_cluster_count += write_func(output_cluster_count, result)
+                counter += 1
+                if counter % 1000000 == 0:
+                    print('Processed %i read clusters.' %(counter), file = sys.stderr)
+        pool.close()
+        pool.join()
+        return output_cluster_count, read1File, read2File
+
+
+    def __ErrorFreeReads__(self, json_record):
+        """
+        main function for getting concensus sequences from read clusters.
+        return  a pair of concensus reads with a 4-line fastq format
+        see functions: 1. filterRead,
+                    2. concensusPairs,
+                    3. calculateConcensusBase
+        """
+        # skip if not enough sequences to perform voting
+        cdef:
+            str index
+            int member_count
+            str sequence_left, quality_left
+            str sequence_right, quality_right
+            str left_record, right_record
+
+        record = ujson.decode(json_record)
+        index = str(record[0])
+        table = np.array(record[1], dtype=str)
+        member_count = table.shape[0]
+        if member_count >= min_family_member_count:
+            sequence_left, quality_left, sequence_right, quality_right = self.__ConcensusPairs__(table[:,0], 
+                                                                                            table[:,2],
+                                                                                            table[:,1]
+                                                                                            table[:,3])
+            left_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_left, quality_left)
+            right_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_right, quality_right)
+            return left_record, right_record
+        else:
+            return 'No'
+
+
+    def __ConcensusPairs__(self, seq_left_list, qual_left_list, seq_right_list, qual_right_list):
+        """ given a pair of reads as defined as the class: seqRecord
+        return concensus sequence and mean quality of the pairs,
+            as well as the number of reads that supports the concnesus pairs
+        see function: concensusSeq, calculateConcensusBase
+        """
+        #extract table
+        cdef:
+            str sequence_left, quality_left
+            str sequence_right, quality_right
+
+        # get concensus left reads first
+        sequence_left, quality_left = self.correction_module.Correct(seq_left_list, qual_left_list)
+        # get concensus right reads
+        sequence_right, quality_right = self.correction_module.Correct(seq_right_list, qual_right_list)
+        return sequence_left, quality_left, sequence_right, quality_right
 
 ############### clustering #####################
 
