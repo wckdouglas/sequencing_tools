@@ -10,7 +10,7 @@ import glob
 import time
 import os
 from sequencing_tools.fastq_tools.cluster_reads import (dictToJson,
-                           writingAndClusteringReads,
+                           Clustering,
                            plotBCdistribution,
                            recordsToDict)
 
@@ -66,8 +66,12 @@ def clustering(outputprefix, inFastq1, inFastq2, idx_base, min_family_member_cou
     p = plotBCdistribution(barcode_member_counts, outputprefix)
     dictToJson(barcode_dict, json_file)
     barcode_dict.clear()
-    output_cluster_count, read1File, read2File = writingAndClusteringReads(outputprefix, min_family_member_count,
-                                                                           json_file, threads, fraction_threshold)
+
+    
+    clustering = Clustering(outputprefix, min_family_member_count,
+                            json_file, threads, fraction_threshold)
+
+    output_cluster_count, read1File, read2File = clustering.run()
     # all done!
     print('[%s] Finished writing error free reads' %programname, file = sys.stderr)
     print('[%s] [Summary]                        ' %programname, file = sys.stderr)
