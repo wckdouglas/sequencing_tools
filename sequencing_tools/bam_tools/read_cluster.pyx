@@ -94,7 +94,7 @@ cdef class readGroup:
             R1_filtered, R2_filtered = R1_array[cluster,:], R2_array[cluster,:]
             self.concensus_read1.append(self.correction_module.Correct(R1_filtered[0], R1_filtered[1]))
             self.concensus_read2.append(self.correction_module.Correct(R2_filtered[0], R2_filtered[1]))
-            self.member_count_list.append(R1_filtered.shape[0]))
+            self.member_count_list.append(R1_filtered.shape[0])
             self.concensus_flag1.append(_R1_flag)
             self.concensus_flag2.append(_R2_flag)
 

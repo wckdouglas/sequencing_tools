@@ -1,5 +1,5 @@
 from sequencing_tools.bam_tools import *
-from sequencing_tools.bam_tools.read_cluster import calculate_concensus_base, calculatePosterior
+from sequencing_tools.consensus_tools import ErrorCorrection, calculatePosterior
 import numpy as np
 import pysam
 from pysam import AlignedRead
@@ -84,6 +84,7 @@ def test_check_primary():
 
 
 def test_error_correction():
+    correction_mode = ErrorCorrection(mode = 'prob')
     column_bases = np.array(list('CCAAAAAGT'))
     column_qualities_str = np.array(list(')))A--A)A'))
     column_qualities = np.array(list(map(ord, column_qualities_str))) - 33
@@ -101,7 +102,7 @@ def test_error_correction():
     loglik = np.array(log_posteriors) - log_posterior_sum
 
 
-    base, loglikelihood = calculate_concensus_base( (column_bases, column_qualities_str, '') )
+    base, loglikelihood = correction_mode.__posteriorConcensus__( (column_bases, column_qualities_str, '') )
     assert(np.isclose(loglikelihood, np.exp(loglik).max() ) )
     assert(base == "A")
 

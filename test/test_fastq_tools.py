@@ -1,6 +1,6 @@
 from sequencing_tools.fastq_tools import *
 from sequencing_tools.fastq_tools.function_clip import clip_read
-from sequencing_tools.fastq_tools.pe_align import make_concensus, posterior_error
+from sequencing_tools.fastq_tools.pe_align import ConsensusBuilder
 import six
 import numpy.random as random
 
@@ -188,6 +188,8 @@ def test_umi_trimmer():
 
 
 def test_pe_align_adapter():
+    consensus_builder = ConsensusBuilder(error_toleration = 0.1,
+                                        min_len = 15)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
         'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
         'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////')
@@ -196,7 +198,7 @@ def test_pe_align_adapter():
         'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
         'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A')
 
-    out = make_concensus(0.1, 15, True, posterior_error, read1, read2)
+    out = consensus_builder.run(read1, read2)
     id, seq, _, qual = out.strip().split('\n')
 
     res_seq ='ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAA'

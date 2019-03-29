@@ -78,7 +78,7 @@ class Clustering():
 
         pool = Pool(self.threads,maxtasksperchild=10000)
         with xopen(self.read1File,'w') as read1, \
-                xopen(self.read2File,'w') as read2, 
+                xopen(self.read2File,'w') as read2, \
                 open(self.json_file,'r') as infile:
             write_func = partial(writeSeqToFiles,read1, read2)
             processes = pool.imap_unordered(self.__ErrorFreeReads__, infile, chunksize = 10000)
@@ -90,7 +90,7 @@ class Clustering():
                     print('Processed %i read clusters.' %(counter), file = sys.stderr)
         pool.close()
         pool.join()
-        return output_cluster_count, read1File, read2File
+        return output_cluster_count, self.read1File, self.read2File
 
 
     def __ErrorFreeReads__(self, json_record):
@@ -113,10 +113,10 @@ class Clustering():
         index = str(record[0])
         table = np.array(record[1], dtype=str)
         member_count = table.shape[0]
-        if member_count >= min_family_member_count:
+        if member_count >= self.min_family_member_count:
             sequence_left, quality_left, sequence_right, quality_right = self.__ConcensusPairs__(table[:,0], 
                                                                                             table[:,2],
-                                                                                            table[:,1]
+                                                                                            table[:,1],
                                                                                             table[:,3])
             left_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_left, quality_left)
             right_record = '%s_%i_readCluster\n%s\n+\n%s' %(index, member_count, sequence_right, quality_right)
