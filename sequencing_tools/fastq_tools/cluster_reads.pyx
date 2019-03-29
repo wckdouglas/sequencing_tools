@@ -68,8 +68,8 @@ class Clustering():
         self.json_file = json_file
         self.threads = threads
         self.fraction_threshold = fraction_threshold
-        self.correction_module = ErrorCorrection(correction_mode = 'vote', 
-                                vote_threshold = fraction_threshold)
+        self.correction_module = ErrorCorrection(mode = 'vote', 
+                                threshold = fraction_threshold)
     
     def run(self):
         cdef:

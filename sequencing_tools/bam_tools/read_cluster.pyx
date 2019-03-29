@@ -44,8 +44,8 @@ cdef class readGroup:
         self.put_alignment(aln)
     
         correction_mode = 'prob' if not conserved else 'vote'
-        self.correction_module = ErrorCorrection(correction_mode = correction_mode,
-                                               vote_threshold=0.8)
+        self.correction_module = ErrorCorrection(mode = correction_mode,
+                                               threshold=0.8)
 
     def put_alignment(self, aln):
         '''
