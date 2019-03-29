@@ -8,7 +8,7 @@ from cpython cimport bool
 from scipy.special import logsumexp
 from sequencing_tools.fastq_tools import reverse_complement
 from six.moves import xrange
-from sequencing_tools.consensus_tools import
+from sequencing_tools.consensus_tools import ErrorCorrection
 
 
 def fix_strand(str seq, str qual, bool strand):
@@ -21,7 +21,7 @@ cdef class readGroup:
     '''
     Read group object
     '''
-    def __init__(self,aln, tag):
+    def __init__(self,aln, tag, conserved):
         #assert self.barcode == '', 'Cluster already initialzed with %s' %(self.barcode)
 
         #self.barcode = aln.query_name.split('_')[0]
@@ -42,7 +42,10 @@ cdef class readGroup:
         self.fastq_record = ''
 
         self.put_alignment(aln)
-
+    
+        correction_mode = 'prob' if not conserved else 'vote'
+        self.correction_module = ErrorCorrection(correction_mode = correction_mode,
+                                               vote_threshold=0.8)
 
     def put_alignment(self, aln):
         '''
@@ -62,7 +65,7 @@ cdef class readGroup:
             self.R2_chrom.append(aln.reference_id)
 
 
-    def cluster(self, conserved):
+    def cluster(self):
         '''
             from read group, generate concensus sequence, quality
         '''
@@ -70,7 +73,6 @@ cdef class readGroup:
         iterator = set(zip(self.R1_chrom, self.R2_chrom,
                            self.R1_position, self.R2_position,
                            self.R1_flag, self.R2_flag))
-
         R1_array = np.array(self.R1)
         R2_array = np.array(self.R2)
         R1_chrom_array = np.array(self.R1_chrom)
@@ -90,9 +92,9 @@ cdef class readGroup:
 
             cluster = chrom_is_right & flag_is_right & pos_is_right
             R1_filtered, R2_filtered = R1_array[cluster,:], R2_array[cluster,:]
-            self.concensus_read1.append(concensus_sequence(conserved, R1_filtered))
-            self.concensus_read2.append(concensus_sequence(conserved, R2_filtered))
-            self.member_count_list.append(len(R1_filtered[:,1]))
+            self.concensus_read1.append(self.correction_module.Correct(R1_filtered[0], R1_filtered[1]))
+            self.concensus_read2.append(self.correction_module.Correct(R2_filtered[0], R2_filtered[1]))
+            self.member_count_list.append(R1_filtered.shape[0]))
             self.concensus_flag1.append(_R1_flag)
             self.concensus_flag2.append(_R2_flag)
 
