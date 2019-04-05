@@ -42,9 +42,7 @@ class mutli_alignments():
 
         
         self.mul_df = pd.DataFrame(self.records)\
-            .rename(columns = {0:'seq_id'})\
-            .pipe(lambda d: pd.concat([d['seq_id'], 
-                               d[1].str.split(',',expand=True)], axis=1))  
+            .rename(columns = {0:'seq_id'})
         self.colors = {'A':'red','C':'blue','U':'green','G': 'orange', '-': 'black',
                       'a':'red','c':'blue','u':'green','g':'orange'}
 
