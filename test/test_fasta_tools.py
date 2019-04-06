@@ -1,3 +1,4 @@
+from __future__ import print_function
 from sequencing_tools.fasta_tools import readfa
 from sequencing_tools.fastq_tools import readfq
 import os
