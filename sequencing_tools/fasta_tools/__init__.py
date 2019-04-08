@@ -19,7 +19,7 @@ def readfa(file_handle):
     yield seqid, seq
        
 
-class mutli_alignments():
+class MutliAlignments():
     '''
     plotting multiple-alignment fasta
     '''
