@@ -68,7 +68,7 @@ class MutliAlignments():
         '''
 
         if not max_pos:
-            max_pos = self.mil_df.shape[1]
+            max_pos = self.mul_df.shape[1]
         ax.plot([min_pos, max_pos], 
                 [0, self.mul_df.shape[0]], 
                 alpha=0)
