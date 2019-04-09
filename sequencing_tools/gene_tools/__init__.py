@@ -65,5 +65,5 @@ class Bed12Record():
         if self.strand == "+":
             out_pos = offset_from_exon_start + self.exon_starts[self.idx][-1]
         else:
-            out_pos = self.reversed_exon_starts[np.argwhere(self.cumulative_exon_starts == shifted_pos)[[0]]] - offset_from_exon_start
+            out_pos = self.reversed_exon_starts[self.idx][-1] - offset_from_exon_start
         return out_pos
