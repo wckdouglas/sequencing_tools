@@ -187,7 +187,7 @@ def test_umi_trimmer():
     assert(name1.split('_')[0].replace('@','') == read1.seq[:6])
 
 
-def test_pe_align_adapter():
+def test_pe_align():
     consensus_builder = ConsensusBuilder(error_toleration = 0.1,
                                         min_len = 15)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
@@ -203,3 +203,26 @@ def test_pe_align_adapter():
 
     res_seq ='ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAA'
     assert(res_seq == seq)
+
+
+
+def test_pe_align():
+    consensus_builder = ConsensusBuilder(error_toleration = 0.1,
+                                        min_len = 15, report_all=True)
+    read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
+        'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
+        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////')
+
+    read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
+        'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
+        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A')
+
+    out = consensus_builder.run(read1, read2)
+    id, seq, _, qual = out.strip().split('\n')
+
+    res_seq ='TCAGAGTTCTACAGTCCGACGATC'\
+        'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAA'\
+        'AGATCGGAAGAGCACACGTCTGAA'
+    assert(res_seq == seq)
+
+
