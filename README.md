@@ -586,6 +586,26 @@ $ split_cigar('63M')
 
 <h2 id='extra'> Extra </h2>
 
+### sequencing_tools.consensus_tools ###
+
+#### consensus_tools.ErrorCorrection ####
+
+A module for error correction in fastq records, included two modes:
+- prob: using base quality as probability of errors as prior to calculate posterior quality, see [fgbio](https://github.com/fulcrumgenomics/fgbio/wiki/Calling-Consensus-Reads)
+- vote: using a voting scheme as SafeSeq to generate consensus base, see [SafeSeqS paper](https://www.pnas.org/content/108/23/9530)
+
+input:
+    mode:  prob or vote
+    threshold: only consider for "vote" mode, as a cutoff for returning a "N" if not enough fraction of bases agree
+
+example usage:
+
+```        
+ec = ErrorCorrection(mode='prob')
+ec.Correct(['AAACA','AAAAA','AAACA','AAACA'],
+            ['IIIII','IIIAI','FFFFF', 'FFFFF'])
+('AAACA', 'IIIII')
+```        
 ### sequencing_tools.viz_tools ###
 
 #### viz_tools.color_encoder ####
