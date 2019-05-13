@@ -15,6 +15,7 @@ cdef:
     double MIN_Q = 33.0
     double MAX_Q = 73.0
     double MAX_PROB = 0.99999999999
+    double MIN_PROB = 1-MAX_PROB
 
 
 def mode(any_list):
@@ -83,7 +84,8 @@ def qual_to_prob(base_qual):
     cdef:
         double q
 
-    return [10**(-q/10) for q in base_qual]
+    for q in base_qual:
+        yield 10**(-q/10)  
 
 
 cdef double cumulative_product(qs):
@@ -210,7 +212,7 @@ class ErrorCorrection():
             best_index = possible_counts==possible_counts.max()
             concensus_base = possible_bases[best_index][0]
             best_quals = column_qualities[column_bases==concensus_base].sum()
-            posterior_correct_probability = min(0.99999999, 1 - 10**(-best_quals/10))
+            posterior_correct_probability = min(MAX_PROB, 1 - 10**(-best_quals/10))
 
         return concensus_base, posterior_correct_probability
 
