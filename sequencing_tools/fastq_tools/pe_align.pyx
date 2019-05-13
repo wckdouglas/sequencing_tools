@@ -15,7 +15,7 @@ cdef:
 
 class ConsensusBuilder:
     def __init__(self, error_toleration = 0.1, min_len = 15, 
-                report_all=True, conserved = False):
+                report_all=False, conserved = False):
         self.error_toleration = error_toleration
         self.min_len = min_len
         self.report_all = report_all
@@ -57,13 +57,13 @@ class ConsensusBuilder:
                                         [R1.qual[r1_start:r1_end],
                                          r2_qual[r2_start:r2_end]])
                 if self.report_all:
-                    if r1_start != 0:
-                        left_add_seq = R1.seq[:r1_start] 
-                        left_add_qual = R1.qual[:r1_start]
+                    if r1_end != len(R1.seq):
+                        right_add_seq = R1.seq[r1_end:] 
+                        right_add_qual = R1.qual[r1_end:]
 
-                    if r2_end != len(r2_seq):
-                        right_add_seq = r2_seq[r2_end:]
-                        right_add_qual = r2_qual[r2_end:]
+                    if r2_start != 0:
+                        left_add_seq = r2_seq[:r2_start]
+                        left_add_qual = r2_qual[:r2_start]
                     seq = left_add_seq + seq + right_add_seq
                     qual = left_add_qual + qual + right_add_qual
 
