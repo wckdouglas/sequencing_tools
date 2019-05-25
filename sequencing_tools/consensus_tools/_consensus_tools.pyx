@@ -15,6 +15,7 @@ cdef:
     double MIN_Q = 33.0
     double MAX_Q = 73.0
     double MAX_PROB = 0.99999999999
+    double MIN_PROB = 1-MAX_PROB
 
 
 def mode(any_list):
@@ -83,7 +84,8 @@ def qual_to_prob(base_qual):
     cdef:
         double q
 
-    return [10**(-q/10) for q in base_qual]
+    for q in base_qual:
+        yield 10**(-q/10)  
 
 
 cdef double cumulative_product(qs):
@@ -119,7 +121,23 @@ def calculatePosterior(column_bases, column_qualities, guess_base):
 class ErrorCorrection():
     def __init__(self, mode = 'prob', threshold=0.8):
         '''
-        a module for error correction in fastq records
+        a module for error correction in fastq records, included two modes:
+            1. prob: using base quality as probability of errors as prior to calculate posterior quality, see:
+                https://github.com/fulcrumgenomics/fgbio/wiki/Calling-Consensus-Reads
+            2. vote: using a voting scheme as SafeSeq to generate consensus base, see:
+                https://www.pnas.org/content/108/23/9530
+
+
+        params:
+            mode:  prob or vote
+            threshold: only consider for "vote" mode, as a cutoff for returning a "N" if not enough fraction of bases agree
+
+
+        example usage:
+        
+        ec = ErrorCorrection(mode='prob')
+        ec.Correct(['AAACA','AAAAA','AAACA','AAACA'],
+                    ['IIIII','IIIAI','FFFFF', 'FFFFF'])
         '''
         self.np_len = np.vectorize(len,otypes=[np.int32])
         self.np_ord = np.vectorize(ord, otypes=[np.int16])
@@ -194,15 +212,23 @@ class ErrorCorrection():
             best_index = possible_counts==possible_counts.max()
             concensus_base = possible_bases[best_index][0]
             best_quals = column_qualities[column_bases==concensus_base].sum()
-            posterior_correct_probability = min(0.99999999, 1 - 10**(-best_quals/10))
+            posterior_correct_probability = min(MAX_PROB, 1 - 10**(-best_quals/10))
 
         return concensus_base, posterior_correct_probability
 
 
     def Correct(self, seq_list, qual_list):
         """given a list of sequences, a list of quality and sequence length.
-            assertion: all seq in seqlist should have same length (see function: selectSeqLength)
-        return a consensus sequence and the mean quality line (see function: calculateConcensusBase)
+            return a consensus sequence and a recalibrated quality
+
+        params: 
+            seq_list: list of sequences with the same length
+            qual_list: list of the corresponding quality strings, must be in the same length as seq_list
+
+        return: tuple
+            consensus seq, 
+            consensus qual
+
         """
         cdef:
             str sequence = ''
