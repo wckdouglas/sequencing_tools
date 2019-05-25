@@ -67,3 +67,35 @@ class Bed12Record():
         else:
             out_pos = self.reversed_exon_starts[self.idx][-1] - offset_from_exon_start
         return out_pos
+
+
+
+class GTFRecord():
+    '''
+    parsing a GTF record line
+    attr:
+        chrom: str
+        start: int
+        end: int
+        strand: str
+        feature_type: str
+        info: dict
+        fields: list separated by '\t'
+    '''
+    def __init__(self, gtf_line):
+        self.fields = gtf_line.split('\t')
+        self.chrom, self.feature_type, \
+                self.start, self.end, self.strand = itemgetter(0,2,3,4,6)(self.fields)
+        self.start, self.end = int(self.start), int(self.end)
+        self.info = self.__parse_extra_fields__(self.fields[-1])
+
+
+    def __parse_extra_fields__(self, extra_field):
+        info_fields = extra_field.split(';')
+        info_dict = {}
+        for info in info_fields[:-1]:
+            row_fields = info.strip().split(' ')
+            info_dict[row_fields[0]] = row_fields[1].strip('\'"')
+
+        return info_dict
+
