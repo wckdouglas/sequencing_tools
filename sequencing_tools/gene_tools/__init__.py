@@ -1,6 +1,8 @@
-import fileinput
+import os
 from operator import itemgetter
+from collections import defaultdict
 import numpy as np
+import pysam
 
 
 '''
@@ -98,4 +100,76 @@ class GTFRecord():
             info_dict[row_fields[0]] = row_fields[1].strip('\'"')
 
         return info_dict
+
+
+class Transcript():
+    '''
+    input:
+        dictionary: transcript_dict[exons|trascript] = list
+                    something like transcripts = defaultdict(list)
+    '''
+    def __init__(self, transcript_dict):
+        self.transcript = transcript_dict['transcript'][0]
+        self.exons = transcript_dict['exon']
+        self.strand = self.transcript.strand
+
+    def plot(self, ax, plot_transcript=False, y = 0, xs = None, xe = None):
+        '''
+        plot gene model
+        '''
+        if plot_transcript:
+            ax.hlines(y = y + 1, 
+                      xmin = ts[tid]['transcript'][0].start, 
+                      xmax=ts[tid]['transcript'][0].end,
+                     linewidth=10, color='darkblue')
+
+        starts = list(map(lambda x: x.start, self.exons))
+        ends = list(map(lambda x: x.end, self.exons))
+        for start, end in zip(starts, ends):
+            start = max(xs, start) if xs else start
+            end = min(xe, end) if xe else end
+            ax.hlines(y = y, 
+                  xmin = start, 
+                  xmax = end,
+                  linewidth=15, 
+                  color='darkblue')
+        
+        start = max(xs, self.transcript.start) if xs else self.transcript.start
+        end = min(xe, self.transcript.end) if xe else self.transcript.end
+
+        ss = np.linspace(start, end, 20)
+        arrow = "<-" if self.strand == '+' else '->'
+        for s,e in zip(ss, ss[1:]):
+            ax.annotate("", 
+                        xy=(s,y), 
+                        xytext = (e+5,y), 
+                        arrowprops=dict(arrowstyle=arrow))
+
+        # plot transcript length
+        ax.hlines(y=y, 
+                  xmin = start,
+                  xmax= end,
+                  color = 'darkblue',
+                  linewidth=1)
+
+
+
+class GeneModel():
+    '''
+    Exon and transcripts GTF
+    '''
+    def __init__(self, gtf_file):
+        assert os.path.isfile(gtf_file + '.tbi'), 'Require indexed GTF'
+        self.gtf = pysam.Tabixfile(gtf_file)
+        self.transcripts = None
+
+    def fetch_transcripts(self, chrom, start, end):
+        self.transcripts = defaultdict(lambda: defaultdict(list))
+        for line in self.gtf.fetch(chrom, start, end):
+             g = GTFRecord(line)
+             if g.feature_type != "gene":
+                 self.transcripts[g.info['transcript_id']][g.feature_type].append(g)
+        return self.transcripts
+
+
 
