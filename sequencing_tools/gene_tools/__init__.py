@@ -113,7 +113,9 @@ class Transcript():
         self.exons = transcript_dict['exon']
         self.strand = self.transcript.strand
 
-    def plot(self, ax, plot_transcript=False, y = 0, xs = None, xe = None):
+    def plot(self, ax, plot_transcript=False, y = 0, 
+             xs = None, xe = None, fontsize=15,
+             gene_name = None):
         '''
         plot gene model
         '''
@@ -123,17 +125,7 @@ class Transcript():
                       xmax=ts[tid]['transcript'][0].end,
                      linewidth=10, color='darkblue')
 
-        starts = list(map(lambda x: x.start, self.exons))
-        ends = list(map(lambda x: x.end, self.exons))
-        for start, end in zip(starts, ends):
-            start = max(xs, start) if xs else start
-            end = min(xe, end) if xe else end
-            ax.hlines(y = y, 
-                  xmin = start, 
-                  xmax = end,
-                  linewidth=15, 
-                  color='darkblue')
-        
+        #plot intron/transcript
         start = max(xs, self.transcript.start) if xs else self.transcript.start
         end = min(xe, self.transcript.end) if xe else self.transcript.end
 
@@ -145,12 +137,29 @@ class Transcript():
                         xytext = (e+5,y), 
                         arrowprops=dict(arrowstyle=arrow))
 
-        # plot transcript length
-        ax.hlines(y=y, 
-                  xmin = start,
-                  xmax= end,
-                  color = 'darkblue',
-                  linewidth=1)
+
+        #plot exons
+        starts = list(map(lambda x: x.start, self.exons))
+        ends = list(map(lambda x: x.end, self.exons))
+        for start, end in zip(starts, ends):
+            start = max(xs, start) if xs else start
+            end = min(xe, end) if xe else end
+            ax.hlines(y = y, 
+                  xmin = start, 
+                  xmax = end,
+                  linewidth=15, 
+                  color='darkblue')
+            
+            ss = np.linspace(start, end, 5)
+            for s in ss:
+                arrow = ">" if self.strand == '+' else '<'
+                ax.text(s, y,arrow, fontsize=fontsize,va='center',
+                        color='white')
+
+        if gene_name:
+            ax.text(end + (xe-xs)*0.02, y, self.transcript.info[gene_name], 
+                    fontsize=fontsize, va='center', ha='left', color='darkblue')
+
 
 
 
