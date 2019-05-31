@@ -255,35 +255,41 @@ def read_tbl(tbl_file):
     return pd.read_table(io.StringIO('\n'.join(lines)), names = header)
 
 
-def RNA_cov_from_picard(metrics):
-    '''
-    metrics = glob.glob('*RNA_metrics')
-    RNA_cov_from_picard(metrics)
+class ReadPicardRNA():
+    def __init__(self, attr = 'strand'):
+        assert(attr in {'strand','cov','base'})
+        self.attr = attr
+        if self.attr == 'cov':
+            self.n_skip = 10
+            self.nrows = None
+            self.regex = None
+        else:
+            self.n_skip = 6
+            self.nrows = 1
+            if self.attr == 'base':
+                self.regex = 'UTR|CODI|INTRO|INTER'
+            elif self.attr == 'strand':
+                self.regex = 'STRAND'
 
+    def read(self, metrics):
+        '''
+        metrics = glob.glob('*RNA_metrics')
+        read_picard = ReadPicardRNA(attr = 'base')
+        read_picard.read(metrics)
+        return dataframe for base distribution
+        '''
+        metric_tables = {met:pd.read_csv(met, skiprows=self.n_skip, nrows=self.nrows, sep='\t') \
+                            for met in metrics}
+        df = pd.concat([df.assign(samplename = sam) for sam, df in metric_tables.items()]) \
 
-    return dataframe for normalized coverage on normalized positions
-    '''
-    metric_tables = {met:pd.read_table(met, skiprows=10) for met in metrics}
-    cov_df = pd.concat([df.assign(samplename = sam)for sam, df in metric_tables.items()])
-    return cov_df
-
-
-def RNA_base_from_picard(metrics):
-    '''
-    metrics = glob.glob('*RNA_metrics')
-    RNA_base_from_picard(metrics)
-
-
-    return dataframe for base distribution
-    '''
-    metric_tables = {met:pd.read_table(met, skiprows=6, nrows=1) \
-                        for met in metrics}
-    return pd.concat([df.assign(samplename = sam) for sam, df in metric_tables.items()]) \
-        .pipe(pd.melt, id_vars=['samplename'],
-                       var_name = 'variable', value_name = 'var_count') \
-        .pipe(lambda d: d[d.variable.str.contains('UTR|CODI|INTRO|INTER')]) \
-        .pipe(lambda d: d[d.variable.str.contains('PCT')])\
-        .assign(variable = lambda d: d.variable.str.replace('_',' ')\
-                                    .str.replace('PCT ','')\
-                                    .str.capitalize())
+        if self.regex:
+            df = df \
+                .pipe(pd.melt, id_vars=['samplename'],
+                               var_name = 'variable', value_name = 'var_count') \
+                .pipe(lambda d: d[d.variable.str.contains(self.regex)]) \
+                .pipe(lambda d: d[d.variable.str.contains('PCT')])\
+                .assign(variable = lambda d: d.variable.str.replace('_',' ')\
+                                            .str.replace('PCT ','')\
+                                            .str.capitalize())
+        return df
 
