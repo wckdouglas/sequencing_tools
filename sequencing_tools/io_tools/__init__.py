@@ -13,6 +13,7 @@ import re
 import time
 import pandas as pd
 from subprocess import Popen, PIPE
+import pandas as pd
 
 __version__ = '0.3.2'
 
@@ -252,3 +253,37 @@ def read_tbl(tbl_file):
                 line = line.strip('#').strip()
                 lines.append(re.sub('\s+','\t', line))
     return pd.read_table(io.StringIO('\n'.join(lines)), names = header)
+
+
+def RNA_cov_from_picard(metrics):
+    '''
+    metrics = glob.glob('*RNA_metrics')
+    RNA_cov_from_picard(metrics)
+
+
+    return dataframe for normalized coverage on normalized positions
+    '''
+    metric_tables = {met:pd.read_table(met, skiprows=10) for met in metrics}
+    cov_df = pd.concat([df.assign(samplename = sam)for sam, df in metric_tables.items()])
+    return cov_df
+
+
+def RNA_base_from_picard(metrics):
+    '''
+    metrics = glob.glob('*RNA_metrics')
+    RNA_base_from_picard(metrics)
+
+
+    return dataframe for base distribution
+    '''
+    metric_tables = {met:pd.read_table(met, skiprows=6, nrows=1) \
+                        for met in metrics}
+    return pd.concat([df.assign(samplename = sam) for sam, df in metric_tables.items()]) \
+        .pipe(pd.melt, id_vars=['samplename'],
+                       var_name = 'variable', value_name = 'var_count') \
+        .pipe(lambda d: d[d.variable.str.contains('UTR|CODI|INTRO|INTER')]) \
+        .pipe(lambda d: d[d.variable.str.contains('PCT')])\
+        .assign(variable = lambda d: d.variable.str.replace('_',' ')\
+                                    .str.replace('PCT ','')\
+                                    .str.capitalize())
+
