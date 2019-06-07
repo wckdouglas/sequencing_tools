@@ -52,6 +52,7 @@ Prerequisits:
 * [BED demultiplexer](#dedup_bed)
 * [FastQ deinterleave](#deinterleaved)
 * [Poisson UMI](#poisson_umi)
+* [BAM base counter](#base_count)
 
 <h3 id='clip'>  UMI clipper </h3>
 
@@ -280,6 +281,36 @@ optional arguments:
                         BED file output (default: - )
   --umi UMI             Number of nucleotide as umi (default: 6)
 ```
+
+<h3 id='base_count'> Extracting base count from BAM along the genome/genomic regions  </h3>
+
+```
+usage: stranded_base_count.py [-h] -i BAM -f FASTA [-b BASES] [-q QUAL]
+                              [-c CROP] [-r BED] [--no_indel]
+                              [--min_coverage MIN_COVERAGE]
+                              [--concensus_fasta CONCENSUS_FASTA]
+
+Pileup whole genome, only output bases where coverage > 0
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i BAM, --bam BAM     Input bam file (indexed)
+  -f FASTA, --fasta FASTA
+                        reference fasta file
+  -b BASES, --bases BASES
+                        number of bases to look at every iteration (default:
+                        100000)
+  -q QUAL, --qual QUAL  base quality to filter (defulat: 30)
+  -c CROP, --crop CROP  Crop how many bases from ends (defulat: 0)
+  -r BED, --bed BED     bed file for regions (default: whole genome)
+  --no_indel            Not considering alignments with Indel
+  --min_coverage MIN_COVERAGE
+                        Minimum coverage to output
+  --concensus_fasta CONCENSUS_FASTA
+                        Generate concensus fasta (only work if bed file is
+                        provided)
+```
+
 
 ---
 
