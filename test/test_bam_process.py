@@ -64,3 +64,15 @@ def test_filter():
     os.system(command)
     assert(filecmp.cmp(out_bam, test_data_path + '/clipped.bam'))
     os.remove(out_bam)
+
+
+def test_stranded_base_count():
+    golden_file = test_data_path + '/pileup.txt'
+    command = 'stranded_base_count.py -i {path}/MT_TF.bam '\
+        '-f {path}/MT_TF.fa -c 0 --min_coverage 0 -q 0  '\
+        '> {path}/test_pileup.txt'.format(path = test_data_path)
+    
+    os.system(command)
+    assert(filecmp.cmp(golden_file, 
+            test_data_path + '/test_pileup.txt'))
+ 
