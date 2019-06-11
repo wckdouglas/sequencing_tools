@@ -276,18 +276,17 @@ class ConsensusAlignments():
 
     def __init__(self, bam, min_cov = 10):
         self.bam = pysam.Samfile(bam)
-        assert bam.has_index(), 'BAM input should be indexed'
+        assert self.bam.has_index(), 'BAM input should be indexed'
         self.decoder = {0:'A',1:'C',2:'G',3:'T',       # for decoding onehot encoded sequence matrix
                         4:'N',5:'N',6:'N',7:'N',8:'N'} # account for bases with same count
-        #self.fa = pysam.Fastafile('/stor/work/Lambowitz/ref/hg19_ref/genome/hg19_genome.fa')
 
     def consensus_seq(self, chrom, start, end):
-        arr = bam.count_coverage(chrom, start, end) #four array.arrays of the same length in order A C G T (onehot encode?)
+        #four array.arrays of the same length in order A C G T (onehot encode?)
+        arr = self.bam.count_coverage(chrom, start, end) 
         arr = np.array(arr)
         arr = np.where(arr==arr.max(axis=0),1,0) # onehot encoded
         seq = np.matmul(np.arange(4),arr)
         seq = [self.decoder[i] for i in seq]
         seq = ''.join(seq)
-        variant_dict[sample] = hamming_distance(ref, seq) if set(seq) != {'N'} else 0
 
-        return variant_dict
+        return seq
