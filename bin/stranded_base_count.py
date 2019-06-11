@@ -73,8 +73,7 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, cro
     output = partial(output_table, fa, chromosome)
     region_generator = make_regions(chrom_length, bases_region)
     for i, (start, end) in enumerate(region_generator):
-        base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int))) #ref pos//strand//base
-        aln_count, base_dict = get_error(base_dict, start, end)
+        aln_count, base_dict = get_error(start, end)
         out = output(base_dict, start, end, min_cov)
         if i % 10 == 0:
             print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
@@ -88,9 +87,8 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop,
     print(header, file=sys.stdout)
     if use_bed:
         con_fa = xopen(concensus_fasta,'w') if concensus_fasta else None
-        base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int))) #ref pos//strand//base
         for chrom, start, end in bed_generator(bed_file):
-            aln_count, base_dict = analyze_region(in_bam, chrom, qual_threshold, crop, no_indel, base_dict, start, end)
+            aln_count, base_dict = analyze_region(in_bam, chrom, qual_threshold, crop, no_indel, start, end)
             out = output_table(fa, chrom, base_dict, start, end, min_cov)
             if con_fa:
                 fa_dict = base_dict_to_fa(base_dict)

@@ -1,5 +1,6 @@
 from __future__ import print_function
 from builtins import zip, map
+from collections import defaultdict
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 from sequencing_tools.bam_tools import *
@@ -26,7 +27,25 @@ def test_direction(bam):
     return 'U' if aln.flag in [0,16] else 'fr'
 
 INDEL = re.compile('I\D')
-def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, start, end):
+def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, start, end):
+    '''
+    input:
+        bam: pysam SamFile object
+        chromosome: str
+        qual_threshold: int
+        crop: boolean, whether sequence head or tail is accounted for
+        no_indel: boolean, whether alignment iwth indels are accounted for
+        start: int
+        end: int
+
+
+    return:
+        aln_count: number of alignments
+        base_dict: multilevel dictionary: refpos/strand/base -> base count
+
+    '''
+
+
     cdef:
         int aln_count = 0
         AlignedSegment aln
@@ -39,6 +58,7 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
         bool no_indel_condition, with_indel_condition
 
     direction = test_direction(bam)
+    base_dict = defaultdict(lambda: defaultdict(lambda: defaultdict(int))) #ref pos//strand//base
     for aln_count, aln in enumerate(bam.fetch(chromosome, start, end)):
         strand = get_strand(aln, direction = direction)
         if not aln.is_unmapped and \
@@ -58,4 +78,4 @@ def analyze_region(bam, chromosome, qual_threshold, crop, no_indel, base_dict, s
                     if ref_pos and aln_pos and crop_end >= aln_pos >= crop and qual >= qual_threshold:
                         base_dict[ref_pos][strand][base] += 1
 
-    return aln_count, base_dict
+    return aln_count + 1, base_dict

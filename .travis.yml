@@ -26,8 +26,7 @@ install:
     - source activate test-environment
     - pip install .
     - for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done
-    - samtools sort -o test/data/MT_TF.sorted.bam /test/data/MT_TF.bam
-    - samtools index test/data/MT_TF.sorted.bam
+    - samtools index test/data/MT_TF.bam
     - samtools faidx test/data/MT_TF.fa
 # # command to run tests
 script: 
