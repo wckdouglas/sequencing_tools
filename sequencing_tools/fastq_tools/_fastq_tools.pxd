@@ -4,3 +4,4 @@ cdef class fastqRecord:
         str id
         str seq
         str qual
+        str description
