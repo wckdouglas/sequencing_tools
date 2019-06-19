@@ -76,7 +76,9 @@ class MutliAlignments():
                                 .pipe(lambda d: d[d.seq_id.str.contains(sample_regex)])\
                                 .set_index('seq_id') \
                                 .iterrows()):
-            ax.text(min_pos - 1, i, id, fontsize=20, ha = 'right', 
+            ax.text(min_pos - 1, i, id, 
+                    fontsize=labelsize, 
+                    ha = 'right', 
                     va = 'center')
 
             for j, b in seq.items():
