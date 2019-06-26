@@ -1,4 +1,5 @@
 from matplotlib.patches import Rectangle
+from sequencing_tools.stats_tools import hamming_distance
 import pandas as pd
 
 
@@ -43,6 +44,7 @@ class MutliAlignments():
         
         self.mul_df = pd.DataFrame(self.records)\
             .rename(columns = {0:'seq_id'})
+        self.pairwise = None
         self.colors = {'A':'red','C':'blue','U':'green','G': 'orange', '-': 'black',
                       'a':'red','c':'blue','u':'green','g':'orange','t':'green'}
 
@@ -117,3 +119,20 @@ class MutliAlignments():
             score = bcount/bcount.sum()
             scores.append(score)
         return concensus_seq, scores
+
+
+    def PairMatrix(self):
+        pairwise = []
+        for id1, seq1 in self.mul_df\
+                       .set_index('seq_id')\
+                       .iterrows():
+            for id2, seq2 in self.mul_df\
+                           .set_index('seq_id')\
+                           .iterrows():
+                seq1 = ''.join(seq1)
+                seq2 = ''.join(seq2)
+                record = (id1, id2, hamming_distance(seq1, seq2))
+                pairwise.append(record)
+
+        self.pairwise = pd.DataFrame(pairwise, columns = ['id1','id2','distance'])
+
