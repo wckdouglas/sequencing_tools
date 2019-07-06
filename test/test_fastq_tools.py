@@ -171,11 +171,15 @@ def test_umi_trimmer():
 
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
         'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
-        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////')
+        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
+        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
+        )
 
     read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
         'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
-        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A')
+        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
+        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
+        )
                     
     ret_code, outread_1, outread_2 = clipping.trim_reads(read1, read2)
     assert(ret_code == 1)
@@ -192,11 +196,15 @@ def test_pe_align():
                                         min_len = 15)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
         'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
-        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////')
+        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
+        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
+        )
 
     read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
         'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
-        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A')
+        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
+        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
+        )
 
     out = consensus_builder.run(read1, read2)
     id, seq, _, qual = out.strip().split('\n')
@@ -211,11 +219,15 @@ def test_pe_align():
                                         min_len = 15, report_all=True)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
         'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
-        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////')
+        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
+        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
+        )
 
     read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
         'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
-        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A')
+        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
+        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
+        )
 
     out = consensus_builder.run(read1, read2)
     id, seq, _, qual = out.strip().split('\n')
