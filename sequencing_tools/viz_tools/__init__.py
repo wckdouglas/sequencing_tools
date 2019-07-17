@@ -1,5 +1,6 @@
 from pandas import Series
 from builtins import zip, range
+import numpy as np
 import re
 from collections import OrderedDict
 
@@ -225,8 +226,10 @@ def mixed_sort(list_of_elements):
     return sorted(list_of_elements, key = alphanum_key)
 
 
-
-def plot_upset(fig, upset_df, ylab = 'Number of full-length intron'):
+def plot_upset(fig, upset_df, 
+            ylab = 'Intersected count', 
+            matrix_to_plot_ratio=0.4,
+            fontsize=15):
     '''
     upset_df:
         pandas dataframe, contain column: sample matrix (binary), "count", 'index'
@@ -244,8 +247,10 @@ def plot_upset(fig, upset_df, ylab = 'Number of full-length intron'):
 
 
     '''
-    bar_ax = fig.add_axes([0,0.4,1,1])
-    heat_ax = fig.add_axes([0,0,1,0.4])
+    bar_ax = fig.add_axes([0, matrix_to_plot_ratio, 1, 1])
+    heat_ax = fig.add_axes([0, 0, 1, matrix_to_plot_ratio])
+
+    # plot upset bar
     upset_df.plot.bar('index','count', width=0.9,ax=bar_ax)
     bar_ax.xaxis.set_visible(False)
     bar_ax.set_xlim(0, upset_df.shape[0]-0.5)
@@ -256,9 +261,9 @@ def plot_upset(fig, upset_df, ylab = 'Number of full-length intron'):
     ticks = np.round(ticks, -1)[1:]
     ticks = np.array(ticks, dtype='int')
     bar_ax.set_yticks(ticks)
-    bar_ax.set_yticklabels(ticks)
+    bar_ax.set_yticklabels(ticks, fontsize=fontsize)
     [bar_ax.spines[s].set_visible(False) for s in ['top','right']]
-    bar_ax.set_ylabel(ylab)
+    bar_ax.set_ylabel(ylab, fontsize=fontsize)
     bar_ax.set_xlim(-0.5,upset_df.shape[0]-0.5)
 
 
@@ -267,7 +272,7 @@ def plot_upset(fig, upset_df, ylab = 'Number of full-length intron'):
     heat_ax.imshow(matrix.transpose(), 
                 aspect='auto', cmap = 'binary', alpha=0.4)
     heat_ax.set_yticks(range(sample_number))
-    heat_ax.set_yticklabels(matrix.columns)
+    heat_ax.set_yticklabels(matrix.columns, fontsize=fontsize)
     heat_ax.xaxis.set_visible(False)
     heat_ax.hlines(y = np.arange(sample_number)+0.5, xmin=-0.5, xmax=upset_df.shape[0]-0.5)
     heat_ax.vlines(x = np.arange(upset_df.shape[0])+0.5, ymax = sample_number+0.5, ymin=-0.5)
