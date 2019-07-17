@@ -142,7 +142,7 @@ plot_upset(fig, upset_df.sort_values('count'), ylab='count', matrix_to_plot_rati
 ```
 
 
-![png](../../img/upset.png)
+![png]((https://raw.githubusercontent.com/wckdouglas/sequencing_tools/master/img/upset.png)
 
 
 ## Correlation matrix scatter plot ##
@@ -161,5 +161,5 @@ cor_plot(d, fig)
 ```
 
 
-![png](../../img/scatter.png)
+![png]((https://raw.githubusercontent.com/wckdouglas/sequencing_tools/master/img/scatter.png)
 
