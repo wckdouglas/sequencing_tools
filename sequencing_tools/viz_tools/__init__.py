@@ -226,3 +226,49 @@ def mixed_sort(list_of_elements):
 
 
 
+def plot_upset(fig, upset_df, ylab = 'Number of full-length intron'):
+    '''
+    upset_df:
+        pandas dataframe, contain column: sample matrix (binary), "count", 'index'
+
+    input example:
+        index   HeLa    K562    UHRR    Plasma  count
+        3       0       1       1       1       1
+        4       1       0       0       0       2
+        5       1       1       0       0       3
+        1       0       1       0       0       11
+        6       1       1       0       1       12
+        7       1       1       1       1       12
+        2       0       1       0       1       13
+        0       0       0       0       1       30
+
+
+    '''
+    bar_ax = fig.add_axes([0,0.4,1,1])
+    heat_ax = fig.add_axes([0,0,1,0.4])
+    upset_df.plot.bar('index','count', width=0.9,ax=bar_ax)
+    bar_ax.xaxis.set_visible(False)
+    bar_ax.set_xlim(0, upset_df.shape[0]-0.5)
+    bar_ax.legend().set_visible(False)
+
+    ymax = round(upset_df['count'].max(), -1)
+    ticks = np.linspace(0, ymax, 5)
+    ticks = np.round(ticks, -1)[1:]
+    ticks = np.array(ticks, dtype='int')
+    bar_ax.set_yticks(ticks)
+    bar_ax.set_yticklabels(ticks)
+    [bar_ax.spines[s].set_visible(False) for s in ['top','right']]
+    bar_ax.set_ylabel(ylab)
+    bar_ax.set_xlim(-0.5,upset_df.shape[0]-0.5)
+
+
+    matrix = upset_df.drop(['index','count'],axis=1)
+    sample_number = matrix.shape[1] 
+    heat_ax.imshow(matrix.transpose(), 
+                aspect='auto', cmap = 'binary', alpha=0.4)
+    heat_ax.set_yticks(range(sample_number))
+    heat_ax.set_yticklabels(matrix.columns)
+    heat_ax.xaxis.set_visible(False)
+    heat_ax.hlines(y = np.arange(sample_number)+0.5, xmin=-0.5, xmax=upset_df.shape[0]-0.5)
+    heat_ax.vlines(x = np.arange(upset_df.shape[0])+0.5, ymax = sample_number+0.5, ymin=-0.5)
+    heat_ax.set_ylim(-0.5,sample_number-0.5)
