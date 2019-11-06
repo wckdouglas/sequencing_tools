@@ -9,22 +9,10 @@ This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of se
 
 ## Installation ##
 
-```
-pip install git+https://github.com/wckdouglas/sequencing_tools.git
-```
-
-or 
-
-```
-conda install -c wckdouglas sequencing_tools
-```
-
-If this gives an error, try:
 
 ```
 git clone https://github.com/wckdouglas/sequencing_tools.git
 cd sequencing_tools
-pip install -r requirements.txt
 python setup.py install --user
 ```
 
@@ -34,10 +22,12 @@ Prerequisits:
 * numpy>=1.12.1
 * cython>=0.25
 * matplotlib>=2.0.0
-* python-cjson>=1.2.0
 * scipy>=0.19.0
 * seaborn>=0.7.1
-* pyBigWig
+* networkx
+* ujson
+* six
+* pytest
 
 ---
 
