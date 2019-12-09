@@ -193,7 +193,7 @@ def test_umi_trimmer():
 
 def test_pe_align():
     consensus_builder = ConsensusBuilder(error_toleration = 0.1,
-                                        min_len = 15)
+                                        min_len = 15, report_all=False)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
         'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
         'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',

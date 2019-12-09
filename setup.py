@@ -15,30 +15,10 @@ except ImportError:
     raise ImportError("Requires numpy to "
             "be installed before running setup.py (pip install numpy)")
 try:
-    import networkx
-except ImportError:
-    raise ImportError("Requires networkx to "
-            "be installed before running setup.py (pip install networkx)")
-try:
     import pysam
 except ImportError:
     raise ImportError("Requires pysam to "
             "be installed before running setup.py (pip install pysam)")
-#try:
-#    import pyBigWig
-#except ImportError:
-#    raise ImportError("Requires pyBigWig to "
-#            "be installed before running setup.py (pip install pyBigWig)")
-try:
-    import ujson
-except ImportError:
-    raise ImportError("Requires ujson to "
-            "be installed before running setup.py (pip install ujson)")
-try:
-    import scipy
-except ImportError:
-    raise ImportError("Requires scipy to "
-            "be installed before running setup.py (pip install scipy)")
 
 include_path = [np.get_include()]
 include_path.append('/usr/include')
@@ -62,10 +42,7 @@ setup(
     zip_safe = False,
     scripts = glob.glob('bin/*py'),
     ext_modules = ext_modules,
-    cmdclass = {'build_ext': build_ext}
-)
-
-"""
+    cmdclass = {'build_ext': build_ext},
     install_requires = [
           'cython',
           'numpy',
@@ -77,5 +54,4 @@ setup(
           'networkx>=2.0',
           'pytest'
       ],
-"""
-
+)
