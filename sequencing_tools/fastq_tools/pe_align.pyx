@@ -57,15 +57,40 @@ class ConsensusBuilder:
                                         [R1.qual[r1_start:r1_end],
                                          r2_qual[r2_start:r2_end]])
                 if self.report_all:
-                    if r2_end != len(R2.seq):
+                    if r2_end != len(R2.seq) :
+                    '''
+                    R1:       --------------------->|======|
+                    R2:           <-------------------------
+                    '''
                         right_add_seq = r2_seq[r2_end:] 
                         right_add_qual = r2_qual[r2_end:]
 
-                    if r1_start != 0:
+                    if r1_start !=0:
+                    '''
+                    R1:       ----------------------->
+                    R2:       |=====|<-------------------------
+                    '''
                         left_add_seq = R1.seq[:r1_start]
                         left_add_qual = R1.qual[:r1_start]
-                    seq = left_add_seq + seq + right_add_seq
-                    qual = left_add_qual + qual + right_add_qual
+                    
+                    if r2_start != 0:
+                    '''
+                    R1:      |=========|----------------------->
+                    R2:      <-------------------------
+                    '''
+                        left_add_seq = r2_seq[:r2_start]
+                        left_add_qual = r2_qual[:r2_start]
+
+                    if r1_end != len(R1.seq):
+                    '''
+                    R1:                 ----------------------->
+                    R2:      <-------------------------|=======|
+                    '''
+                        right_add_seq = r2_seq[r2_end:] 
+                        right_add_qual = r2_qual[r2_end:]
+
+                seq = left_add_seq + seq + right_add_seq
+                qual = left_add_qual + qual + right_add_qual
 
                 out_line = '@%s\n%s\n+\n%s' %(r1_id,seq, qual)
         return out_line
