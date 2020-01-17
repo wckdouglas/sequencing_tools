@@ -13,6 +13,7 @@ This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of se
 ```
 git clone https://github.com/wckdouglas/sequencing_tools.git
 cd sequencing_tools
+pip install -r requirements.txt
 python setup.py install --user
 ```
 
