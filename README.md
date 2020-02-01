@@ -309,6 +309,8 @@ optional arguments:
 
 * [fastq_tools](#fastq)
 * [bam_tools](#bam_tools)
+* [viz_tools](#viz_tools)
+* [consensus_tools](#consensus_tools)
 
 <h3 id='fastq'> sequencing_tools.fastq_tools </h3>
 
@@ -608,7 +610,7 @@ $ split_cigar('63M')
 
 <h2 id='extra'> Extra </h2>
 
-### sequencing_tools.consensus_tools ###
+<h3 id='consensus_tools'> sequencing_tools.consensus_tools </h3>
 
 #### consensus_tools.ErrorCorrection ####
 
@@ -628,7 +630,8 @@ ec.Correct(['AAACA','AAAAA','AAACA','AAACA'],
             ['IIIII','IIIAI','FFFFF', 'FFFFF'])
 ('AAACA', 'IIIII')
 ```        
-### sequencing_tools.viz_tools ###
+
+</h3 id='viz_tools'> sequencing_tools.viz_tools </h3>
 
 #### viz_tools.color_encoder ####
 
