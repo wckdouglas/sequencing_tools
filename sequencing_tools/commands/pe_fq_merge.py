@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 
-from sequencing_tools.fastq_tools.pe_align import merge_interleaved
-from sequencing_tools.io_tools import xopen
-import argparse
+from ..fastq_tools.pe_align import merge_interleaved
+from ..io_tools import xopen
 import sys
 
-def getOptions():
+def getopt(subparsers):
     '''
     reading input
     '''
     descriptions = 'Merging interleaved, paired-end fastq file and output overlapped '+ \
         'regions only with error correction using cutadapt module to find overlapping regions'
-    parser = argparse.ArgumentParser(description=descriptions)
+    parser = subparsers.add_parser('mergepe', description=descriptions)
     parser.add_argument('-i', '--interleaved', default='-',
         help='Interleaved Fastq files (default: -)')
     parser.add_argument('-o', '--outfile', default='-',
@@ -25,15 +24,9 @@ def getOptions():
     parser.add_argument('-c','--conserved', action='store_true', 
                         help = 'Use of a voting algorithm, '\
                         'otherwise use posterior error from qualit')
-    return parser.parse_args()
 
-def main():
-    args = getOptions()
+def run(args):
     outfile=args.outfile
     outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else xopen(outfile,mode = 'w')
     merge_interleaved(args.interleaved, outfile_handle,
             args.min_len, args.error, args.all, args.conserved)
-
-
-if __name__ == '__main__':
-    main()

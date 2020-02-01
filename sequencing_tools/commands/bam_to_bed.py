@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 
 import argparse
-from sequencing_tools.bam_tools.fragment_pairs import bam_to_bed
 import sys
+import logging
+import os
+from ..bam_tools.fragment_pairs import bam_to_bed
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
-def getopt():
-    parser = argparse.ArgumentParser(description = 'Making paired-end bam into bed file for every fragment')
+
+def getopt(subparsers):
+    parser = subparsers.add_parser(name = 'bam2bed',
+                 help = 'Making paired-end bam into bed file for every fragment')
     parser.add_argument('-i', '--in_bam', required=True,
                         help = 'BAM file name, or stdin (-) ** name sorted' )
     parser.add_argument('-o','--out_bed', default='-', help = 'BED file output (default: - )')
@@ -25,18 +31,14 @@ def getopt():
     parser.add_argument('--prefix', default=None,
                         help = 'Prefix for read fragment name')
 
-    return parser.parse_args()
 
-def main():
-    args = getopt()
+def run(args):
     in_bam = args.in_bam
     out_file = sys.stdout if args.out_bed == '-' else open(args.out_bed, 'w')
     tag = args.tag
     if args.max_size <= args.min_size:
-        sys.exit('!!!!! Min fragment size > Max fragment size') 
+        logger.error('!!!!! Min fragment size > Max fragment size') 
+        sys.exit()
     bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, 
             args.all, args.primary, args.add_cigar, args.prefix)
     return 0
-
-if __name__ == '__main__':
-    main()
