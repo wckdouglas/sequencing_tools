@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from sequencing_tools.bam_tools.umi_tag import add_umi_tag
+from ..bam_tools.umi_tag import add_umi_tag
 import argparse
 
-def getopt():
-    parser = argparse.ArgumentParser(description = 'Putting UMI as RX tag in bam, enables picard Markduplicates with BARCODE_TAG=RX')
+def getopt(subparsers):
+    parser = subparsers.add_parser(name='bamTag',description = 'Putting UMI as RX tag in bam, enables picard Markduplicates with BARCODE_TAG=RX')
     parser.add_argument('-i', '--in_bam', required=True,
                         help = 'BAM file name, or stdin (-)' )
     parser.add_argument('-o','--out_bam', default='-', help = 'BAM file output (default: - )')
@@ -14,12 +14,10 @@ def getopt():
                         help = 'after splitting read name using {delim}, which' +\
                             'fragment is UMI? can use -1 as last piece (default: 0)')
 
-    return parser.parse_args()
 
-def main():
+def run():
     args = getopt()
     add_umi_tag(args.in_bam, args.out_bam, args.tag, args.delim, int(args.fragment))
-    return 0
 
 if __name__ == '__main__':
     main()

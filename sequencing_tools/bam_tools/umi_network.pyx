@@ -3,7 +3,7 @@ from sequencing_tools.stats_tools import hamming_distance
 from collections import defaultdict
 import six
 from networkx import Graph, connected_components
-from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
+from ..stats_tools import hamming_distance, levenshtein_distance
 '''
 Core code copied from umi_tools
 https://github.com/CGATOxford/UMI-tools/blob/master/umi_tools/network.py

@@ -1,13 +1,13 @@
 from __future__ import print_function
-from sequencing_tools.fastq_tools import read_interleaved, reverse_complement
-from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
-from sequencing_tools.fastq_tools.cutadapt_align import locate
-from sequencing_tools.io_tools import xopen
 import sys
 from builtins import zip
 from functools import partial
 from cpython cimport bool
-from sequencing_tools.consensus_tools import ErrorCorrection
+from ._fastq_tools import read_interleaved, reverse_complement
+from ._fastq_tools cimport fastqRecord
+from .cutadapt_align import locate
+from ..io_tools import xopen
+from ..consensus_tools import ErrorCorrection
 import numpy as np
 cdef:
     double EPSILON = 0.999999

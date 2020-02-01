@@ -7,7 +7,7 @@ from operator import itemgetter
 import sys
 import cython
 from itertools import groupby
-from sequencing_tools.bam_tools.bed_dedup import fragment_coordinates
+from .bed_dedup import fragment_coordinates
 
 
 '''

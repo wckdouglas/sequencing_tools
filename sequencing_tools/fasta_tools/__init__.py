@@ -1,5 +1,5 @@
 from matplotlib.patches import Rectangle
-from sequencing_tools.stats_tools import hamming_distance
+from ..stats_tools import hamming_distance
 import pandas as pd
 
 

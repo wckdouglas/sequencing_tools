@@ -11,11 +11,11 @@ from builtins import zip, map, range
 from functools import partial
 from cpython cimport bool
 import six
-from sequencing_tools.stats_tools import cy_mean, hamming_distance
-from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
-from sequencing_tools.fastq_tools import readfq
-from sequencing_tools.io_tools import xopen
-from sequencing_tools.consensus_tools import ErrorCorrection
+from ..stats_tools import cy_mean, hamming_distance
+from ..fastq_tools._fastq_tools cimport fastqRecord
+from ..fastq_tools import readfq
+from ..io_tools import xopen
+from ..consensus_tools import ErrorCorrection
 
 
 def plotBCdistribution(barcode_family_count, outputprefix):

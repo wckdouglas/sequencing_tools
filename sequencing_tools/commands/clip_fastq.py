@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-import argparse
 import numpy as np
 import time
 import sys
 import re
-from sequencing_tools.fastq_tools.function_clip import clip_pairs
+import os
+from ..fastq_tools.function_clip import clip_pairs
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
-def getOptions():
+def getopt(subparsers):
     '''
     reading input
     '''
     descriptions = 'Clip the barcode sequence and attached to the front of seq id'
-    parser = argparse.ArgumentParser(description=descriptions)
+    parser = subparsers.add_parser(name = 'clipFQ',description=descriptions)
     parser.add_argument('-o', '--out_file', default='-',
         help='Interleaved Fastq files (default: -)')
     parser.add_argument('-1', '--fastq1', required=True,
@@ -34,11 +36,8 @@ def getOptions():
 #        help="Using how many bases on the barcode to split the fastq? A choice of 3 will generate 4^3 = 64 files (deflaut: 4)")
     parser.add_argument("-r", "--read", default='read1',choices = ['read1','read2'],
         help="Which read is the UMI on?")
-    args = parser.parse_args()
-    return args
 
-
-def main(args):
+def run(args):
     """
     main function:
         controlling work flow
@@ -59,21 +58,16 @@ def main(args):
 
     #print out parameters
     programname = sys.argv[0]
-    print('[%s] [Parameters] ' %(programname), file = sys.stderr)
-    print('[%s] indexed bases:                     %i' %(programname, idx_base), file = sys.stderr)
-    print('[%s] min mean barcode quality:          %i' %(programname, barcode_cut_off), file = sys.stderr)
-    print('[%s] output file:                       %s' %(programname, out_file), file = sys.stderr)
-    print('[%s] using constant regions:            %s' %(programname, constant), file = sys.stderr)
-    print('[%s] allowed mismatches:                %i' %(programname, allow_mismatch), file = sys.stderr)
-    print('[%s] Using UMI side:                    %s' %(programname, UMI_side), file = sys.stderr)
-    print('[%s] Using min-length:                  %i' %(programname, args.min_length), file = sys.stderr)
+    logger.ingo('[Parameters] ' %(programname), file = sys.stderr)
+    logger.info('indexed bases:                     %i' %(idx_base))
+    logger.info('min mean barcode quality:          %i' %(barcode_cut_off))
+    logger.info('output file:                       %s' %(out_file))
+    logger.info('using constant regions:            %s' %(constant))
+    logger.info('allowed mismatches:                %i' %(allow_mismatch))
+    logger.info('Using UMI side:                    %s' %(UMI_side))
+    logger.info('Using min-length:                  %i' %(args.min_length))
 
     # divide reads into subclusters
     clip_pairs(inFastq1, inFastq2, out_file, idx_base,
             barcode_cut_off, constant, allow_mismatch, programname, UMI_side, args.min_length)
-    print('[%s] time lapsed:      %2.3f min' %(programname, np.true_divide(time.time()-start,60)), file = sys.stderr)
-    return 0
-
-if __name__ == '__main__':
-    args = getOptions()
-    main(args)
+    logger.info('time lapsed:      %2.3f min' %(np.true_divide(time.time()-start,60)))

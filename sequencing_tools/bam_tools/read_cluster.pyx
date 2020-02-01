@@ -8,7 +8,7 @@ from cpython cimport bool
 from scipy.special import logsumexp
 from sequencing_tools.fastq_tools import reverse_complement
 from six.moves import xrange
-from sequencing_tools.consensus_tools import ErrorCorrection
+from ..consensus_tools import ErrorCorrection
 
 
 def fix_strand(str seq, str qual, bool strand):

@@ -6,8 +6,8 @@ from itertools import combinations, groupby
 from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
-from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
-from sequencing_tools.bam_tools.umi_network import demultiplex_directional, demultiplex_adj
+from ..stats_tools import hamming_distance, levenshtein_distance
+from .umi_network import demultiplex_directional, demultiplex_adj
 import sys
 import six
 from libc.stdint cimport uint32_t

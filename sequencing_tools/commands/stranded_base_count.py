@@ -10,14 +10,17 @@ import os
 import sys
 import string
 import argparse
-from sequencing_tools.bam_tools.pileup_errors import extract_bases, analyze_region, make_regions
-from sequencing_tools.io_tools import xopen
+from ..bam_tools.pileup_errors import extract_bases, analyze_region, make_regions
+from ..io_tools import xopen
 from operator import itemgetter
 import six
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 long = six.integer_types[-1]
 
-def getopt():
-    parser = argparse.ArgumentParser(description='Pileup whole genome, only output bases where coverage > 0')
+def getopt(subparsers):
+    parser = subparsers.add_parser(name='pileup',description='Pileup whole genome, only output bases where coverage > 0')
     parser.add_argument('-i', '--bam',required=True, help='Input bam file (indexed)')
     parser.add_argument('-f','--fasta', required=True, help='reference fasta file')
     parser.add_argument('-b','--bases', default = 100000,
@@ -32,8 +35,6 @@ def getopt():
     parser.add_argument('--min_coverage', default = 0, type = int,
                         help='Minimum coverage to output')
     parser.add_argument('--concensus_fasta', help = 'Generate concensus fasta (only work if bed file is provided)')
-    args = parser.parse_args()
-    return args
 
 def bed_generator(bed_file):
     bed = sys.stdin if bed_file == '-' else xopen(bed_file)
@@ -76,7 +77,7 @@ def analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, cro
         aln_count, base_dict = get_error(start, end)
         out = output(base_dict, start, end, min_cov)
         if i % 10 == 0:
-            print('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count), file=sys.stderr)
+            logger.info('Written %s:%i-%i with %i alignments' %(chromosome, start, end, aln_count))
 
 def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, 
                 bed_file, use_bed, no_indel, min_cov, concensus_fasta):
@@ -109,8 +110,7 @@ def analyze_bam(in_bam, fa, bases_region, qual_threshold, crop,
             analyze_chromosome(chromosome, in_bam, fa, bases_region, qual_threshold, crop, no_indel, min_cov)
 
 
-def main():
-    args = getopt()
+def run(args):
     bam_file = args.bam
     ref_fasta = args.fasta
     bases_region = args.bases
@@ -124,7 +124,3 @@ def main():
     with pysam.Samfile(bam_file, 'rb') as in_bam, \
             pysam.FastaFile(ref_fasta) as fa:
         analyze_bam(in_bam, fa, bases_region, qual_threshold, crop, args.bed, use_bed, no_indel, min_cov, concensus_fasta)
-
-
-if __name__ == '__main__':
-    main()
