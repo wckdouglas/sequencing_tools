@@ -4,7 +4,7 @@ from operator import itemgetter
 from cpython cimport bool
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import sys
-from sequencing_tools.bam_tools import concordant_pairs, read_ends,\
+from ._bam_tools import concordant_pairs, read_ends,\
                                         fragment_ends, check_concordant, \
                                         check_primary
 cdef class read_fragment:

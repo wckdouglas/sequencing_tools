@@ -12,8 +12,8 @@ import seaborn as sns
 import pandas as pd
 from collections import defaultdict
 import time
-from sequencing_tools.bam_tools.read_cluster import readGroup
-from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
+from .read_cluster import readGroup
+from ..stats_tools import hamming_distance, levenshtein_distance
 
 
 accpetable_flag = [99,147,

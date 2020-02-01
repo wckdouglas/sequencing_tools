@@ -6,7 +6,7 @@ from libc.math cimport log10, exp, log
 import sys
 from cpython cimport bool
 from scipy.special import logsumexp
-from sequencing_tools.fastq_tools import reverse_complement
+from ..fastq_tools import reverse_complement
 from six.moves import xrange
 from functools import partial
 

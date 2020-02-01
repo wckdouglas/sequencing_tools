@@ -11,11 +11,11 @@ from cpython cimport bool
 import io
 import os
 from libc.math cimport fmin
-from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
-from sequencing_tools.fastq_tools import readfq, reverse_complement
-from sequencing_tools.fastq_tools.cutadapt_align import locate
-from sequencing_tools.io_tools import xopen
-from sequencing_tools.stats_tools import hamming_distance
+from ._fastq_tools cimport fastqRecord
+from ._fastq_tools import readfq, reverse_complement
+from .cutadapt_align import locate
+from ..io_tools import xopen
+from ..stats_tools import hamming_distance
 
 
 class adapters():

@@ -6,7 +6,7 @@ import sys
 import numpy as np
 from numpy cimport ndarray
 from cpython cimport bool
-from sequencing_tools.bam_tools import concordant_alignment, split_cigar, concordant_pairs
+from ._bam_tools import concordant_alignment, split_cigar, concordant_pairs
 
 
 cdef class fragment_pairs:

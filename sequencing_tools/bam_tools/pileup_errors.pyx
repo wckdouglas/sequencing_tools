@@ -3,7 +3,7 @@ from builtins import zip, map
 from collections import defaultdict
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
-from sequencing_tools.bam_tools import *
+from ..bam_tools import *
 
 
 def extract_bases(base_dict, pos):
