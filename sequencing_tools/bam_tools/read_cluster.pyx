@@ -6,9 +6,9 @@ from libc.math cimport log10, exp, log
 import sys
 from cpython cimport bool
 from scipy.special import logsumexp
-from sequencing_tools.fastq_tools import reverse_complement
 from six.moves import xrange
 from ..consensus_tools import ErrorCorrection
+from ..fastq_tools import reverse_complement
 
 
 def fix_strand(str seq, str qual, bool strand):
