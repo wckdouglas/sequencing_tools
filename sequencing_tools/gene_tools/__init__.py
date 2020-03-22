@@ -106,7 +106,7 @@ class Transcript():
     '''
     input:
         dictionary: transcript_dict[exons|trascript] = list
-                    something like transcripts = defaultdict(list)
+                    something like transcripts = defaultdict(list) [start and end]
     '''
     def __init__(self, transcript_dict):
         self.transcript = transcript_dict['transcript'][0]

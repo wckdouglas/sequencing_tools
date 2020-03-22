@@ -26,13 +26,12 @@ inut:
 
 Example usage:
 ```
-    ma = multi_alignment("fasta file")
-
-    ax = plt.subplot(111)
-    ma.plot(ax = ax) # plotting multiple alignment
-    
-    consensus_seq, scores = ma.concensus() # making consensus sequence, score is shows the proportion of sequence having the consensus base
-
-    matrix = ma.PairMatrix() # Pairwise hamming distance matrix computing for each pair of sequences
+$ from sequencing_tools.fastq_tools import readfa
+$ ma = multi_alignment("fasta file")
+$
+$ ax = plt.subplot(111)
+$ ma.plot(ax = ax) # plotting multiple alignment
+$ consensus_seq, scores = ma.concensus() # making consensus sequence, score is shows the proportion of sequence having the consensus base
+$ matrix = ma.PairMatrix() # Pairwise hamming distance matrix computing for each pair of sequences
 ```
 
