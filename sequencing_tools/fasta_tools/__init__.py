@@ -102,7 +102,7 @@ class MutliAlignments():
         compute a concensus sequence
         '''
         sequence_matrix = np.array(self.records)[:, 1:]
-        concensus_seq = ''
+        consensus_seq = ''
         scores = []
         for pos in range(sequence_matrix.shape[1]):
             bases = sequence_matrix[:,pos]
@@ -115,10 +115,10 @@ class MutliAlignments():
             #elif len(b) > 1:
             #    cb = str(b[bcount == np.sort(bcount)[-2]][0])
 
-            concensus_seq += cb
+            consensus_seq += cb
             score = bcount/bcount.sum()
             scores.append(score)
-        return concensus_seq, scores
+        return consensus_seq, scores
 
 
     def PairMatrix(self):
