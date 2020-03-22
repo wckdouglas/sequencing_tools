@@ -5,7 +5,7 @@
 Iterate over a fasta file
 
 input:
-    file handle of a fasta file
+- file handle of a fasta file
 
 Example usage:
 ```
@@ -21,7 +21,7 @@ $         print(seqid, seq)
 Plotting and making consensus sequence from multiple alignments
 
 inut:
-    fa_file: fasta file name
+- fa_file: fasta file name
 
 
 Example usage:
