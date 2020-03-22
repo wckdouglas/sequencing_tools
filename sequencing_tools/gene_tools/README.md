@@ -3,8 +3,8 @@
 ## Transcriptome ##
 
 input:
-    refflat file: (default: [hg19 refflat](http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz) )
-    coding_only: True if only protein coding genes are needed
+- refflat file: (default: [hg19 refflat](http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz) )
+- coding_only: True if only protein coding genes are needed
 
 Example usage:
 ```
@@ -26,7 +26,7 @@ The output transcript_dict is:
 ## Bed12 ##
 
 input:
-    bed12 line
+- bed12 line
 
 
 Example usage:
@@ -60,17 +60,17 @@ with open('bedfile') as bed:
 Parser for gtf file
 
 input:
-    GTFline
+   - GTFline
 
 output:
-    object with attr:
-        - chrom: str
-        - start: int
-        - end: int
-        - strand: str
-        - feature_type: str
-        - info: dict
-        - fields: list separated by '\t'
+- object with attr:
+    - chrom: str
+    - start: int
+    - end: int
+    - strand: str
+    - feature_type: str
+    - info: dict
+    - fields: list separated by '\t'
 
 Example usage:
 ```
