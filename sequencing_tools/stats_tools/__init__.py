@@ -1,1 +1,1 @@
-from .stats_tools._stats_tools import *
+from ._stats_tools import *
