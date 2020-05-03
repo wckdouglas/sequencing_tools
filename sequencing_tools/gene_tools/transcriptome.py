@@ -224,6 +224,9 @@ class Transcriptome():
                     self.transcript_dict[transcript['Gene name']][transcript['tid']] = Transcript(transcript)
 
     def MakeTranscriptomeFromSqlite(self):
+        '''
+        indexing from sqlite db
+        '''
         cursor = self.sql_connection.cursor()
         log.info('Reading database %s' %self.sqldb)
 
