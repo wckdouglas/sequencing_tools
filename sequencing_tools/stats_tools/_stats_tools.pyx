@@ -4,6 +4,9 @@ cimport numpy as np
 from cython cimport floating
 from scipy.stats import binom
 import pandas as pd
+import logging
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger('Stat tool')
 
 cpdef np.ndarray p_adjust(pvalue):
     '''
@@ -48,6 +51,7 @@ cpdef np.ndarray p_adjust(pvalue):
     in_order = descending_p_order.argsort()
     steps = float(len(pvalue)) / np.arange(len(pvalue), 0, -1)
     adjusted_p = np.minimum(1.0, np.minimum.accumulate(steps * pvalue[descending_p_order]))
+    logger.info('Corrected %i p-values' %len(pvalue))
     return adjusted_p[in_order]
 
 def binom_test(success_test, total_test, expected_p = 0.5):
@@ -195,6 +199,7 @@ def normalize_count(count_mat, return_sf = False):
     
     sf = np.apply_along_axis(get_size_factor, 0, count_mat)
     sf = np.exp(sf)
+    logger.info('Calculated size factor for %i samples' %len(sf))
     norm_count = count_mat/sf
     if return_sf:
         return norm_count, sf

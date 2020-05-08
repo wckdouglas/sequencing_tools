@@ -9,6 +9,9 @@ from .cutadapt_align import locate
 from ..io_tools import xopen
 from ..consensus_tools import ErrorCorrection
 import numpy as np
+import logging 
+logging.basicConfig(level = logging.INFO)
+logger = logging.getLogger('PE align')
 cdef:
     double EPSILON = 0.999999
 
@@ -114,5 +117,5 @@ def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_
             print(out_line, file=outfile_handle)
         record_count += 1
 
-    print('Parsed %i records' %(record_count), file=sys.stderr)
-    print('Merged %i records' %(out_count), file=sys.stderr)
+    logger.info('Parsed %i records' %(record_count))
+    logger.info('Merged %i records' %(out_count))
