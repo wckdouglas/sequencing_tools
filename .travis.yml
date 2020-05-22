@@ -16,13 +16,12 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - conda config --add channels r
     - conda config --add channels bioconda
 
 
     - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
         cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy 
-        matplotlib samtools future
+        matplotlib samtools future pytest-cov codecov
     - source activate test-environment
     - pip install .
     - for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done
@@ -30,5 +29,10 @@ install:
     - samtools faidx test/data/MT_TF.fa
 # # command to run tests
 script: 
-    - pytest
+    - pytest --cov=./
     - bash test_script.sh
+
+after_success:
+    - codecov
+
+
