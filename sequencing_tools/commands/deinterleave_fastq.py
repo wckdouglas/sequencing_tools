@@ -41,4 +41,4 @@ def run(args):
                 r2_count += 1
 
     assert r1_count == r2_count, 'Not equal reads!!!! %i != %i' %(r1_count, r2_count)
-    logger.info('Written %i records' %(r1_count), file = sys.stderr)
+    logger.info('Written %i records' %(r1_count))
