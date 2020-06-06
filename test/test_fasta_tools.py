@@ -1,6 +1,6 @@
 
-import os
 from __future__ import print_function
+import os
 from sequencing_tools.fasta_tools import readfa, MultiAlignments
 from sequencing_tools.fastq_tools import readfq
 import numpy as np
