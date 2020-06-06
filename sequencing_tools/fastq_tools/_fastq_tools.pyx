@@ -83,9 +83,9 @@ def readfq(fp): # this is a generator function
 
 # python 3 compatibility
 try:
-    complement_seq = string.maketrans('ACTGNactgn','TGACNtgacn')
+    complement_seq = string.maketrans('ACTGNactgnRYSWKMDHVryswkmdhv','TGACNtgacnBDHKMWSRYbdhkmwsry')
 except AttributeError:
-    complement_seq = str.maketrans('ACTGNactgn','TGACNtgacn')
+    complement_seq = str.maketrans('ACTGNactgnRYSWKMDHVryswkmdhv','TGACNtgacnBDHKMWSRYbdhkmwsry')
 
 def complement(seq):
     """

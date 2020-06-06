@@ -1,6 +1,7 @@
+import pandas as pd
+import numpy as np
 from matplotlib.patches import Rectangle
 from ..stats_tools import hamming_distance
-import pandas as pd
 
 
 def readfa(file_handle):
@@ -20,7 +21,7 @@ def readfa(file_handle):
     yield seqid, seq
        
 
-class MutliAlignments():
+class MultiAlignments():
     '''
     plotting multiple-alignment fasta
     '''
