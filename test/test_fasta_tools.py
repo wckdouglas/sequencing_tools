@@ -21,7 +21,7 @@ def test_readfa():
     assert(seq == record.seq)
 
 def test_multialign():
-    ma = MutliAlignments(test_data_path + '/multi.fa')
+    ma = MultiAlignments(test_data_path + '/multi.fa')
     consensus_seq, score = ma.concensus()
     assert(consensus_seq == 'GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG')
     assert( min(max(s) for s in score) == 0.5 )
