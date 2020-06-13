@@ -1,4 +1,5 @@
 from sequencing_tools.stats_tools import p_adjust, levenshtein_distance, hamming_distance
+from sequencing_tools.stats_tools.regression import Bootstrap
 import numpy as np
 
 def test_padjust():
@@ -49,3 +50,15 @@ def test_padjust():
 def test_distance():
     assert(levenshtein_distance('AACCA','AACCT') == 1)
     assert(hamming_distance('AACCA','AACCT') == 1)
+
+
+def test_bootstrap():
+    n = 100
+    group_size = 10 
+    a = np.random.rand(100)
+    bs = Bootstrap()
+    for i, b in enumerate(bs.bootstrap(a, group_size=group_size, n_boots=n)):
+        assert( len(b) == group_size)
+    
+    assert( i == n-1 )
+    
