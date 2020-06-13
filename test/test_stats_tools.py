@@ -62,3 +62,8 @@ def test_bootstrap():
     
     assert( i == n-1 )
     
+
+def test_regression():
+    np.random.seed(123)
+    X = 2 * np.random.rand(10,2)
+    y = 3 * X[:,0]+np.random.randn(10)

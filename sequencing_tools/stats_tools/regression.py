@@ -30,15 +30,17 @@ class Bootstrap:
         total_size = xs.shape[0]
         logger.info('Total size for bootstrap: %i' %total_size)
         if group_size > total_size:
-            raise SeqUtilsError('Group size > input array size')
+            #raise SeqUtilsError('Group size > input array size')
+            raise ValueError('Group size > input array size')
     
         for i in range(n_boots):
             idx = self.rng.randint(0, total_size, group_size)
             yield idx
-
-
 class GradientDescent():
-    def __init__(self, lr = 0.001, max_iter = 10000, limit = 1e-4, verbose = False):
+    def __init__(self, 
+                 lr = 0.001, max_iter = 10000, 
+                 limit = 1e-4, verbose = False,
+                method = 'mean'):
         '''
         A stochastic gradient descent model using Adam optimizer 
         for solving linear regression with no intercept:
@@ -47,6 +49,7 @@ class GradientDescent():
             lr: learning rate for how gradient should change the weight in each iteration
             max_iter: how many iteration to run if not converging
             limit: how small of a difference between iteration we would tolerate as converge?
+            method: mean or median
         test:
         import logging
         import numpy as np
@@ -60,46 +63,57 @@ class GradientDescent():
         '''
 
         # static parameter 
+        assert(method in ['mean', 'median'])
+        self.method = method
         self.learning_rate = lr
         self.max_iter = max_iter
         self.verbose = verbose
         self.print = self.max_iter // 5
-        self.B = np.random.rand() # regression coefficient
+        self.B = None # regression coefficients
         self.diff = 1
         self.beta_1 = 0.9
         self.beta_2 = 0.999
-        self.initialize()
         self.epsilon = 1e-8 # avoid division by zero
         self.limit = limit
         self.bootstrap = Bootstrap(seed=123)
         self.logger = logging.getLogger('Gradient Descent')
-        self.initialize()
+        self._initialize()
 
-    def initialize(self):
+    def _initialize(self):
         # initialize parameters
         self.moving_average_gradient = 0
         self.moving_average_squared_gradient = 0
         self._iter = 0
-        self.x = None
+        self.X = None
         self.y = None
         self.n = 0
-        self.cost = 0
-        self.losses = np.zeros(int(self.max_iter))
-        self.gradients = np.zeros(int(self.max_iter))
-        self.diffs = np.zeros(int(self.max_iter))
+        self.n_coefficients = 0
+        self.cost = []
+        self.losses = []
+        self.gradients = []
+        self.gradient = []
+        self.diffs = []
         if self.verbose:
             self.logger.info('Initialized parameters')
         self.converge = False
+        if self.method == 'mean':
+            self.summary = np.mean
+        if self.method == 'median':
+            self.summary = np.median
+
 
     
     def Cost(self):
         '''
         compute error with new regression coefficien
         '''
-        self.cost = self.y - self.x * self.B  # error = y - predicted_y 
-        self.gradient = np.median( self.x * self.cost ) # using a median cost
-        self.losses[self._iter - 1] = np.abs(self.gradient)
-        self.gradients[self._iter - 1] = self.gradient
+        self.residuals = self.y - np.sum(self.X * self.B, axis=1)  # error = y - predicted_y 
+        self.cost = np.sqrt(self.summary(self.residuals**2))
+        self.losses[self._iter - 1] = self.cost
+
+        for i in range(self.n_coefficients):
+            self.gradient[i] = self.summary( - self.X[:,i] * self.residuals[i] )
+            self.gradients[self._iter - 1, i] = self.gradient[i]
     
     
     def Adam_update(self):
@@ -107,42 +121,56 @@ class GradientDescent():
         Adam optimizer
         https://github.com/sagarvegad/Adam-optimizer/blob/master/Adam.py
         '''
-        self.moving_average_gradient = self.beta_1*self.moving_average_gradient + (1-self.beta_1)*self.gradient
-        self.moving_average_squared_gradient = self.beta_2*self.moving_average_squared_gradient + (1-self.beta_2)*(self.gradient * self.gradient)
-        m_cap = self.moving_average_gradient / (1-(self.beta_1**self._iter)) #calculates the bias-corrected estimates
-        v_cap = self.moving_average_squared_gradient / (1-(self.beta_2**self._iter)) #calculates the bias-corrected estimates
 
-        self.diff = self.learning_rate * m_cap / (np.sqrt(v_cap) + self.epsilon)
-        self.diffs[self._iter - 1] = self.diff
-        self.B -=  self.diff
-        self.diff = np.abs(self.diff)
+        for i in range(self.n_coefficients):
+            self.moving_average_gradient = self.beta_1*self.moving_average_gradient + (1-self.beta_1)*self.gradient[i]
+            self.moving_average_squared_gradient = self.beta_2*self.moving_average_squared_gradient + (1-self.beta_2)*(self.gradient[i] * self.gradient[i])
+            m_cap = self.moving_average_gradient / (1-(self.beta_1**self._iter)) #calculates the bias-corrected estimates
+            v_cap = self.moving_average_squared_gradient / (1-(self.beta_2**self._iter)) #calculates the bias-corrected estimates
 
-    def fit(self, x, y):
+            self.diff = self.learning_rate * m_cap / (np.sqrt(v_cap) + self.epsilon)
+            self.B[i] -=  self.diff
+
+    def fit(self, X, y):
         '''
         fitting B for 
         
         y = Bx
         '''
+        if X.ndim != 2:
+            #raise SeqUtilsError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
+            raise ValueError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
         self._iter = 0
-        self.n = len(x)
-        bootstrap_idx = self.bootstrap.bootstrap(x, group_size=len(x)//5, 
+        self.n = len(X)
+        self.n_coefficients = X.shape[1]
+        self.B = np.random.rand(self.n_coefficients)
+        self.gradient = np.zeros(self.n_coefficients)
+        self.losses = np.zeros(int(self.max_iter))
+        self.gradients = np.zeros((int(self.max_iter), self.n_coefficients))
+        bootstrap_idx = self.bootstrap.bootstrap(X, group_size=len(X)//10, 
                                                 n_boots=int(self.max_iter))
 
-        assert(x.ndim == 1)
+        idx = next(bootstrap_idx)
+        self.X, self.y = X[idx], y[idx]
+        self._fit()
 
-        while self._iter < self.max_iter and self.diff < self.epsilon:
-            idx = next(bootstrap_idx)
-            self.x = x[idx]
-            self.y = y[idx]
-            self._iter += 1
-            self.Cost()
-            self.Adam_update()
-            if (self._iter % self.print == 0 or self._iter == 1) and self.verbose:
-                self.logger.info('%i iteration: gradient %.3f; b %.7f; diff %.7f' %(self._iter, self.gradient, self.b, self.diff))
+        self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
         
-        if self.diff > self.limit:
+        while self._iter < self.max_iter and np.abs(self.cost) > self.epsilon:
+            idx = next(bootstrap_idx)
+            self.X, self.y = X[idx], y[idx]
+            self._fit()
+            if self._iter % self.print == 0  and self.verbose:
+                self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
+        
+        if np.abs(self.cost) > self.limit:
             if self.verbose:
                 self.logger.warning('b is not converged, please consider increasing max_iter')
         elif self.verbose:
             self.converge = True
-            self.logger.info('Converged at the %ith iteration: gradient %.3f; b %.7f; diff %.7f' %(self._iter, self.gradient, self.b, self.diff))
+            self.logger.info('Converged at the %ith iteration: Cost %.3f' %(self._iter, self.cost))
+            
+    def _fit(self):
+        self._iter += 1
+        self.Cost()
+        self.Adam_update()
