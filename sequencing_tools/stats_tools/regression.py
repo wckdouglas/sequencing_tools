@@ -40,6 +40,7 @@ class GradientDescent():
     def __init__(self, 
                  lr = 0.001, max_iter = 10000, 
                  limit = 1e-4, verbose = False,
+                 seed = 123,
                 method = 'mean'):
         '''
         A stochastic gradient descent model using Adam optimizer 
@@ -75,7 +76,8 @@ class GradientDescent():
         self.beta_2 = 0.999
         self.epsilon = 1e-8 # avoid division by zero
         self.limit = limit
-        self.bootstrap = Bootstrap(seed=123)
+        self.bootstrap = Bootstrap(seed=seed)
+        self.rng = np.random.RandomState(seed)
         self.logger = logging.getLogger('Gradient Descent')
         self._initialize()
 
@@ -140,25 +142,22 @@ class GradientDescent():
         if X.ndim != 2:
             #raise SeqUtilsError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
             raise ValueError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
+
+        self.orig_X = X
+        self.orig_y = y
         self._iter = 0
         self.n = len(X)
         self.n_coefficients = X.shape[1]
-        self.B = np.random.rand(self.n_coefficients)
+        self.B = self.rng.rand(self.n_coefficients)
         self.gradient = np.zeros(self.n_coefficients)
         self.losses = np.zeros(int(self.max_iter))
         self.gradients = np.zeros((int(self.max_iter), self.n_coefficients))
-        bootstrap_idx = self.bootstrap.bootstrap(X, group_size=len(X)//10, 
+        self.bootstrap_idx = self.bootstrap.bootstrap(X, group_size=len(X)//10, 
                                                 n_boots=int(self.max_iter))
 
-        idx = next(bootstrap_idx)
-        self.X, self.y = X[idx], y[idx]
         self._fit()
-
         self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
-        
         while self._iter < self.max_iter and np.abs(self.cost) > self.epsilon:
-            idx = next(bootstrap_idx)
-            self.X, self.y = X[idx], y[idx]
             self._fit()
             if self._iter % self.print == 0  and self.verbose:
                 self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
@@ -171,6 +170,8 @@ class GradientDescent():
             self.logger.info('Converged at the %ith iteration: Cost %.3f' %(self._iter, self.cost))
             
     def _fit(self):
+        idx = next(self.bootstrap_idx)
+        self.X, self.y = self.orig_X[idx], self.orig_y[idx]
         self._iter += 1
         self.Cost()
         self.Adam_update()
