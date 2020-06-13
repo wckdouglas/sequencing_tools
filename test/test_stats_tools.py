@@ -72,5 +72,5 @@ def test_regression():
 
     gd = GradientDescent(verbose = True, max_iter=100000, lr = 1e-2, method='mean')
     gd.fit(X,y)
-    assert np.abs(gd.B[0] - 3.1) < 0.2
-    assert np.abs(gd.B[1] - 3.8) < 0.2
+    assert np.abs(gd.B[0] - 3.5) < 0.2
+    assert np.abs(gd.B[1] - 3.2) < 0.2

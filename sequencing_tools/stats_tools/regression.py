@@ -96,6 +96,7 @@ class GradientDescent():
         self.gradients = []
         self.gradient = []
         self.diffs = []
+        self.diff = 0 
         if self.verbose:
             self.logger.info('Initialized parameters')
         self.converge = False
@@ -117,7 +118,7 @@ class GradientDescent():
         for i in range(self.n_coefficients):
             self.gradient[i] = self.summary( - self.X[:,i] * self.residuals[i] )
             self.gradients[self._iter - 1, i] = self.gradient[i]
-    
+
     
     def Adam_update(self):
         '''
@@ -132,7 +133,9 @@ class GradientDescent():
             v_cap = self.moving_average_squared_gradient / (1-(self.beta_2**self._iter)) #calculates the bias-corrected estimates
 
             self.diff = self.learning_rate * m_cap / (np.sqrt(v_cap) + self.epsilon)
+            self.diffs[i] = self.diff
             self.B[i] -=  self.diff
+        self.diffs = np.abs(self.diffs)
 
     def fit(self, X, y):
         '''
@@ -151,6 +154,7 @@ class GradientDescent():
         self.n_coefficients = X.shape[1]
         self.B = self.rng.rand(self.n_coefficients)
         self.gradient = np.zeros(self.n_coefficients)
+        self.diffs = np.zeros(self.n_coefficients)
         self.losses = np.zeros(int(self.max_iter))
         self.gradients = np.zeros((int(self.max_iter), self.n_coefficients))
         self.bootstrap_idx = self.bootstrap.bootstrap(X, group_size=len(X)//10, 
@@ -158,20 +162,20 @@ class GradientDescent():
 
         self._fit()
         self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
-        while self._iter < self.max_iter and np.abs(self.cost - self.last_cost) > self.epsilon:
+        while self._iter < self.max_iter and self.diffs.max() > self.limit:
             self._fit()
             if self._iter % self.print == 0  and self.verbose:
-                self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
+                self.logger.info('%i iteration: Cost %.3f, Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
         
-        if np.abs(self.cost - self.last_cost) > self.limit:
+        if self.diffs.max() > self.limit:
             if self.verbose:
                 self.logger.warning('b is not converged, please consider increasing max_iter')
         elif self.verbose:
             self.converge = True
-            self.logger.info('Converged at the %ith iteration: Cost %.3f' %(self._iter, self.cost))
+            self.logger.info('Converged at the %ith iteration: Cost %.3f, Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
             
     def _fit(self):
-        self.last_cost = self.cost
+        self.last_B = self.B
         idx = next(self.bootstrap_idx)
         self.X, self.y = self.orig_X[idx], self.orig_y[idx]
         self._iter += 1
