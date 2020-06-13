@@ -90,7 +90,8 @@ class GradientDescent():
         self.y = None
         self.n = 0
         self.n_coefficients = 0
-        self.cost = []
+        self.cost = 0
+        self.last_cost = 0
         self.losses = []
         self.gradients = []
         self.gradient = []
@@ -157,12 +158,12 @@ class GradientDescent():
 
         self._fit()
         self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
-        while self._iter < self.max_iter and np.abs(self.cost) > self.epsilon:
+        while self._iter < self.max_iter and np.abs(self.cost - self.last_cost) > self.epsilon:
             self._fit()
             if self._iter % self.print == 0  and self.verbose:
                 self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
         
-        if np.abs(self.cost) > self.limit:
+        if np.abs(self.cost - self.last_cost) > self.limit:
             if self.verbose:
                 self.logger.warning('b is not converged, please consider increasing max_iter')
         elif self.verbose:
@@ -170,6 +171,7 @@ class GradientDescent():
             self.logger.info('Converged at the %ith iteration: Cost %.3f' %(self._iter, self.cost))
             
     def _fit(self):
+        self.last_cost = self.cost
         idx = next(self.bootstrap_idx)
         self.X, self.y = self.orig_X[idx], self.orig_y[idx]
         self._iter += 1

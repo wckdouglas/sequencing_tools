@@ -1,5 +1,5 @@
 from sequencing_tools.stats_tools import p_adjust, levenshtein_distance, hamming_distance
-from sequencing_tools.stats_tools.regression import Bootstrap
+from sequencing_tools.stats_tools.regression import Bootstrap, GradientDescent
 import numpy as np
 
 def test_padjust():
@@ -64,6 +64,13 @@ def test_bootstrap():
     
 
 def test_regression():
+    #from sequencing_tools.stats_tools.regression import Bootstrap, GradientDescent
+    #import numpy as np
     np.random.seed(123)
-    X = 2 * np.random.rand(10,2)
-    y = 3 * X[:,0]+np.random.randn(10)
+    X = 2 * np.random.rand(100,2) 
+    y = np.sum(np.array([3,4]) * X, axis=1)+np.random.randn(100) 
+
+    gd = GradientDescent(verbose = True, max_iter=100000, lr = 1e-2, method='mean')
+    gd.fit(X,y)
+    assert np.abs(gd.B[0] - 3.1) < 0.2
+    assert np.abs(gd.B[1] - 3.8) < 0.2
