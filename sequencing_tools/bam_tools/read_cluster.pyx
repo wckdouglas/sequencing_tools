@@ -3,12 +3,19 @@ import numpy as np
 import pysam
 from builtins import zip, map
 from libc.math cimport log10, exp, log
+import os
 import sys
 from cpython cimport bool
 from scipy.special import logsumexp
 from six.moves import xrange
+import logging
 from ..consensus_tools import ErrorCorrection
 from ..fastq_tools import reverse_complement
+from ..utils import SeqUtilsError
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
+
+
 
 
 def fix_strand(str seq, str qual, bool strand):
@@ -82,8 +89,11 @@ class readGroup:
         R1_pos_array = np.array(self.R1_position)
         R2_pos_array = np.array(self.R2_position)
 
-        assert self.R2 and self.R1, (self.R1, self.R2, self.barcode)
-        assert R2_array.shape == R1_array.shape, 'Unequal R1 list vs R2'
+        if not (self.R2 and self.R1):
+            raise SeqUtilsError('No input: {} {} {}'.format(self.R1, self.R2, self.barcode))
+
+        if  R2_array.shape != R1_array.shape:
+            raise SeqUtilsError('Unequal R1 list vs R2')
 
         for _chrom1, _chrom2, _pos1, _pos2, _R1_flag, _R2_flag in iterator:
             chrom_is_right = (R1_chrom_array == _chrom1) & (R2_chrom_array == _chrom2)
@@ -107,7 +117,8 @@ class readGroup:
             int member_count
             bool strand1, strand2
 
-        assert self.concensus_read1, 'No concensus read generated'
+        if not self.concensus_read1:
+            raise SeqUtilsError('No concensus read generated')
         iterable = zip(self.concensus_read1, self.concensus_read2,
                         self.member_count_list,
                         self.concensus_flag1, self.concensus_flag2)

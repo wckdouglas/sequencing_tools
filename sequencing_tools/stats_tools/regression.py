@@ -1,6 +1,6 @@
 import numpy as np
-from ..utils import SeqUtilsError
 import logging
+from ..utils import SeqUtilsError
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger('Regression')
 
@@ -64,7 +64,7 @@ class GradientDescent():
         self.max_iter = max_iter
         self.verbose = verbose
         self.print = self.max_iter // 5
-        self.b = np.random.rand()
+        self.B = np.random.rand() # regression coefficient
         self.diff = 1
         self.beta_1 = 0.9
         self.beta_2 = 0.999
@@ -96,7 +96,7 @@ class GradientDescent():
         '''
         compute error with new regression coefficien
         '''
-        self.cost = self.y - self.x * self.b  # error = y - predicted_y 
+        self.cost = self.y - self.x * self.B  # error = y - predicted_y 
         self.gradient = np.median( self.x * self.cost ) # using a median cost
         self.losses[self._iter - 1] = np.abs(self.gradient)
         self.gradients[self._iter - 1] = self.gradient
@@ -114,7 +114,7 @@ class GradientDescent():
 
         self.diff = self.learning_rate * m_cap / (np.sqrt(v_cap) + self.epsilon)
         self.diffs[self._iter - 1] = self.diff
-        self.b -=  self.diff
+        self.B -=  self.diff
         self.diff = np.abs(self.diff)
 
     def fit(self, x, y):
@@ -129,7 +129,6 @@ class GradientDescent():
                                                 n_boots=int(self.max_iter))
 
         assert(x.ndim == 1)
-        assert(x.ndim == y.ndim)
 
         while self._iter < self.max_iter and self.diff < self.epsilon:
             idx = next(bootstrap_idx)
