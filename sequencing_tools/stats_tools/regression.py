@@ -35,7 +35,8 @@ class Bootstrap:
     
         for i in range(n_boots):
             idx = self.rng.randint(0, total_size, group_size)
-            yield idxclass GradientDescent():
+            yield idx
+class GradientDescent():
     def __init__(self, 
                  lr = 0.001, max_iter = 10000, 
                  limit = 1e-4, verbose = False,
