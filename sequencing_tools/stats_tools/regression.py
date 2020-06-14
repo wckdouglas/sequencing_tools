@@ -40,7 +40,7 @@ class GradientDescent():
     def __init__(self, 
                  lr = 0.01, max_iter = 10000, 
                  limit = 1e-4, verbose = False,
-                 seed = 123,
+                 seed = 123, n_iter_no_change = 5,
                 method = 'mean'):
         '''
         A stochastic gradient descent model using Adam optimizer on mini batches
@@ -55,6 +55,7 @@ class GradientDescent():
             method: mean or median for optimizing RMSE (root mean square error or root median square error)
             verbose: Output logs for optimizer
             seed: Set seed for the optimizer
+            n_iter_no_change: How many iteration with small change to call a stop?
 
         test:
         import logging
@@ -85,6 +86,7 @@ class GradientDescent():
         self.beta_1 = 0.9
         self.beta_2 = 0.999
         self.epsilon = 1e-8 # avoid division by zero
+        self.n_iter_no_change = n_iter_no_change
         self.limit = limit
         self.bootstrap = Bootstrap(seed=seed)
         self.rng = np.random.RandomState(seed)
@@ -99,6 +101,7 @@ class GradientDescent():
         self.X = None
         self.y = None
         self.n = 0
+        self.iter_no_change = 0
         self.n_coefficients = 0
         self.B = []
         self.B_history = []
@@ -177,12 +180,12 @@ class GradientDescent():
         # do an initial fitting with the random coefficients
         self._fit()
         self.logger.info('%i iteration: Cost %.3f; Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
-        while self._iter < self.max_iter and self.diffs.max() > self.limit:
+        while self._iter < self.max_iter and self.iter_no_change < self.n_iter_no_change:
             self._fit()
             if self._iter % self.print == 0  and self.verbose:
                 self.logger.info('%i iteration: Cost %.3f, Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
         
-        if self.diffs.max() > self.limit:
+        if self.iter_no_change < self.n_iter_no_change:
             message = 'B is not converged, please consider increasing max_iter'
         else:
             self.converge = True
@@ -204,3 +207,8 @@ class GradientDescent():
         self.Cost()
         self.Adam_update()
         self.B_history[self._iter - 1] = self.B
+
+        if self.diffs.max() > self.limit:
+            self.iter_no_change = 0
+        else:
+            self.iter_no_change += 1
