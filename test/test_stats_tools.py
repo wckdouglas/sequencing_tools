@@ -67,10 +67,10 @@ def test_regression():
     #from sequencing_tools.stats_tools.regression import Bootstrap, GradientDescent
     #import numpy as np
     np.random.seed(123)
-    X = 2 * np.random.rand(100,2) 
+    X = 10 * np.random.rand(100,2) 
     y = np.sum(np.array([3,4]) * X, axis=1)+np.random.randn(100) 
 
-    gd = GradientDescent(verbose = True, max_iter=100000, lr = 1e-2, method='mean')
+    gd = GradientDescent(verbose = True, max_iter=100000, lr = 1e-3, method='mean')
     gd.fit(X,y)
     assert np.abs(gd.B[0] - 3.5) < 0.2
     assert np.abs(gd.B[1] - 3.2) < 0.2

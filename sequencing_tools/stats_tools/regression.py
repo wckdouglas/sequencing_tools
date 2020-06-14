@@ -35,8 +35,7 @@ class Bootstrap:
     
         for i in range(n_boots):
             idx = self.rng.randint(0, total_size, group_size)
-            yield idx
-class GradientDescent():
+            yield idxclass GradientDescent():
     def __init__(self, 
                  lr = 0.001, max_iter = 10000, 
                  limit = 1e-4, verbose = False,
@@ -67,7 +66,7 @@ class GradientDescent():
         assert(method in ['mean', 'median'])
         self.method = method
         self.learning_rate = lr
-        self.max_iter = max_iter
+        self.max_iter = int(max_iter)
         self.verbose = verbose
         self.print = self.max_iter // 5
         self.B = None # regression coefficients
@@ -90,6 +89,8 @@ class GradientDescent():
         self.y = None
         self.n = 0
         self.n_coefficients = 0
+        self.B = []
+        self.B_history = []
         self.cost = 0
         self.last_cost = 0
         self.losses = []
@@ -111,7 +112,7 @@ class GradientDescent():
         '''
         compute error with new regression coefficien
         '''
-        self.residuals = self.y - np.sum(self.X * self.B, axis=1)  # error = y - predicted_y 
+        self.residuals = self.y - np.matmul(self.X, self.B)  # error = y - predicted_y 
         self.cost = np.sqrt(self.summary(self.residuals**2))
         self.losses[self._iter - 1] = self.cost
 
@@ -153,15 +154,16 @@ class GradientDescent():
         self.n = len(X)
         self.n_coefficients = X.shape[1]
         self.B = self.rng.rand(self.n_coefficients)
+        self.B_history = np.zeros((self.max_iter, self.n_coefficients))
         self.gradient = np.zeros(self.n_coefficients)
-        self.diffs = np.zeros(self.n_coefficients)
-        self.losses = np.zeros(int(self.max_iter))
-        self.gradients = np.zeros((int(self.max_iter), self.n_coefficients))
+        self.diffs = np.zeros(self.n_coefficients) + 1000
+        self.losses = np.zeros(self.max_iter)
+        self.gradients = np.zeros((self.max_iter, self.n_coefficients))
         self.bootstrap_idx = self.bootstrap.bootstrap(X, group_size=len(X)//10, 
                                                 n_boots=int(self.max_iter))
 
         self._fit()
-        self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
+        self.logger.info('%i iteration: Cost %.3f; Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
         while self._iter < self.max_iter and self.diffs.max() > self.limit:
             self._fit()
             if self._iter % self.print == 0  and self.verbose:
@@ -181,3 +183,4 @@ class GradientDescent():
         self._iter += 1
         self.Cost()
         self.Adam_update()
+        self.B_history[self._iter - 1] = self.B
