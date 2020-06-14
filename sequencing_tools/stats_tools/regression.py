@@ -55,7 +55,7 @@ class GradientDescent():
             method: mean or median for optimizing RMSE (root mean square error or root median square error)
             verbose: Output logs for optimizer
             seed: Set seed for the optimizer
-            n_iter_no_change: How many iteration with small change to call a stop?
+            n_iter_no_change: How many iteration with small change to call a stop? (avoiding random stop)
 
         test:
         import logging
