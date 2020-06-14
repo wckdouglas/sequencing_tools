@@ -1,41 +1,10 @@
 import numpy as np
 import logging
 from ..utils import SeqUtilsError
+from ._stats_tools import Bootstrap
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger('Regression')
 
-
-class Bootstrap:
-    def __init__(self, seed=123):
-        '''
-        boostrap 1d array
-        usage:
-        xs = np.arange(100)
-        bs = Bootstrap(seed=123)
-        for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
-            print(xs[idx].mean())
-        '''
-        self.rng = np.random.RandomState(seed)
-
-    def bootstrap(self, xs, group_size=100, n_boots = 100):
-        '''
-        input:
-            xs: 1d np.array
-            group_size: number of values in each bootstrap iteration
-            n_boots: how many bootstrap groups
-        output:
-            iterator: bootstrapped
-        '''
-        xs = np.array(xs)
-        total_size = xs.shape[0]
-        logger.info('Total size for bootstrap: %i' %total_size)
-        if group_size > total_size:
-            #raise SeqUtilsError('Group size > input array size')
-            raise ValueError('Group size > input array size')
-    
-        for i in range(n_boots):
-            idx = self.rng.randint(0, total_size, group_size)
-            yield idx
 class GradientDescent():
     def __init__(self, 
                  lr = 0.01, max_iter = 10000, 
