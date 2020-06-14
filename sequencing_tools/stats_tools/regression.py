@@ -38,7 +38,7 @@ class Bootstrap:
             yield idx
 class GradientDescent():
     def __init__(self, 
-                 lr = 0.001, max_iter = 10000, 
+                 lr = 0.01, max_iter = 10000, 
                  limit = 1e-4, verbose = False,
                  seed = 123,
                 method = 'mean'):
