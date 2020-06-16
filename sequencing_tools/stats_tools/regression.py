@@ -148,17 +148,17 @@ class GradientDescent():
 
         # do an initial fitting with the random coefficients
         self._fit()
-        self.logger.info('%i iteration: Cost %.3f; Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
+        self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
         while self._iter < self.max_iter and self.iter_no_change < self.n_iter_no_change:
             self._fit()
             if self._iter % self.print == 0  and self.verbose:
-                self.logger.info('%i iteration: Cost %.3f, Diff %.7f' %(self._iter, self.cost, self.diffs.max()))
+                self.logger.info('%i iteration: Cost %.3f' %(self._iter, self.cost))
         
         if self.iter_no_change < self.n_iter_no_change:
             message = 'B is not converged, please consider increasing max_iter'
         else:
             self.converge = True
-            message = 'Converged at the %ith iteration: Cost %.3f, Diff %.7f' %(self._iter, self.cost, self.diffs.max())
+            message = 'Converged at the %ith iteration: Cost %.3f' %(self._iter, self.cost)
         if self.verbose:
             self.logger.info(message)
             
@@ -177,7 +177,7 @@ class GradientDescent():
         self.Adam_update()
         self.B_history[self._iter - 1] = self.B
 
-        if self.diffs.max() > self.limit:
+        if self.cost > self.limit:
             self.iter_no_change = 0
         else:
             self.iter_no_change += 1
