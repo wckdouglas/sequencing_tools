@@ -90,14 +90,17 @@ class GradientDescent():
             self.summary = np.mean
         if self.method == 'median':
             self.summary = np.median 
+        
+    def cost_function(self, X, y):
+        residuals = y - np.matmul(X, self.B)
+        cost = np.sqrt(self.summary(residuals ** 2))
+        return cost, residuals
 
     def Cost(self):
         '''
         compute error with new regression coefficien
         '''
-        self.residuals = self.y - np.matmul(self.X, self.B)  # error = y - predicted_y 
-        self.cost = np.sqrt(self.summary(self.residuals**2)) # RMSE cost
-        self.losses[self._iter - 1] = self.cost # Store cost history
+        self.cost, self.residuals = self.cost_function(self.X, self.y)
 
         for i in range(self.n_coefficients):
             self.gradient[i] = self.summary( - self.X[:,i] * self.residuals[i] ) # graident for each coefficient
@@ -143,8 +146,9 @@ class GradientDescent():
         self.diffs = np.zeros(self.n_coefficients) 
         self.losses = np.zeros(self.max_iter)
         self.gradients = np.zeros((self.max_iter, self.n_coefficients))
-        self.bootstrap_idx = self.bootstrap.bootstrap(X, group_size=len(X)//10, 
-                                                n_boots=int(self.max_iter))
+        self.bootstrap_idx = self.bootstrap.bootstrap(X, 
+                                                group_size=len(X)//10, 
+                                                n_boots=int(self.max_iter * 2.5))
 
         # do an initial fitting with the random coefficients
         self._fit()
@@ -170,14 +174,18 @@ class GradientDescent():
             3. update coefficients
         '''
         self.last_B = self.B
-        idx = next(self.bootstrap_idx)
-        self.X, self.y = self.orig_X[idx], self.orig_y[idx]
+        train_idx = next(self.bootstrap_idx)
+        self.X, self.y = self.orig_X[train_idx], self.orig_y[train_idx]
         self._iter += 1
         self.Cost()
         self.Adam_update()
         self.B_history[self._iter - 1] = self.B
 
-        if self.cost > self.limit:
+        test_idx = next(self.bootstrap_idx)
+        test_X, test_y = self.orig_X[test_idx], self.orig_y[test_idx]
+        cost, _ = self.cost_function(test_X, test_y)
+        self.losses[self._iter - 1] = cost # Store cost history
+        if cost > self.limit:
             self.iter_no_change = 0
         else:
             self.iter_no_change += 1
