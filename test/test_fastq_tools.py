@@ -8,7 +8,7 @@ import numpy.random as random
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
 
 def test_complement():
-    assert(complement('ACTGNactgn') == 'TGACNtgacn')
+    assert(complement('ACTGNactgnryswkmdhvRYSWKMDHV') == 'TGACNtgacnbdhkmwsryBDHKMWSRY')
 
 
 def test_reverse_complement():
@@ -25,6 +25,7 @@ def test_fastq():
     record.subseq(0,20)
     assert(record.seq == 'AAAAAAAAAAAAAAAAAAAA')
     assert(record.qual=='EAEE6666EEEEEEEEEEEE')
+    
 
 def test_kmer():
     test_seq = 'ACTGACT'
@@ -191,7 +192,7 @@ def test_umi_trimmer():
     assert(name1.split('_')[0].replace('@','') == read1.seq[:6])
 
 
-def test_pe_align():
+def test_pe_align_only_overlap():
     consensus_builder = ConsensusBuilder(error_toleration = 0.1,
                                         min_len = 15, report_all=False)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
@@ -214,7 +215,7 @@ def test_pe_align():
 
 
 
-def test_pe_align():
+def test_pe_align_all():
     consensus_builder = ConsensusBuilder(error_toleration = 0.1,
                                         min_len = 15, report_all=True)
     read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',

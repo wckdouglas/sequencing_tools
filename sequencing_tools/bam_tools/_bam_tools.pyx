@@ -5,6 +5,7 @@ import pysam
 import re
 from operator import itemgetter
 import six
+from ..utils import SeqUtilsError
 
 numbers = re.compile(r'[0-9]+')
 strings = re.compile(r'[MIS]')
@@ -247,7 +248,8 @@ cpdef str get_strand(AlignedSegment aln, str direction = 'fr'):
         bool read1_rvs
         bool read2_rvs
 
-    assert direction in ['fr','rf', 'U'], 'Wrong direction: only accept either fr or rf'
+    if direction not in ['fr','rf', 'U']:
+        raise SeqUtilsError('Wrong direction: only accept either fr or rf')
     read1_rvs = (aln.is_read1) and (aln.is_reverse)
     read2_rvs = (aln.is_read2) and (not aln.is_reverse)
 
@@ -350,8 +352,11 @@ def paired_bam(AlignmentFile bam_handle):
                 read1 = six.next(bam_handle)
                 read2 = six.next(bam_handle)
 
-                assert(read1.is_read1 and read2.is_read2)
-                assert(read1.query_name.split('/')[0] == read2.query_name.split('/')[0])
+                if not (read1.is_read1 and read2.is_read2):
+                    raise SeqUtilsError('First read is not read 1 or Second read is not read 2')
+                if read1.query_name.split('/')[0] != read2.query_name.split('/')[0]:
+                    raise SeqUtilsError("Read names doesn't match! %s and %s" %(read1.query_name, read2.query_name))
+                    
                 yield read1, read2
 
     except StopIteration:

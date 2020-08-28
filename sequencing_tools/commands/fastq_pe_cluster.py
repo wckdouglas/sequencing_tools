@@ -9,6 +9,7 @@ import glob
 import time
 import os
 import logging
+from ..utils import SeqUtilsError
 from ..fastq_tools.cluster_reads import (dictToJson,
                            Clustering,
                            plotBCdistribution,
@@ -101,7 +102,7 @@ def run(args):
     which_side = args.read
     fraction_threshold = args.fraction
     if fraction_threshold >= 1:
-        sys.exit('Fraction cannot > 1')
+        raise SeqUtilsError('Fraction cannot > 1')
 
     #print out parameters
     logger.info('[Parameters] ')

@@ -1,0 +1,2 @@
+class SeqUtilsError(ValueError):
+    pass

@@ -5,6 +5,7 @@ import sys
 import logging
 import os
 from ..bam_tools.fragment_pairs import bam_to_bed
+from ..utils import SeqUtilsError
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -37,8 +38,7 @@ def run(args):
     out_file = sys.stdout if args.out_bed == '-' else open(args.out_bed, 'w')
     tag = args.tag
     if args.max_size <= args.min_size:
-        logger.error('!!!!! Min fragment size > Max fragment size') 
-        sys.exit()
+        raise SeqUtilsError('!!!!! Min fragment size > Max fragment size') 
     bam_to_bed(in_bam, out_file, args.min_size, args.max_size, tag, 
             args.all, args.primary, args.add_cigar, args.prefix)
     return 0

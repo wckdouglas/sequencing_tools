@@ -6,9 +6,10 @@ from libc.math cimport log10, exp, log
 import sys
 from cpython cimport bool
 from scipy.special import logsumexp
-from ..fastq_tools import reverse_complement
 from six.moves import xrange
 from functools import partial
+from ..fastq_tools import reverse_complement
+from ..utils import SeqUtilsError
 
 
 cdef:
@@ -237,7 +238,9 @@ class ErrorCorrection():
             int num_seq
 
         num_seq = len(seq_list)
-        assert num_seq == len(qual_list), 'Number of sequences not match number of quality sequence'
+        if num_seq != len(qual_list):
+            raise SeqUtilsError('Number of sequences not match number of quality sequence')
+
         if len(seq_list) == 1:
             '''
             return the only sequence if only 1 input

@@ -3,14 +3,16 @@
 ## Transcriptome ##
 
 input:
-- refflat file: (default: [hg19 refflat](http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz) )
+- input gene file: refFlat file from UCSC  or a sqlite table from [AnnotationHub](https://annotationhub.bioconductor.org/package2/AHEnsDbs) (default: [hg19 refflat](http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz) )
 - coding_only: True if only protein coding genes are needed
 
 Example usage:
 ```
 from sequencing_tools.gene_tools import Transcriptome
-transcriptome = Transcriptome(coding_only=True)
-transcript_dict = transcriptome.MakeTranscriptome()
+transcriptome = Transcriptome(refflat = 'refflat.txt.gz', coding_only=True)
+# or 
+transcriptome = Transcriptome(sqldb='EnsDb.Hsapiens.v96.sqlite', coding_only=True)
+transcriptome.transcript_dict
 ```
 
 The output transcript_dict is:

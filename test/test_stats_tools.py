@@ -1,4 +1,5 @@
-from sequencing_tools.stats_tools import p_adjust, levenshtein_distance, hamming_distance
+from sequencing_tools.stats_tools import p_adjust, levenshtein_distance, hamming_distance, Bootstrap
+from sequencing_tools.stats_tools.regression import GradientDescent
 import numpy as np
 
 def test_padjust():
@@ -49,3 +50,27 @@ def test_padjust():
 def test_distance():
     assert(levenshtein_distance('AACCA','AACCT') == 1)
     assert(hamming_distance('AACCA','AACCT') == 1)
+
+
+def test_bootstrap():
+    n = 100
+    group_size = 10 
+    a = np.random.rand(100)
+    bs = Bootstrap()
+    for i, b in enumerate(bs.bootstrap(a, group_size=group_size, n_boots=n)):
+        assert( len(b) == group_size)
+    
+    assert( i == n-1 )
+    
+
+def test_regression():
+    #from sequencing_tools.stats_tools.regression import Bootstrap, GradientDescent
+    #import numpy as np
+    np.random.seed(123)
+
+    X = 5 * np.random.rand(100,2) 
+    y = np.matmul(X, np.array([3,4]))+np.random.randn(100) 
+    gd = GradientDescent(verbose = True, max_iter=100000, lr = 1e-2, method='mean', limit=1e-6)
+    gd.fit(X,y)
+    assert np.abs(gd.B[0] - 3) < 0.1
+    assert np.abs(gd.B[1] - 4) < 0.1
