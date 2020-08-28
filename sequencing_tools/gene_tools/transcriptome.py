@@ -11,7 +11,7 @@ import sys
 from collections import defaultdict
 from pandas import read_csv
 import logging
-log = logging.getLogger(__name__)
+log = logging.getLogger('Transcriptome')
 
 
 class Exon():
@@ -172,7 +172,10 @@ class Transcriptome():
 
     def __init__(self, refflat = None, coding_only=True):
         self.url = refflat or 'http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz'
+        self.transcript_count = 0
+        self.exon_count = 0
         self.transcript_dict = self.MakeTranscriptome(coding_only=coding_only)
+        log.info('Stored %i transcripts with %i exons' %(self.transcript_count, self.exon_count))
 
     
     def MakeTranscriptome(self, coding_only=False):
@@ -185,11 +188,13 @@ class Transcriptome():
                                         'tx_start', 'tx_end',
                                         'cds','cde', 'exon_count', 
                                         'exon_starts','exon_ends'],
-                            chunksize = 1000) 
+                            chunksize = 1000)
  
         transcript_dict = defaultdict(lambda: defaultdict(Transcript))
         for tab in refflat:
+            self.exon_count += tab.exon_count.sum()
             for i, transcript in tab.iterrows():
+                self.transcript_count += 1
                 if transcript['cds'] != transcript['cde'] or not coding_only:
                     transcript_dict[transcript['Gene name']][transcript['tid']] = Transcript(transcript)
         return transcript_dict

@@ -21,6 +21,7 @@ except ImportError:
             "be installed before running setup.py (pip install pysam)")
 
 include_path = [np.get_include()]
+#include_path.append('/services_data/workspace/douglaswu/src/miniconda3/include')
 include_path.append('/usr/include')
 include_path.extend(pysam.get_include())
 #include_path.extend(os.environ['INCLUDE_PATH'].split(':'))
