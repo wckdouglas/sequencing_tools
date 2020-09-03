@@ -1,12 +1,20 @@
 from __future__ import print_function
+import os
 import pysam
 from operator import itemgetter
 from cpython cimport bool
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+import logging
 import sys
 from ._bam_tools import concordant_pairs, read_ends,\
                                         fragment_ends, check_concordant, \
                                         check_primary
+from ..utils import SeqUtilsError
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
+
+
+
 cdef class read_fragment:
     cdef:
         str tag
@@ -86,7 +94,8 @@ cdef class read_paired_fragment(read_fragment):
             try:
                 self.rt1 = str(max(float(self.rt1), float(self.rt2)))
             except ValueError:
-                assert self.rt1 == self.rt2, 'Wrong tag %s and %s' %(self.rt1, self.rt2)
+                if self.rt1 != self.rt2:
+                    raise SeqUtilsError('Wrong tag %s and %s' %(self.rt1, self.rt2))
 
         #if concordant_pairs(self.read_1, self.read_2) and not (self.read_1.is_duplicate or self.read_2.is_duplicate):
         self.chrom = self.read_1.reference_name
@@ -112,7 +121,7 @@ def pair_end_iterator(in_bam):
             if check_concordant(read_1, read_2):
                 yield read_1, read_2
             else:
-                raise Exception('Pairs not sorted together, try samtools sort -n and/or samtools view -F2048 -F256')
+                raise SeqUtilsError('Pairs not sorted together, try samtools sort -n and/or samtools view -F2048 -F256')
 
         except StopIteration:
             break
@@ -197,7 +206,7 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
 #                        print(line, file=out_file)
             except StopIteration:
                 break
-    print('Witten %i pair fragments and %i multiple jump fragments' %(pair_count, single_count), file = sys.stderr)
+    logger.info('Witten %i pair fragments and %i multiple jump fragments' %(pair_count, single_count))
     return 0
 
 
@@ -283,5 +292,5 @@ def mate_info(in_bam, out_bam):
                         pair_count += 1
                 except StopIteration:
                     break
-    print('Witten %i pair fragments' %(pair_count), file = sys.stderr)
+    logger.info('Witten %i pair fragments' %(pair_count))
     return 0 

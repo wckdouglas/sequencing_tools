@@ -1,16 +1,23 @@
 from __future__ import print_function
 import sys
+import os
 import fileinput 
 from operator import itemgetter
 from itertools import combinations, groupby
 from functools import partial
 from collections import Counter, defaultdict
 from networkx import Graph, connected_components
+import six
+import logging
+from libc.stdint cimport uint32_t
 from ..stats_tools import hamming_distance, levenshtein_distance
 from .umi_network import demultiplex_directional, demultiplex_adj
-import sys
-import six
-from libc.stdint cimport uint32_t
+from ..utils import SeqUtilsError
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
+
+
+
 long = six.integer_types[-1]
 
 class fragment_group:
@@ -170,7 +177,8 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         long max_member_count = 0
 
     barcode_group = None
-    assert((ct > 5 and isinstance(ct, int)) or ct == -1, 'Unacceptable cigar field, needs to be an integer > 5')
+    if not ((ct > 5 and isinstance(ct, int)) or ct == -1): 
+        raise SeqUtilsError('Unacceptable cigar field, needs to be an integer > 5')
 
     for coordinates, fragment_list in groupby(in_file_handle, fragment_coordinates):
         barcode_group = fragment_group(coordinates, 
@@ -186,7 +194,8 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         max_member_count = max(max_member_count, _max_member_count)
         in_count += barcode_group.fragment_count
 
-    assert(total_member_count == in_count + 1, 'Wrong output lines!')
+    if total_member_count != in_count + 1:
+        raise SeqUtilsError('Wrong output lines!')
 
-    print('Iput %i lines, output %i lines with highest duplicate with %i members' %(in_count + 1, out_count, max_member_count), file=sys.stderr)
+    logger.info('Iput %i lines, output %i lines with highest duplicate with %i members' %(in_count + 1, out_count, max_member_count))
     return 0

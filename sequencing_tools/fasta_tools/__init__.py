@@ -1,6 +1,42 @@
+import pandas as pd
+import numpy as np
+from itertools import product
 from matplotlib.patches import Rectangle
 from ..stats_tools import hamming_distance
-import pandas as pd
+
+
+class IUPAC:
+    def __init__(self):
+        self.IUPAC = {'R': ['A','G'],
+                'Y': ['C','T'],
+                'S': ['G','C'],
+                'W': ['A','T'],
+                'K': ['G','T'],
+                'M': ['A','C'],
+                'B': ['C','G','T'],
+                'D': ['A','G','T'],
+                'H': ['A','C','T'],
+                'V': [ 'A','C','G'],
+                'N': ['A','C','T','G']}
+
+    def check_degenerate(self, seq):
+        bases = set(seq)
+        return set(self.IUPAC.keys()).intersection(bases)
+
+    def expand(self, seq):
+        '''
+        output all possible sequence by looping over the dengerative base
+        '''
+        degenerative_bases = self.check_degenerate(seq)
+        expandable_list = [self.IUPAC[b] for b in degenerative_bases ]
+        for base_combination in product(*expandable_list):
+            new_seq = seq
+            for i, db in enumerate(degenerative_bases):
+                new_seq = new_seq.replace(db, base_combination[i])
+            assert( set(new_seq) - {'A','C','T','G'} == set() )
+            yield new_seq
+
+
 
 
 def readfa(file_handle):
@@ -20,7 +56,7 @@ def readfa(file_handle):
     yield seqid, seq
        
 
-class MutliAlignments():
+class MultiAlignments():
     '''
     plotting multiple-alignment fasta
     '''

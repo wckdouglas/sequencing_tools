@@ -5,6 +5,7 @@ from cython cimport floating
 from scipy.stats import binom
 import pandas as pd
 import logging
+from ..utils import SeqUtilsError
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger('Stat tool')
 
@@ -46,7 +47,9 @@ cpdef np.ndarray p_adjust(pvalue):
 
     pvalue = np.array(pvalue, dtype='float')
     pvalue[np.isnan(pvalue)] = 1
-    assert pvalue.ndim == 1, 'Only accept 1D array'
+    if pvalue.ndim != 1:
+        raise SeqUtilsError('Only accept 1D array')
+
     descending_p_order = pvalue.argsort()[::-1]
     in_order = descending_p_order.argsort()
     steps = float(len(pvalue)) / np.arange(len(pvalue), 0, -1)
@@ -66,7 +69,8 @@ def binom_test(success_test, total_test, expected_p = 0.5):
         list of p-values
         
     '''
-    assert len(success_test)==len(total_test), 'Wrong length of vector!'
+    if len(success_test)!=len(total_test):
+        raise SeqUtilsError('Wrong length of vector!')
     ps = binom.cdf(success_test,n=total_test,p=expected_p)
     return ps
 
@@ -163,7 +167,8 @@ cpdef int hamming_distance(str s1, str s2):
     cdef:
         str i, j
         int hamming = 0
-    assert len(s1) == len(s2), 'Wrong barcode extraction'
+    if len(s1) != len(s2):
+        raise SeqUtilsError( 'Wrong barcode extraction')
 
     for i, j in zip(s1, s2):
         if i != j:
@@ -205,3 +210,36 @@ def normalize_count(count_mat, return_sf = False):
         return norm_count, sf
     else:
         return norm_count
+
+
+class Bootstrap:
+    def __init__(self, seed=123):
+        '''
+        boostrap 1d array
+        usage:
+        xs = np.arange(100)
+        bs = Bootstrap(seed=123)
+        for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
+            print(xs[idx].mean())
+        '''
+        self.rng = np.random.RandomState(seed)
+
+    def bootstrap(self, xs, group_size=100, n_boots = 100):
+        '''
+        input:
+            xs: 1d np.array
+            group_size: number of values in each bootstrap iteration
+            n_boots: how many bootstrap groups
+        output:
+            iterator: bootstrapped
+        '''
+        xs = np.array(xs)
+        total_size = xs.shape[0]
+        logger.info('Total size for bootstrap: %i' %total_size)
+        if group_size > total_size:
+            #raise SeqUtilsError('Group size > input array size')
+            raise SeqUtilsError('Group size > input array size')
+    
+        for i in range(n_boots):
+            idx = self.rng.randint(0, total_size, group_size)
+            yield idx

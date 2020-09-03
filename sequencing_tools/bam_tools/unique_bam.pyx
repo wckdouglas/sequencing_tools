@@ -92,8 +92,7 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
     with pysam.Samfile(in_bam,'rb') as inbam:
         with pysam.Samfile(out_bam,'wb',template = inbam) as outbam:
             for aln_count, aln in enumerate(inbam):
-                flag_qualify_ok = concordant_alignment(aln)
-                if not aln.is_unmapped and flag_qualify_ok:
+                if not aln.is_unmapped:
                     soft_clipped = 'S' in aln.cigarstring
                     if not soft_clipped and not inverse:
                         outbam.write(aln)

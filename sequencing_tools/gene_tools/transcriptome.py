@@ -216,10 +216,12 @@ class Transcriptome():
                                         'tx_start', 'tx_end',
                                         'cds','cde', 'exon_count', 
                                         'exon_starts','exon_ends'],
-                            chunksize = 1000) 
+                            chunksize = 1000)
  
         for tab in refflat:
+            self.exon_count += tab.exon_count.sum()
             for i, transcript in tab.iterrows():
+                self.transcript_count += 1
                 if transcript['cds'] != transcript['cde'] or not self.coding_only:
                     self.transcript_dict[transcript['Gene name']][transcript['tid']] = Transcript(transcript)
 
