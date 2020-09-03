@@ -58,7 +58,7 @@ def run(args):
 
     #print out parameters
     programname = sys.argv[0]
-    logger.ingo('[Parameters] ' %(programname), file = sys.stderr)
+    logger.info('[Parameters] ' %(programname), file = sys.stderr)
     logger.info('indexed bases:                     %i' %(idx_base))
     logger.info('min mean barcode quality:          %i' %(barcode_cut_off))
     logger.info('output file:                       %s' %(out_file))
