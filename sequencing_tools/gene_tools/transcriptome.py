@@ -197,6 +197,7 @@ class Transcriptome():
     def __init__(self, refflat = None, sqldb=None, coding_only=True):
         self.coding_only = coding_only
         self.transcript_dict = defaultdict(lambda: defaultdict(Transcript))
+        self.transcript_count = 0
         if sqldb:
             self.sqldb = sqldb
             self.sql_connection = sqlite3.connect(self.sqldb)
@@ -219,7 +220,6 @@ class Transcriptome():
                             chunksize = 1000)
  
         for tab in refflat:
-            self.exon_count += tab.exon_count.sum()
             for i, transcript in tab.iterrows():
                 self.transcript_count += 1
                 if transcript['cds'] != transcript['cde'] or not self.coding_only:
