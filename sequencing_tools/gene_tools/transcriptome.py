@@ -54,7 +54,6 @@ class Exon():
         '''
         return self.transcript_start <= transcript_position <= self.cumulative_transcript_length
     
-    @property
     def __len__(self):
         return self.length
     
