@@ -31,9 +31,14 @@ class Exon():
         self.after_cds = 0
         self.after_cde = 0
         self.coding_bases = 0
-        self.cumulative_transcript_length = 0  #exon end coordincate - transcript start
-        self.transcript_start = self.cumulative_transcript_length - self.length
+        self.cumulative_transcript_length = None  
+        self.transcript_start = None #exon end coordincate - transcript start
+        self.transcript_end = None
 
+    def add_cumulative_length(self, cumulative_transcript_length):
+        self.cumulative_transcript_length = cumulative_transcript_length
+        self.transcript_start = self.cumulative_transcript_length - self.length
+        self.transcript_end = self.cumulative_transcript_length
 
     def __ContainWholeCD__(self):
         '''
@@ -161,7 +166,7 @@ class Transcript():
 
             assert(exon.length >= 0)
             cumulative_transcript_length += exon.length
-            exon.cumulative_transcript_length = cumulative_transcript_length
+            exon.add_cumulative_length(cumulative_transcript_length)
 
             self.exons[exon_num + 1] = exon
     
