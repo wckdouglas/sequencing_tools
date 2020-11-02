@@ -165,6 +165,89 @@ class Transcript():
 
             self.exons[exon_num + 1] = exon
     
+    def blocks(self, tstart_pos: int, tend_pos: int):
+        '''
+        given a start position and end position along the transcript,
+        return the block starts and block sizes on the genome scale
+        '''
+        assert (tend_pos > tstart_pos)
+
+        start_collecting = 0
+        collected_all_exon = 0
+        blocks = []
+
+        for exon_number, exon in self.exons.items():
+            '''
+            Examples: 
+
+                            exon 1                           exon 2
+            Transcript: |===========|-----------------|=================|
+            Amplicon:        |------>                 <--------|
+            blocks:             block1                   block2
+
+            
+                            exon 1                           
+            Transcript: |===========================|
+            Amplicon:        |--------------|
+            blocks:             block1                   
+
+
+                            exon 1                exon 2                 exon3
+            Transcript: |===========|---------|==========|--------|=================|
+            Amplicon:        |------>         |----------|        <--------|
+            blocks:            block1            block2            block3
+
+
+            '''
+            if tstart_pos in exon:
+                start_collecting = 1
+                if tx.strand == "+":
+                    block_start = exon.start + (tstart_pos - exon.transcript_start)
+                else:
+                    block_end = exon.end - (tstart_pos - exon.transcript_start)
+
+                if  tend_pos in exon:
+                    # example 2
+                    if tx.strand == '+':
+                        block_end = exon.start + (tend_pos - exon.transcript_start)
+                    else:
+                        block_start = exon.end - (tend_pos - exon.transcript_start)
+                    collected_all_exon = 1
+                
+                else:
+                    # example 1 or 3
+                    if tx.strand == '+':
+                        block_end = exon.end
+                    else:
+                        block_start = exon.start
+                blocks.append((block_start, block_end))
+            
+            elif collected_all_exon == 0 and start_collecting == 1:
+                if tx.strand == '+':
+                    block_start = exon.start
+                else:
+                    block_end = exon.end
+
+                if tend_pos in exon:
+                    # exon 2 from example 1, or exon 3 from example 3
+                    if tx.strand == '+':
+                        block_end = exon.start + (tend_pos - exon.transcript_start)
+                    else:
+                        block_start = exon.end - (tend_pos - exon.transcript_start)
+                    collected_all_exon = 1
+                else:
+                    # exon 2 from example 3
+                    if tx.strand == "+":
+                        block_end = exon.end
+                    else:
+                        block_start = exon.start
+                
+                blocks.append((block_start, block_end))
+    
+        return blocks
+
+
+    
     def __FirstCodingExon__(self):
         return list(filter(lambda ex: ex.contain_cds==1, self.exons.values()))[0]
 
