@@ -248,7 +248,8 @@ class Transcript():
                         block_start = exon.start
                 
                 blocks.append((block_start, block_end))
-    
+        amplicon_size = tend_pos - tstart_pos
+        assert( sum(map(lambda x: x[1] - x[0], blocks)) == amplicon_size) 
         return blocks
 
 
