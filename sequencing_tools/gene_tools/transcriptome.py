@@ -101,8 +101,6 @@ class Transcript():
         self.__MakeTranscripts__()
 
 
-
-
     def __MakeTranscripts__(self):
         """
         populate the exon list
@@ -167,27 +165,6 @@ class Transcript():
 
             self.exons[exon_num + 1] = exon
     
-
-    def FilterExon(self):
-        '''
-        get the largest exon after CDS within 500bp
-        '''
-
-        for exon in self.exons.values():
-            if self.__CloseExon__(exon):
-                # we don't allow CDS-CDE-containing the exon
-                yield exon
-
-
-    def __CloseExon__(self, exon):
-        '''
-        The whole exon is in 500bp downstream of CDS
-        '''
-#        return self.cds_off_set < exon.cumulative_transcript_length - exon.length < (500 + self.cds_off_set)
-        return 50 <= exon.cumulative_transcript_length  <= 500 or \
-             exon.cumulative_transcript_length - exon.length <= 500 <= exon.cumulative_transcript_length
-
-
     def __FirstCodingExon__(self):
         return list(filter(lambda ex: ex.contain_cds==1, self.exons.values()))[0]
 
