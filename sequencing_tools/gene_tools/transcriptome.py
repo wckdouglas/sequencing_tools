@@ -32,6 +32,7 @@ class Exon():
         self.after_cde = 0
         self.coding_bases = 0
         self.cumulative_transcript_length = 0  #exon end coordincate - transcript start
+        self.transcript_start = self.cumulative_transcript_length - self.length
 
 
     def __ContainWholeCD__(self):
@@ -46,6 +47,16 @@ class Exon():
         does the exon contains any coding bases
         '''
         return self.contain_cde or self.contain_cds or (not self.after_cde and self.after_cds)
+    
+    def __contains__(self, transcript_position):
+        '''
+        dose this exon contain a certain transcript position?
+        '''
+        return self.transcript_start <= transcript_position <= self.cumulative_transcript_length
+    
+    @property
+    def __len__(self):
+        return self.length
     
 
 class Transcript():
