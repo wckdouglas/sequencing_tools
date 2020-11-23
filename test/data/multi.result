@@ -95,6 +95,7 @@
 @SQ	SN:gi|23898|emb|X12811.1|	LN:2231
 @SQ	SN:gi|555853|gb|U13369.1|HSU13369	LN:42999
 @PG	ID:hisat2	PN:hisat2	VN:2.0.5	CL:"/work/02727/cdw2854/lonestar/src/miniconda2/bin/hisat2-align-s --wrapper basic-0 -p 24 -k 10 --no-mixed --no-discordant --known-splicesite-infile /corral-repl/utexas/2013lambowitz/Ref/hg19/genome/splicesite.tsv --novel-splicesite-outfile /scratch/02727/cdw2854/cell_Free_nucleotides/tgirt_map/200FN_1_S3_R1_001/Hisat/novelsite.txt -x /corral-repl/utexas/2013lambowitz/Ref/hg19/genome/hg19_genome -1 /scratch/02727/cdw2854/cell_Free_nucleotides/tgirt_map/200FN_1_S3_R1_001/rRNA_tRNA_premap/non_tRNA_rRNA.1.fq -2 /scratch/02727/cdw2854/cell_Free_nucleotides/tgirt_map/200FN_1_S3_R1_001/rRNA_tRNA_premap/non_tRNA_rRNA.2.fq"
+@PG	ID:samtools	PN:samtools	PP:hisat2	VN:1.11	CL:samtools view -b test/data/multi.sam
 TGCGAA_NS500358:147:H3WGWBGX5:1:11101:14759:1072	83	chr1	91852856	1	39M2S	=	91852820	-77	CCGACATCGAAGGATCAAAAAGCGACGTCGCTATGAACGAA	EEAEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE	AS:i:-2	ZS:i:-2	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:39	YS:i:0	YT:Z:CP	NH:i:2
 TGCGAA_NS500358:147:H3WGWBGX5:1:11101:14759:1072	163	chr1	91852820	1	23M	=	91852856	77	CGCTTGGTGAATTCTGCTTCACA	AAAAEEEEEEEEEEEEEEEEEEE	AS:i:0	ZS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:23	YS:i:-2	YT:Z:CP	NH:i:2
 TCACCT_NS500358:147:H3WGWBGX5:1:11101:9788:3343	99	gi|555853|gb|U13369.1|HSU13369	12339	1	21M	=	12435	160	TTTTTGATCCTTCGATGTCGG	EEEEEEEEEEEEEEEEEEEEE	AS:i:0	ZS:i:0	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:21	YS:i:-4	YT:Z:CP	NH:i:2

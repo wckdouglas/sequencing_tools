@@ -194,8 +194,8 @@ def dedup_bed(in_file_handle, out_file_handle, threshold, str delim, int f, int 
         max_member_count = max(max_member_count, _max_member_count)
         in_count += barcode_group.fragment_count
 
-    if total_member_count != in_count + 1:
-        raise SeqUtilsError('Wrong output lines!')
+    if total_member_count != in_count :
+        raise SeqUtilsError('Wrong output lines! Input: %i, output: %i' %(in_count, total_member_count))
 
-    logger.info('Iput %i lines, output %i lines with highest duplicate with %i members' %(in_count + 1, out_count, max_member_count))
+    logger.info('Iput %i lines, output %i lines with highest duplicate with %i members' %(in_count , out_count, max_member_count))
     return 0
