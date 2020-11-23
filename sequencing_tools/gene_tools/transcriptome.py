@@ -12,6 +12,7 @@ from collections import defaultdict
 from pandas import read_csv, read_sql_query
 import sqlite3
 import logging
+from ..utils import SeqUtilsError
 logging.basicConfig(level = logging.INFO)
 log = logging.getLogger('Transcriptome')
 
@@ -349,7 +350,13 @@ class Transcriptome():
             if transcript['tx_biotype'] == 'protein_coding' or not self.coding_only:
                 self.transcript_dict[transcript['gene_name']][transcript['tid']] = Transcript(transcript)
 
-
+    def get_gene(self, gene_name):
+        '''
+        return all transcript from gene
+        '''
+        if gene_name not in self.transcript_dict.keys():
+            raise SeqUtilsError('%s not in database' %gene_name)
+        return self.transcript_dict[gene_name]
 
         
 
