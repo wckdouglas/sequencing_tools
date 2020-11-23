@@ -59,10 +59,10 @@ def test_correct():
 def test_filter():
     in_bam = test_data_path + '/tag.bam'
     out_bam = test_data_path + '/filtered.out'
-    command = 'seqtools filterSoftClip  --pe -s 0 -i {in_bam} -o - > {out_bam}'.format(in_bam = in_bam,
+    command = 'seqtools filterSoftClip  --pe -s 0 -i {in_bam} -o - | samtools view > {out_bam}'.format(in_bam = in_bam,
                                                                             out_bam = out_bam)
     os.system(command)
-    assert(filecmp.cmp(out_bam, test_data_path + '/clipped.bam'))
+    assert(filecmp.cmp(out_bam, test_data_path + '/clipped.result'))
     os.remove(out_bam)
 
 
