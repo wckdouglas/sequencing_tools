@@ -24,7 +24,7 @@ def test_bam():
 def test_multi():
     in_bam = test_data_path + '/multi.bam'
     out_bam = test_data_path + '/multi.out'
-    command = 'seqtools filterMulti -i  {in_bam} -o - > {out_bam}'.format(in_bam = in_bam,
+    command = 'seqtools filterMulti -i  {in_bam} -o - | samtools view > {out_bam}'.format(in_bam = in_bam,
                                                                             out_bam = out_bam)
     os.system(command)
     assert(filecmp.cmp(out_bam, test_data_path + '/multi.result'))
