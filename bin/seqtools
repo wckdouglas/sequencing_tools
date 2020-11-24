@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-from sequencing_tools.commands import (bam_to_bed, 
+from sequencing_tools.cli import (bam_to_bed, 
                                     bam_read_cluster, 
                                     bam_umi_tag, 
                                     bedpe_to_bed, 
