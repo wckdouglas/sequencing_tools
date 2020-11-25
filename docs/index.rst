@@ -31,6 +31,13 @@ This module contains some functions that work with figures
 .. automodule:: sequencing_tools.viz_tools
     :members:
 
+stats_tools
+=========
+This module contains some math functions
+
+.. automodule:: sequencing_tools.stats_tools
+    :members:
+
 
 utils
 =====

@@ -14,21 +14,17 @@ cpdef np.ndarray p_adjust(pvalue):
     Benjamini-Hochberg p-value correction for multiple hypothesis testing.
     adapted from https://stackoverflow.com/questions/7450957/how-to-implement-rs-p-adjust-in-python/21739593
 
-    Usage:
+    Usage::
 
-    padj = p_adjust(pvalue_array)
+        padj = p_adjust(pvalue_array)
 
-    Parameter:
+    Args:
+        pvalue_array: list of pvalue
 
-    - pvalue_array: list of pvalue
+    Returns:
+        list: list of adjusted pvalue 
 
-    Return:
-
-    - list of adjusted pvalue 
-    '''
-
-    '''    
-    in R:
+    An equivalent in R::
 
         nm <- names(p)
         vp <- as.numeric(p)
@@ -59,14 +55,19 @@ cpdef np.ndarray p_adjust(pvalue):
 
 def binom_test(success_test, total_test, expected_p = 0.5):
     '''
-    Vectorized binomial test:
+    Vectorized binomial test
 
-    usage:
+    Usage::
 
         binom_test(failed_test, total_test, expected_p = 0.5)
-    
-    return:
-        list of p-values
+
+    Args:
+        success_test: number of success
+        total_test: number of total trials
+        expected_p: expected probability of success
+
+    Returns:
+        list: list of p-values
         
     '''
     if len(success_test)!=len(total_test):
@@ -78,18 +79,26 @@ cpdef double cy_mean(xs):
     '''
     Fast numerical mean calculator, works with number generator too
 
+    Example::
 
-    In [1]: from sequencing_tools.stats_tools import cy_mean
-    In [2]: import numpy as np
-    In [3]: a = range(10)
-    In [4]: b = np.array(a)
-    In [5]: %timeit b.mean()
-    6.37 µs ± 323 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-    In [6]: %timeit cy_mean(a)
-    385 ns ± 7.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+        In [1]: from sequencing_tools.stats_tools import cy_mean
+        In [2]: import numpy as np
+        In [3]: a = range(10)
+        In [4]: b = np.array(a)
+        In [5]: %timeit b.mean()
+        6.37 µs ± 323 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        In [6]: %timeit cy_mean(a)
+        385 ns ± 7.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
 
-    usage: cy_mean(list_of_numbers)
-    return: mean of the list
+    Usage:: 
+        
+        cy_mean(list_of_numbers)
+
+    Args:
+        xs: list of numbers
+
+    Returns: 
+        float: Mean of the list
     '''
     cdef:
         double x
@@ -110,16 +119,16 @@ cpdef int levenshtein_distance(str s1, str s2):
     Calculating Levenshtein distance from two strings
     algorithm from: http://rosettacode.org/wiki/Levenshtein_distance#Python
 
-    usage: levenshtein_distance(string1, string2)
-    ==============================
-    Parameter:
+    usage:: 
+        
+        levenshtein_distance(string1, string2)
+    
+    Args:
+        string1: first string in the comparison
+        string2: second string in the comparison
 
-    string1
-    string2
-
-    return:
-    edit distance: the edit distance between two string
-
+    Returns:
+        int: the edit distance between two string
     '''
 
     cdef:
@@ -148,19 +157,19 @@ cpdef int levenshtein_distance(str s1, str s2):
 
 cpdef int hamming_distance(str s1, str s2):
     '''
-    Calculating hamming distance from two strings
+    Calculating hamming distance from two strings, the two strings has to be in the same length
 
-    usage: hamming_distance(string1, string2)
-    ==============================
-    Parameter:
+    Usage:: 
+        
+        hamming_distance(string1, string2)
+    
+    Args:
+        string1: first string in the comparison
+        string2: second string in the comparison
 
-    string1
-    string2
+    Returns:
+        int: the hamming edit distance between two strin
 
-    has to be same length
-
-    return:
-    edit distance: the edit distance between two string
     ===============================
     '''
 
@@ -182,12 +191,12 @@ def normalize_count(count_mat, return_sf = False):
     DESeq2 size factor:
         https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106#Sec22
 
-    input:
-        pandas dataframe with shape(m,n): m is gene count, n is sample number
-        return_sf: return size factors (n)
+    Args:
+        count_mat: pandas dataframe with shape(m,n): m is gene count, n is sample number
+        return_sf: boolean, if it needs returning size factors 
 
     output:
-        np.ndarray(m,n)
+        np.ndarray(m,n): normalized count matrix
     '''
 
     cols = count_mat.columns.tolist()
@@ -216,21 +225,23 @@ class Bootstrap:
     def __init__(self, seed=123):
         '''
         boostrap 1d array
-        usage:
-        xs = np.arange(100)
-        bs = Bootstrap(seed=123)
-        for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
-            print(xs[idx].mean())
+
+        Usage::
+
+            xs = np.arange(100)
+            bs = Bootstrap(seed=123)
+            for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
+                print(xs[idx].mean())
         '''
         self.rng = np.random.RandomState(seed)
 
     def bootstrap(self, xs, group_size=100, n_boots = 100):
         '''
-        input:
+        Args:
             xs: 1d np.array
             group_size: number of values in each bootstrap iteration
             n_boots: how many bootstrap groups
-        output:
+        Returns:
             iterator: bootstrapped
         '''
         xs = np.array(xs)
