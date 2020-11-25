@@ -93,13 +93,13 @@ class Transcript():
         self.chrom = transcript['chrom'] #: chromosome name
         self.id = transcript['tid'] #: transcript ID
         self.strand = '+' if transcript['strand'] in ['+', 1] else '-' #: strand ('+' or '-')
-        self.tx_start = transcript['tx_start'] #: transcription start site (genomic)
-        self.tx_end = transcript['tx_end']  #: transcription end site (genomnic)
-        self.cds = transcript['cds'] #: coding start site (genomic)
-        self.cde = transcript['cde'] #: coding end site (genomic)
-        self.exon_count = transcript['exon_count'] #: number of exons in this transcript
-        self.exon_starts = transcript['exon_starts'].split(',')[:-1] #: list of exon start sites
-        self.exon_ends = transcript['exon_ends'].split(',')[:-1] #: list of exon end sites
+        self.tx_start = int(transcript['tx_start']) #: transcription start site (genomic)
+        self.tx_end = int(transcript['tx_end'])  #: transcription end site (genomnic)
+        self.cds = int(transcript['cds']) #: coding start site (genomic)
+        self.cde = int(transcript['cde']) #: coding end site (genomic)
+        self.exon_count = int(transcript['exon_count']) #: number of exons in this transcript 
+        self.exon_starts = transcript['exon_starts'].split(',')[:-1] #: str, comma list of exon start sites 
+        self.exon_ends = transcript['exon_ends'].split(',')[:-1] #: str, comman list of exon end sites
         self.five_UTR_length = self.tx_start - self.cds #: how long is the 5' UTR? 5' as of genomic coordinate
         self.transcript_length = 0 #: transcript size
         if self.strand == '-': # reverse exon starts and ends for reverse strand

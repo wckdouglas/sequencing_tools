@@ -3,7 +3,7 @@ from operator import itemgetter
 from collections import defaultdict
 import numpy as np
 import pysam
-from .transcriptome import Exon
+from .transcriptome import Exon, Transcript
 
 
 '''
@@ -28,16 +28,18 @@ class Bed12Record():
                 for line in bed12:
                     transcript = Bed12Record(line)
         '''
-        self.fields = line.strip().split('\t')
+        fields = line.strip().split('\t')
         exon_starts = fields[11].strip(',').split(',')
         exon_sizes = fields[10].strip(',').split(',')
-        exon_starts = self.start + np.array(list(map(int, exon_starts)) # list of exon genomic starts
-        exon_ends = self.start + np.array(list(map(int, exon_sizes)) # list of exon sizes
+        exon_starts = int(fields[1]) + np.array(list(map(int, exon_starts))) # list of exon genomic starts
+        exon_ends = exon_starts + np.array(list(map(int, exon_sizes))) # list of exon sizes
         keys = ['chrom','tid','strand','tx_start', 'tx_end', 
                 'cds','cde', 'exon_count', 'exon_starts', 'exon_ends']
         values = [fields[0], fields[3], fields[5],fields[1], fields[2],
-                fields[6], fields[7], fields[9], exon_starts, exon_ends]
-        transcript = {k:v for k,v in zip(key, values)}
+                fields[6], fields[7], fields[9], 
+                ','.join(map(str, exon_starts)) + ',', 
+                ','.join(map(str, exon_ends)) + ',']
+        transcript = {k:v for k,v in zip(keys, values)}
         self.transcript = Transcript(transcript)
 
 
@@ -49,16 +51,16 @@ class Bed12Record():
             generator: intron_line, 6-columns bed for the introns
         '''
         exons = list(self.transcript.exons.values())
-        for intron_count, (exon_5, exon_3) in enumerate(zip(exons[1:], exons)):
+        for intron_count, (exon_3, exon_5) in enumerate(zip(exons[1:], exons)):
             if self.transcript.strand == '-':
                 start, end = exon_3.end, exon_5.start
             else:
                 start, end = exon_5.end, exon_3.start
             intron_line = '{chrom}\t{start}\t{end}\t{tid}\t{intron_count}\t{strand}'\
                     .format(chrom = self.transcript.chrom,
-                            start = start,
+                            start = start + 1,
                             end = end,
-                            tid = self.transcript.tid,
+                            tid = self.transcript.id,
                             intron_count = intron_count,
                             strand = self.transcript.strand)
             yield intron_line
@@ -93,7 +95,7 @@ class GTFRecord():
         return info_dict
 
 
-class Transcript():
+class TranscriptPlot():
     '''
     Transcript plotting
     '''
