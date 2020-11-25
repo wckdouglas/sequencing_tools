@@ -2,17 +2,46 @@ import os
 import re
 import string
 import six
+import numpy as np
 from collections import defaultdict
+from ..utils import SeqUtilsError
 
 # define fastq record type
 cdef class fastqRecord:
     def __init__(self, str id, str seq, str qual, str description):
+        '''
+        Args:
+            id (str): fastq record id
+            seq (str): fastq record seq
+            qual (str): fastq record quality string
+        '''
         self.id = id
         self.seq = seq
         self.qual = qual
         self.description = description
 
+    @property
+    def length(self):
+        return self.__len__()
+    
+    def __len__(self):
+        return len(self.seq)
+
     def subseq(self, int start, int end):
+        '''
+        Trim off sequences outside of start:end
+
+        Args:
+            start (int): 
+            seq (str): fastq record seq
+            qual (str): fastq record quality string
+        '''
+        if start < 0 or start > self.__len__():
+            raise SeqUtilsError('Start position must be positive and smaller than sequence length: %i' %self.__len__())
+
+        if end < start or end > self.__len__():
+            raise SeqUtilsError('End position must be greater than start position and smaller than sequence length: %i' %self.__len__())
+
         self.seq = self.seq[start:end]
         self.qual = self.qual[start:end]
 
@@ -31,19 +60,11 @@ def readfq(fp): # this is a generator function
         https://github.com/lh3/readfq/blob/master/readfq.py
 
 
-    usage: readfq(fp)
-    ==============================
-    Parameter:
+    Args:
+        fp: file handle of a fastq file
 
-    fp: file handle of a fastq file
-
-    return:
-
-    fastqRecord object
-        name: sequence id
-        seq: sequence
-        qual: quality
-    ===============================
+    Returns:
+        Generator(FastqRecord): :class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`
     '''
     cdef:
         str l, name, seq, description
@@ -91,15 +112,12 @@ def complement(seq):
     """
     Find complement a sequence.
 
-    ============================
-    parameter:
-    
-    string seq: sequence to be complemented
+    Args:
+        seq (str): sequence to be complemented
     
 
-    return:
-
-    complemented sequence
+    Returns:
+        str: complemented sequence
     """
     return seq.translate(complement_seq)
 
@@ -108,15 +126,12 @@ def reverse_complement(seq):
     """
     Reverse complement a sequence.
 
-    ============================
-    parameter:
-    
-    string seq: sequence to be reverse complemented
+    Args:
+        seq (str): sequence to be reverse complemented
     
 
-    return:
-
-    reverse complemented sequence
+    Returns:
+        str: reverse complemented sequence
     """
     return complement(seq)[::-1]
 
@@ -125,25 +140,15 @@ def read_interleaved(infile):
     '''
     A interleaved fastq iterator
 
-    usage: parse_interleaved(fp)
-    ==============================
-    Parameter:
+    uUsage::
 
-    fp: file handle of a fastq file
+        parse_interleaved(fp)
 
-    return:
+    Args:
+        fp: file handle of a fastq file
 
-    R1: fastqRecord object
-        name: sequence id
-        seq: sequence
-        qual: quality
-
-    R2: fastqRecord object
-        name: sequence id
-        seq: sequence
-        qual: quality
-
-    ===============================
+    Returns:
+        Generator(tuple):  (fastqRecord for R1, fastqRecord for R2) :class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord` 
     '''
 
     cdef:
@@ -180,9 +185,8 @@ def kmer_bag(str sequence, k_start = 1, k_end = 4):
     '''
     K-mer bag method for feature extraction
 
-    ---
     We used k = 1,2,3,4,5, resulting in 41 + 42 + 43 + 44 + 45 = 1364 features. 
-    For example, the se- quence ACTGG would produce a length-1364 feature vector
+    For example, the sequence ACTGG would produce a length-1364 feature vector
     where the entries corresponding to the k-mers A, C, T, AC, CT, TG, GG, ACT, 
     CTG, TGG, ACTG, CTGG, and ACTGG would each equal 1, 
     and the entry corresponding to G would equal 2. 
@@ -190,8 +194,17 @@ def kmer_bag(str sequence, k_start = 1, k_end = 4):
     (from Zhang and Kamath. Learning the Language of the Genome using RNNs)
 
 
-    usage:
-    kmer_bag(str sequence, k_start = 1, k_end = 4)
+    Usage::
+
+        kmer_bag(str sequence, k_start = 1, k_end = 4)
+    
+    Args:
+        sequence (str): the sequence for feature extraction
+        k_start (int): k for the smallest kmer
+        k_end (int): k for the largest kmer
+
+    Returns:
+        dict: key is kmer, values: count
     '''
 
     cdef: 
@@ -209,12 +222,12 @@ def kmer_bag(str sequence, k_start = 1, k_end = 4):
     
     return bag
 
-import numpy as np
 class onehot_sequence_encoder:
     '''
     A onehot encoder for DNA sequence
 
-    usage:
+    usage::
+
         dna_encoder = onehot_sequence_encoder()
         onehot_encoded_matrix = dna_encoder.fit_transform(sequence)
         dna_encoder.base_encoder  # check which base each column represents
@@ -225,6 +238,10 @@ class onehot_sequence_encoder:
     
 
     def fit(self, sequence='ACTGN'):
+        '''
+        Args:
+            sequence (str): the bases to be extract
+        '''
         self.bases = list(set(sequence))
         self.bases.sort()
         self.base_encoder = {b:i for i, b in enumerate(self.bases)}
@@ -236,14 +253,11 @@ class onehot_sequence_encoder:
         '''
         One hot sequence encoder
 
-        Parameter:
-            sequence: a string of sequence, only accept 'ACTGN'
+        Args:
+            sequence (str): a string of sequence, only accept the bases suppled in `fit`, with length n
 
-        return:
-            onehot encoded array:  len(sequence)-by-distinct(base) matrix
-                                    columns represent each base
-                                    rows represent each position along the sequence
-
+        Returns:
+            np.ndarray(n,m): onehot encoded array, len(sequence)-by-distinct(base) matrix, columns represent each base, rows represent each position along the sequence
         '''
         cdef:
             int pos
@@ -262,14 +276,11 @@ class onehot_sequence_encoder:
         '''
         One hot sequence encoder
 
-        Parameter:
-            sequence: a string of sequence, only accept 'ACTGN'
+        Args:
+            sequence (str): a string of sequence, only accept the bases suppled in `fit`, with length n, with m unique bases
 
-        return:
-            onehot encoded array:  len(sequence)-by-distinct(base) matrix
-                                    columns represent each base
-                                    rows represent each position along the sequence
-
+        Returns:
+            np.ndarray(n,m): onehot encoded array, len(sequence)-by-distinct(base) matrix, columns represent each base, rows represent each position along the sequence
         '''
         cdef:
             int pos
@@ -280,13 +291,11 @@ class onehot_sequence_encoder:
  
     def decode(self, encoded_mat):
         '''
-        Parameter:
-            onehot encoded array: len(sequence)-by-distinct(base) matrix
-                                    columns represent each base
-                                    rows represent each position along the sequence
+        Args:
+            onehot encoded array: len(sequence)-by-distinct(base) matrix, columns represent each base, rows represent each position along the sequence
 
-        Return:
-            sequence: a string of sequence, only accept 'ACTGN'
+        Returns:
+            str: Sequence, the decoded sequence
         '''
 
         decoded = np.matmul(encoded_mat, np.arange(len(self.bases)))
