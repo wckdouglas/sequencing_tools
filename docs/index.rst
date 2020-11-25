@@ -11,9 +11,11 @@ This is `Douglas's repo <https://github.com/wckdouglas/sequencing_tools>`_ for u
 Installation
 ============
 
+Installation can be done via conda::
+
     $ conda config --add channels bioconda
-    $ conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
-        cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy 
+    $ conda create -q -n test-environment python=3.6 \
+        cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy   \
         matplotlib samtools future pytest-cov codecov
     $ git clone https://github.com/wckdouglas/sequencing_tools.git
     $ cd sequencing_tools
