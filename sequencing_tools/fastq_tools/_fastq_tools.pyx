@@ -169,10 +169,14 @@ def read_interleaved(infile):
     except StopIteration:
         pass
 
-from collections import defaultdict
 def extract_kmer(str sequence, int k):
     '''
-    output kmer
+    Args:
+        sequence (str): input sequence for extracting kmer
+        k (int): kmer size
+    
+    Returns:
+        generator(str): kmer from the sequence
     '''
     cdef int i
 
