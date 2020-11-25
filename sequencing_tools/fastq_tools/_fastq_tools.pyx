@@ -9,12 +9,12 @@ from ..utils import SeqUtilsError
 # define fastq record type
 cdef class fastqRecord:
     def __init__(self, str id, str seq, str qual, str description):
-        '''
+        """
         Args:
             id (str): fastq record id
             seq (str): fastq record seq
             qual (str): fastq record quality string
-        '''
+        """
         self.id = id
         self.seq = seq
         self.qual = qual
