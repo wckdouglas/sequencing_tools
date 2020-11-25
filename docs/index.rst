@@ -25,7 +25,7 @@ fastq_tools
 ===========
 This module contains functions to interact with fastq files
 
-.. automodule:: sequencing_tools.bam_tools._fastq_tools
+.. automodule:: sequencing_tools.fastq_tools._fastq_tools
     :members:
 
 bam_tools
