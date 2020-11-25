@@ -29,6 +29,8 @@ include_path.extend(pysam.get_include())
 ext_modules=cythonize([
         Extension('*', ['sequencing_tools/*tools/*.pyx'],
                   include_dirs = list(include_path))])
+for e in ext_modules:
+    e.cython_directives = {"embedsignature": True}
 
 
 setup(

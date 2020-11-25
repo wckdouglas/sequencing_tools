@@ -32,7 +32,7 @@ This module contains some functions that work with figures
     :members:
 
 stats_tools
-=========
+===========
 This module contains some math functions
 
 .. automodule:: sequencing_tools.stats_tools
