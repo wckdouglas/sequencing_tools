@@ -7,12 +7,14 @@ from collections import OrderedDict
 def douglas_palette():
     '''
     Automatic set color if seaborn is installed, otherwise return list of colors
-    usage: douglas_palette()
+    Example:: 
 
-    ax=plt.subplot();
-    for i in range(14):
-        ax.plot(np.arange(10),np.arange(10) + i,label=i)
-    ax.legend()
+        colors = douglas_palette()
+
+        ax=plt.subplot();
+        for i in range(14):
+            ax.plot(np.arange(10),np.arange(10) + i,label=i, color = colors[i])
+        ax.legend()
     '''
     colors = ['#B98476', '#6297B6', '#BF7F8E', '#8E955A', '#6F94B9', '#579F79', '#3C9F9D', 
             '#EDAEB5', '#B0BDEA', '#D8BA90', '#7BCBD5', '#87CDA9', '#B1C68D', '#E7C039']
@@ -23,6 +25,15 @@ def maximum_palette():
     '''
     modified from:
     https://sashat.me/2017/01/11/list-of-20-simple-distinct-colors/
+
+    Example:: 
+
+        colors = maximum_palette()
+
+        ax=plt.subplot();
+        for i in range(22):
+            ax.plot(np.arange(10),np.arange(10) + i,label=i, color = colors[i])
+        ax.legend()
     '''
     colors = ['#f58231','#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#911eb4', 
             '#03A8FB', '#F8BF6C', '#CAF5CB', '#fabebe', 
@@ -35,6 +46,15 @@ def simpsons_palette():
     '''
     A palette from ggsci R package
     https://github.com/road2stat/ggsci/blob/master/data-raw/data-generator.R
+
+    Example:: 
+
+        colors = simpsons_palette()
+
+        ax=plt.subplot();
+        for i in range(16):
+            ax.plot(np.arange(10),np.arange(10) + i,label=i, color = colors[i])
+        ax.legend()
     '''
     colors = [
         '#FED439', '#709AE1',
@@ -53,6 +73,15 @@ def okabeito_palette():
     Color palette proposed by Okabe and Ito
     copy from colorboindr R package 
     https://github.com/clauswilke/colorblindr/blob/master/R/palettes.R
+
+    Example:: 
+
+        colors = okabeito_palette()
+
+        ax=plt.subplot();
+        for i in range(8):
+            ax.plot(np.arange(10),np.arange(10) + i,label=i, color = colors[i])
+        ax.legend()
     '''
     colors = ["#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999"]
     return colors
@@ -65,14 +94,14 @@ def cor_plot(plot_df, fig, diagonal_line = True, method = 'pearson', **kwargs):
 
     usage: cor_plot(plot_df, fig=fig, diagonal_line = True, method = 'pearson')
     
-    input:
-    * plot_df: a pandas dataframe
-    * fig: matplotlib figure object (optional)
-    * diagonal_line: Boolean controlling if a diagonal line should be drawn
-    * method: correlation method, [spearman or pearson]
+    Args:
+        plot_df: a pandas dataframe
+        fig: matplotlib figure object (optional)
+        diagonal_line: Boolean controlling if a diagonal line should be drawn
+        method: correlation method, [spearman or pearson]
 
-    output:
-    * fig: matplotlib figure object
+    Returns:
+        matplotlib.pyplot.figure: matplotlib figure object
     '''
 
     import matplotlib.pyplot as plt
@@ -135,25 +164,28 @@ class color_encoder():
     '''
     color-encoding a categoric vector
 
-    Example:
+    Example::
 
-    colors = obakeito_palette()
-    ce = color_encoder()
-    ce.fit(categroical_vector, colors)
-    encoded_colors = ce.transform(new_categorical_vector) 
+        categorical_vector = ['a','b','c','a']
+        colors = obakeito_palette()
+        ce = color_encoder()
+        ce.fit(categorical_vector, colors)
+        encoded_colors = ce.transform(new_categorical_vector) 
 
-    #or
+    or::
 
-    ce = color_encoder()
-    encoded_colors = ce.fit_transform(categorical_vector, colors)
+        ce = color_encoder()
+        encoded_colors = ce.fit_transform(categorical_vector, colors)
 
-    #access color encoder
-    encoded_color_map = ce.encoder
+    access color encoder::
+
+        encoded_color_map = ce.encoder
+
     '''
     def __init__(self):
         self.x  = None
         self.categories = None
-        self.encoder = None
+        self.encoder = None #: color encoder dictionary
 
 
     def fit(self, x, colors = okabeito_palette()):
@@ -209,16 +241,16 @@ def mixed_sort(list_of_elements):
     https://arcpy.wordpress.com/2012/05/11/sorting-alphanumeric-strings-in-python/
 
     Args:
-       a list
+       a list of 
     
-    return:
-      a list
+    Returns:
+      list: ordered list
 
-    Usage:
+    Example::
 
-    $ a = ['A1','A10','A2','A20']
-    $ mixed_sort(a)
-    ['A1','A2', 'A10', 'A20']
+        a = ['A1','A10','A2','A20']
+        mixed_sort(a)
+        > ['A1','A2', 'A10', 'A20']
 
     '''
     convert = lambda text: int(text) if text.isdigit() else text
@@ -231,10 +263,15 @@ def plot_upset(fig, upset_df,
             matrix_to_plot_ratio=0.4,
             fontsize=15):
     '''
-    upset_df:
-        pandas dataframe, contain column: sample matrix (binary), "count", 'index'
+    Args:
+        fig: matplotlib figure object
+        upset_df: pandas dataframe, contain column: sample matrix (binary), "count", 'index'
+        ylab: y label
+        matrix_to_plot_ratio: ratio between interaction matrix and batplot
+        fontsize: fontsize
 
-    input example:
+    input example::
+
         index   HeLa    K562    UHRR    Plasma  count
         3       0       1       1       1       1
         4       1       0       0       0       2

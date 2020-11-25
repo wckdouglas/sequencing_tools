@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
-'''
-contain transcript structure:
+"""
+Modeul for manipulating transcriptome annotation data
 
-1. transcript
-2. exon
-'''
+"""
 
 import sys
 from collections import defaultdict
@@ -19,22 +17,29 @@ log = logging.getLogger('Transcriptome')
 
 class Exon():
     '''
-    Exon info
+    Exon object storing the coordinate, exon rank and strand information
+
+    Args:
+        start (int): genomic start coordinate of the exon
+        end (int): genomic end coordinate of the exon
+        exon_num (int): exon rank
+        strand (string): strandeness of the exon (either + or -)
+    
     '''
     def __init__(self, start, end, exon_num, strand):
-        self.start = int(start)
+        self.start = int(start) 
         self.end = int(end)
         self.exon_num = int(exon_num)
         self.strand = strand
         self.length = self.end - self.start
-        self.contain_cds = 0
-        self.contain_cde = 0
-        self.after_cds = 0
-        self.after_cde = 0
-        self.coding_bases = 0
-        self.cumulative_transcript_length = None  
-        self.transcript_start = None #exon end coordincate - transcript start
-        self.transcript_end = None
+        self.contain_cds = 0 #: 1 if this exon contains coding start site else 0
+        self.contain_cde = 0 #: 1 if this exon contains coding end site else 0
+        self.after_cds = 0 #: 1 if downstream of coding start site else 0
+        self.after_cde = 0 #: 1 if downstream of coding end  site else 0
+        self.coding_bases = 0 #: how many bases are within coding frame
+        self.cumulative_transcript_length = None   #: the transcript position of last exon base
+        self.transcript_start = None #: the transcript position of the first exon base
+        self.transcript_end = None #: the transcript position of the last exon base
 
     def add_cumulative_length(self, cumulative_transcript_length):
         self.cumulative_transcript_length = cumulative_transcript_length
@@ -66,11 +71,11 @@ class Exon():
 
 class Transcript():
     '''
-    transcript  info:
+    Transcript object storing information of a transcript
         
         
-    input:
-        transcript: dictionary with keys:
+    Args:
+        transcript (dict): with the following keys:
             1. chrom
             2. tid
             3. strand
@@ -85,17 +90,17 @@ class Transcript():
     
     '''
     def __init__(self, transcript):
-        self.chrom = transcript['chrom']
-        self.id = transcript['tid']
-        self.strand = '+' if transcript['strand'] in ['+', 1] else '-'
-        self.tx_start = transcript['tx_start']
-        self.tx_end = transcript['tx_end']
-        self.cds = transcript['cds']
-        self.cde = transcript['cde']
-        self.exon_count = transcript['exon_count']
-        self.exon_starts = transcript['exon_starts'].split(',')[:-1]
-        self.exon_ends = transcript['exon_ends'].split(',')[:-1]
-        self.five_UTR_length = self.tx_start - self.cds
+        self.chrom = transcript['chrom'] #: chromosome name
+        self.id = transcript['tid'] #: transcript ID
+        self.strand = '+' if transcript['strand'] in ['+', 1] else '-' #: strand ('+' or '-')
+        self.tx_start = transcript['tx_start'] #: transcription start site (genomic)
+        self.tx_end = transcript['tx_end']  #: transcription end site (genomnic)
+        self.cds = transcript['cds'] #: coding start site (genomic)
+        self.cde = transcript['cde'] #: coding end site (genomic)
+        self.exon_count = transcript['exon_count'] #: number of exons in this transcript
+        self.exon_starts = transcript['exon_starts'].split(',')[:-1] #: list of exon start sites
+        self.exon_ends = transcript['exon_ends'].split(',')[:-1] #: list of exon end sites
+        self.five_UTR_length = self.tx_start - self.cds #: how long is the 5' UTR? 5' as of genomic coordinate
         if self.strand == '-': # reverse exon starts and ends for reverse strand
             self.exon_starts = self.exon_starts[::-1]
             self.exon_ends = self.exon_ends[::-1]
@@ -103,7 +108,7 @@ class Transcript():
             self.cds, self.cde = self.cde, self.cds
 
         self.cds_off_set =  -1
-        self.exons = {} #(populate by (exon start, exon end, exon length))
+        self.exons = {} #: dictionary with key as exon rank, values are :class:`sequencing_tools.gene_tools.transcriptome.Exon`
         self.__MakeTranscripts__()
 
 
@@ -175,6 +180,21 @@ class Transcript():
         '''
         given a start position and end position along the transcript,
         return the block starts and block sizes on the genome scale
+
+        Example::
+
+                                        exon 1                           exon 2
+                Transcript: |===========|-----------------|=================|
+                Amplicon:        |------>                 <--------|
+                blocks:             block1                   block2
+                Return:        [(a,     b)                (c,      d)   ]
+
+        Args:
+            tstart_pos (int): left position on the transcript
+            tend_pos (int): right position on the transcript
+
+        Returns:
+            list: list of tuples containing the (start, end) of each block
         '''
         assert (tend_pos > tstart_pos)
 
@@ -264,27 +284,26 @@ class Transcriptome():
     all annotated transcripts
     read in a refflat file
 
-
-    input: 
-        refflat:  refflat file or url (http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.g)
-        sqldb: https://annotationhub.bioconductor.org/package2/AHEnsDbs
+    Args: 
+        refflat:  refflat file or `url <http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz>`_
+        sqldb: Can be found under `Annotationhub <https://annotationhub.bioconductor.org/package2/AHEnsDbs>`_
         coding_only: only index coding transcript?
     """
 
     def __init__(self, refflat = None, sqldb=None, coding_only=True):
-        self.coding_only = coding_only
-        self.transcript_dict = defaultdict(lambda: defaultdict(Transcript))
-        self.transcript_count = 0
+        self.coding_only = coding_only #: Only index coding genes (mRNA)?
+        self.transcript_dict = defaultdict(lambda: defaultdict(Transcript)) #: Dict storing transcripts, with gene name as key and values are :class:`sequencing_tools.gene_tools.transcriptome.Transcript`
+        self.transcript_count = 0 #: how many transcript was indexed?
         if sqldb:
             self.sqldb = sqldb
             self.sql_connection = sqlite3.connect(self.sqldb)
-            self.MakeTranscriptomeFromSqlite()
+            self.__MakeTranscriptomeFromSqlite()
         else:
             self.url = refflat or 'http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz'
-            self.MakeTranscriptomeFromRefFlat()
+            self.__MakeTranscriptomeFromRefFlat()
 
     
-    def MakeTranscriptomeFromRefFlat(self):
+    def __MakeTranscriptomeFromRefFlat(self):
         '''
         build transcriptome database, index by gene name
         '''
@@ -302,7 +321,7 @@ class Transcriptome():
                 if transcript['cds'] != transcript['cde'] or not self.coding_only:
                     self.transcript_dict[transcript['Gene name']][transcript['tid']] = Transcript(transcript)
 
-    def MakeTranscriptomeFromSqlite(self):
+    def __MakeTranscriptomeFromSqlite(self):
         '''
         indexing from sqlite db
         '''
@@ -352,7 +371,13 @@ class Transcriptome():
 
     def get_gene(self, gene_name):
         '''
-        return all transcript from gene
+        Get transcripts from gene
+
+        Args:
+            gene_name (str): 
+
+        Returns:
+            dict: dictionary with key as transcript id as key and values are :class:`sequencing_tools.gene_tools.transcriptome.Transcript`
         '''
         if gene_name not in self.transcript_dict.keys():
             raise SeqUtilsError('%s not in database' %gene_name)

@@ -11,33 +11,47 @@ usage: cat bed12 | python bed12_to_intron.py  > intron.bed
 
 
 class Bed12Record():
+    """
+    Parser for bed12 line
+    """
     def __init__(self, line):
         '''
-        object for analyzing bed12 line
+        Analyzing bed12 line
+
+        Args:
+            line (str): bed12 line 
+        
+        Example::
+
+            with open('gene.bed12','r') as bed12:
+                for line in bed12:
+                    transcript = Bed12Record(line)
         '''
         fields = line.strip().split('\t')
         chrom, start, end, tid, exon_count, \
-            strand, exon_starts, exon_ends = itemgetter(0,1,2,3,4,5,8,9)(fields)
-        self.chrom = chrom
-        self.start = int(start)
-        self.end = int(end)
-        self.strand = strand
-        self.exon_count = int(exon_count)
-        self.tid = tid
-        self.exon_starts = np.array(list(map(int, exon_starts.strip(',').split(','))))
-        self.exon_ends = np.array(list(map(int, exon_ends.strip(',').split(','))))
-        self.exon_length = np.array([e-s for e,s in zip(self.exon_ends, self.exon_starts)])
+            strand, exon_starts, exon_sizes = itemgetter(0,1,2,3,9,5,11,10)(fields)
+        self.chrom = chrom #: chromosome name
+        self.start = int(start) #: genomic start site as in bed12 
+        self.end = int(end) #: genomic end site as in bed12 
+        self.strand = strand #: srand
+        self.exon_count = int(exon_count) #: number of exons for the transcript
+        self.tid = tid #: transcript ID
+        self.exon_starts = np.array(list(map(int, exon_starts.strip(',').split(',')))) # list of exon starts
+        self.exon_sizes = np.array(list(map(int, exon_sizes.strip(',').split(',')))) # list of exon sizes
+        self.exon_ends = np.array([s+l for s,l in zip(self.exon_starts, self.exon_sizes)]) # list of exon ends
         if self.strand == '-':
-            self.exon_length = self.exon_length[::-1]
+            self.exon_sizes = self.exon_sizes[::-1]
             self.reversed_exon_starts = self.exon_ends[::-1]
-        self.cumulative_exon_starts = np.append([0], np.cumsum(self.exon_length)[:-1])
-        self.transcript_length = self.end - self.start
+        self.transcript_length = self.end - self.start 
         assert(len(self.exon_starts)==len(self.exon_ends))
         assert(len(self.exon_starts)== self.exon_count)
 
     def get_introns(self):
         '''
-        generator for introns
+        generator for introns, for each transcript (bed12 line), return all its intron
+
+        Returns:
+            generator: intron_line, 6-columns bed for the introns
         '''
         for i, (next_s, end) in enumerate(zip(self.exon_starts[1:], self.exon_ends)):
             intron_count = self.exon_count - i if self.strand == '-' else i + 1
@@ -54,15 +68,23 @@ class Bed12Record():
         '''
         translate transcriptome position to genomic position
 
-        |-------------|-----------*---------|-----------|
-        /    exon1   /\        exon2      / \    exon3  \
-       /            /  \                 /   \           \
-      |------------|xxxx|---------*-----|xxxxx|----------|  
-                    intron              intron
+        Args:
+            tpos: transcript position
+
+        Returns:
+            int: the corresponding genomic position
+
+        Illustration::
+
+                |-------------|-----------*---------|-----------|
+                /    exon1   /\        exon2      / \    exon3  \
+            /            /  \                 /   \           \
+            |------------|xxxx|---------*-----|xxxxx|----------|  
+                            intron              intron
         '''
 
-        self.idx = self.cumulative_exon_starts < tpos # which exon the position is on
-        shifted_pos = self.cumulative_exon_starts[self.idx][-1]
+        self.idx = self.exon_starts < tpos # which exon the position is on
+        shifted_pos = self.exon_starts[self.idx][-1]
         offset_from_exon_start = tpos - shifted_pos  # how far is the position to the exon start
         if self.strand == "+":
             out_pos = offset_from_exon_start + self.exon_starts[self.idx][-1]
@@ -75,21 +97,16 @@ class Bed12Record():
 class GTFRecord():
     '''
     parsing a GTF record line
-    attr:
-        chrom: str
-        start: int
-        end: int
-        strand: str
-        feature_type: str
-        info: dict
-        fields: list separated by '\t'
     '''
     def __init__(self, gtf_line):
         self.fields = gtf_line.split('\t')
-        self.chrom, self.feature_type, \
-                self.start, self.end, self.strand = itemgetter(0,2,3,4,6)(self.fields)
+        self.chrom = self.fields[0] #: chromosome name
+        self.feature_type = self.fields[2] #: feature type of the transcript
+        self.start = self.fields[3] #: genomic start
+        self.end = self.fields[4] #: genomic end
+        self.strand = self.fields[6] #: strand
         self.start, self.end = int(self.start), int(self.end)
-        self.info = self.__parse_extra_fields__(self.fields[-1])
+        self.info = self.__parse_extra_fields__(self.fields[-1]) #: info field as a dictionary
 
 
     def __parse_extra_fields__(self, extra_field):
@@ -104,11 +121,14 @@ class GTFRecord():
 
 class Transcript():
     '''
-    input:
-        dictionary: transcript_dict[exons|trascript] = list
-                    something like transcripts = defaultdict(list) [start and end]
+    Transcript plotting
     '''
     def __init__(self, transcript_dict):
+        '''
+        Args:
+        dictionary: transcript_dict[exons|trascript] = list
+                    something like transcripts = defaultdict(list) [start and end]
+        '''
         self.transcript = transcript_dict['transcript'][0]
         self.exons = transcript_dict['exon']
         self.strand = self.transcript.strand
