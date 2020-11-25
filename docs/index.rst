@@ -52,7 +52,10 @@ stats_tools
 ===========
 This module contains some math functions
 
-.. automodule:: sequencing_tools.stats_tools
+.. automodule:: sequencing_tools.stats_tools._stats_tools
+    :members:
+
+.. autoclass:: sequencing_tools.stats_tools._stats_tools.Bootstrap
     :members:
 
 

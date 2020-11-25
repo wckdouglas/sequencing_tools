@@ -157,6 +157,7 @@ cpdef int levenshtein_distance(str s1, str s2):
 
 cpdef int hamming_distance(str s1, str s2):
     '''
+
     Calculating hamming distance from two strings, the two strings has to be in the same length
 
     Usage:: 
@@ -170,7 +171,6 @@ cpdef int hamming_distance(str s1, str s2):
     Returns:
         int: the hamming edit distance between two strin
 
-    ===============================
     '''
 
     cdef:
@@ -188,14 +188,13 @@ cpdef int hamming_distance(str s1, str s2):
 
 def normalize_count(count_mat, return_sf = False):
     '''
-    DESeq2 size factor:
-        https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106#Sec22
+    `DESeq2 size factor <https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106#Sec22>`_
 
     Args:
         count_mat: pandas dataframe with shape(m,n): m is gene count, n is sample number
         return_sf: boolean, if it needs returning size factors 
 
-    output:
+    Returns:
         np.ndarray(m,n): normalized count matrix
     '''
 
@@ -232,8 +231,11 @@ class Bootstrap:
             bs = Bootstrap(seed=123)
             for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
                 print(xs[idx].mean())
+ 
+        Args:
+            seed: seed for random number generater
         '''
-        self.rng = np.random.RandomState(seed)
+        self.rng = np.random.RandomState(seed) 
 
     def bootstrap(self, xs, group_size=100, n_boots = 100):
         '''
