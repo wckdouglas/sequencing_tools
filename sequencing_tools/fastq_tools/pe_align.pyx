@@ -17,8 +17,46 @@ cdef:
 
 
 class ConsensusBuilder:
+    """
+    Merging the two reads from paired end sequencing, and build consensus sequence for the overlapped part, paired end sequencing of a fragments:
+
+    Illustration::
+
+        Reads:
+                       | adapter|                            |adapter |
+                    R1:         |------------------>
+          DNA Fragment: ========|----------------------------|========
+                    R2:                     <----------------|
+            report all:         |---------------------------->
+        not report all:                     |------>
+    
+
+    Args:
+        error_toleration (float): maximum mismatch fraction at the overlap region, reads are merged if they have mismatch fraction lower than this
+        min_len (int): minumum overlapping bases at the overlapping region, if lower than this, reads won't merge
+        report_all (boolean): True if the output merged sequence contains non-overlapping bases
+
+    Example::
+
+        consensus_builder = ConsensusBuilder(error_toleration = 0.1,
+                                    min_len = 15, report_all=False)
+        read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
+            'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
+            'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
+            'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
+            )
+
+        read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
+            'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
+            'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
+            'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
+            )
+
+        out = consensus_builder.run(read1, read2)
+    """
     def __init__(self, error_toleration = 0.1, min_len = 15, 
                 report_all=False, conserved = False):
+
         self.error_toleration = error_toleration
         self.min_len = min_len
         self.report_all = report_all
@@ -28,10 +66,16 @@ class ConsensusBuilder:
                 
     
     def run(self, fastqRecord R1, fastqRecord R2):
-        '''
+        """
         reverse complement read2 sequence and find matching position on read1
-        return concensus sequence
-        '''
+
+        Args:
+            R1: :class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`
+            R2: :class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`
+
+        Returns: 
+            str: fastq line for the merged concensus sequence [+ non-overlapping sequence]
+        """
         
         cdef:
             str seq, qual, r2_seq, r1_id, r2_id

@@ -117,7 +117,6 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
     usage: make_regions(chromosome_length, how_many_bases_every_time)
     return cigar_base
 
-    ==================================
     Args:
         chromosome_length: last base you want to look at
         how_many_bases_every_time: segment size

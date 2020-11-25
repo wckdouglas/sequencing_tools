@@ -28,6 +28,9 @@ This module contains functions to interact with fastq files
 .. automodule:: sequencing_tools.fastq_tools._fastq_tools
     :members:
 
+.. autoclass:: sequencing_tools.fastq_tools.pe_align.ConsensusBuilder
+    :members:
+
 bam_tools
 =========
 This module contains functions to interact with bam files and bed files
