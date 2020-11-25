@@ -1,9 +1,24 @@
 Welcome to sequencing_tools's documentation!
 ============================================
 
+This is `Douglas's repo <https://github.com/wckdouglas/sequencing_tools>`_ for useful bioinformatics stuff. 
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+
+Installation
+============
+
+    $ conda config --add channels bioconda
+    $ conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
+        cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy 
+        matplotlib samtools future pytest-cov codecov
+    $ git clone https://github.com/wckdouglas/sequencing_tools.git
+    $ cd sequencing_tools
+    $ pip install .
+
 
 gene_tools
 =============
