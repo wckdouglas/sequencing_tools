@@ -120,26 +120,25 @@ def calculatePosterior(column_bases, column_qualities, guess_base):
 
 
 class ErrorCorrection():
-    def __init__(self, mode = 'prob', threshold=0.8):
-        '''
-        a module for error correction in fastq records, included two modes:
-            1. prob: using base quality as probability of errors as prior to calculate posterior quality, see:
-                https://github.com/fulcrumgenomics/fgbio/wiki/Calling-Consensus-Reads
-            2. vote: using a voting scheme as SafeSeq to generate consensus base, see:
-                https://www.pnas.org/content/108/23/9530
+    """
+    A module for error correction in fastq records, included two modes:
+    
+    1. prob: using base quality as probability of errors as prior to calculate posterior quality, see `fgbio explanation <https://github.com/fulcrumgenomics/fgbio/wiki/Calling-Consensus-Reads>`_
+    2. vote: using a voting scheme as `SafeSeq <https://www.pnas.org/content/108/23/9530>`_ to generate consensus sequences
+
+    Args:
+        mode:  'prob' or 'vote'
+        threshold: only consider for "vote" mode, as a cutoff for returning a "N" if not enough fraction of bases agree
 
 
-        params:
-            mode:  prob or vote
-            threshold: only consider for "vote" mode, as a cutoff for returning a "N" if not enough fraction of bases agree
-
-
-        example usage:
-        
+    Example::
+    
         ec = ErrorCorrection(mode='prob')
         ec.Correct(['AAACA','AAAAA','AAACA','AAACA'],
                     ['IIIII','IIIAI','FFFFF', 'FFFFF'])
-        '''
+    """
+    def __init__(self, mode = 'prob', threshold=0.8):
+
         self.np_len = np.vectorize(len,otypes=[np.int32])
         self.np_ord = np.vectorize(ord, otypes=[np.int16])
         self.threshold = threshold
@@ -219,16 +218,15 @@ class ErrorCorrection():
 
 
     def Correct(self, seq_list, qual_list):
-        """given a list of sequences, a list of quality and sequence length.
-            return a consensus sequence and a recalibrated quality
+        """
+        Given a list of sequences and a list of quality, return a consensus sequence and a recalibrated quality
 
-        params: 
+        Args: 
             seq_list: list of sequences with the same length
             qual_list: list of the corresponding quality strings, must be in the same length as seq_list
 
-        return: tuple
-            consensus seq, 
-            consensus qual
+        Returns: 
+            tuple: (consensus seq, consensus qual)
 
         """
         cdef:

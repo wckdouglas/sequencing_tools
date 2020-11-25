@@ -2,7 +2,7 @@ from sequencing_tools.gene_tools import Bed12Record
 
 
 def test_bed12():
-    line = 'chr1\t11868\t14409\tENST00000456328.2_1\t3\t+\t14409\t14409\t11868,12612,13220,\t12227,12721,14409,\n'
+    line = 'chr1\t14403\t29570\tENST00000488147.1\t0\t-\t14403\t14403\t0\t11\t98,34,152,159,198,136,137,147,99,154,37,\t0,601,1392,2203,2454,2829,3202,3511,3864,10334,15130,'
     br = Bed12Record(line)
     first_intron = next(br.get_introns())
-    assert(first_intron == 'chr1\t12227\t12612\tENST00000456328.2_1\t1\t+')
+    assert(first_intron == 'chr1\t14501\t15004\tENST00000488147.1\t11\t-')

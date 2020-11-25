@@ -21,9 +21,22 @@ Installation can be done via conda::
     $ cd sequencing_tools
     $ pip install .
 
+bam_tools
+=========
+This module contains functions to interact with bam files and bed files
+
+.. automodule:: sequencing_tools.bam_tools._bam_tools
+    :members:
+
+consensus_tools
+===============
+
+.. autoclass:: sequencing_tools.consensus_tools._consensus_tools.ErrorCorrection
+    :members:
+
 
 gene_tools
-=============
+==========
 This module contains functions to interact with bed files, refflat, and gtf files.
 
 .. autoclass:: sequencing_tools.gene_tools.Bed12Record

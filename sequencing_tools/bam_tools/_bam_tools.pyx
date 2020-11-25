@@ -12,15 +12,18 @@ strings = re.compile(r'[MIS]')
 all_strings = re.compile(r'[A-Z]')
 def split_cigar(cigar_string):
     '''
-    split cigar string to numpy array
-    input cigar string: e.g. 63M
-    return:
-        ([list of numbers],
-         [list of cigar operators correspongs to the numbers])
+    Splitting cigar string to numpy array
 
-    split_cigar('63M')
+    Args:
+        cigar_string: a cigar string e.g. '63M1S4D10M'
 
-    [63], [M]
+    Returns:
+        (list,list): ([list of cigar numbers], [list of cigar operators correspongs to the numbers])
+
+    Example::
+
+        $ split_cigar('63M')
+        [63], [M]
     '''
 
     cigar_numbers = list(map(int, numbers.findall(cigar_string)))
@@ -31,20 +34,13 @@ def split_cigar(cigar_string):
 
 def read_ends(AlignedSegment read):
     '''
-    get read end positions, output start and end position of a read
-    =============
+    Get read end positions, output start and end position of a read
 
-    read_ends(AlignedSegment)
+    Args:
+        AlignedSegment : a pysam alignment
 
-    Parameters
-    ----------
-    AlignedSegment : a pysam alignment
-
-    Returns
-    -------
-    start:  leftmost positoin of the read
-    end:    rightmost position of the read
-    ============
+    Returns:
+        tuple: (start, end), leftmost and rightmost position of the read
     '''
     positions = read.get_reference_positions()
     start, end = itemgetter(0,-1)(positions)
@@ -54,19 +50,17 @@ def read_ends(AlignedSegment read):
 def fragment_ends(AlignedSegment read1, AlignedSegment read2):
     '''
     get start and end position of a pair of reads
-    =============
 
-    fragment_ends(read1, read2)
+    Example::
 
-    Parameters
-    ----------
-    read1: a pysam alignment
-    read2: a pysam alignment
+        fragment_ends(read1, read2)
 
-    Returns
-    -------
-    start:  leftmost positoin of the pair
-    end:    rightmost position of the pair
+    Args:
+        read1: a pysam alignment
+        read2: a pysam alignment
+
+    Returns:
+        tuple: (start, end), leftmost and rightmost position of the fragment
     '''
     cdef:
         long start1, end1, start2, end2
@@ -82,18 +76,17 @@ def fragment_ends(AlignedSegment read1, AlignedSegment read2):
 cpdef bool concordant_pairs(AlignedSegment read1, AlignedSegment read2):
     '''
     Check if pair is properly mapped flag == 99, 147, 163, 83
-    ==================================
-    usage: concordant_pairs(read1, read2)
 
-    parameter:
+    Example::
 
-    read1: read1 of the pair
-    read2: read2 of the pair
+        usage: concordant_pairs(read1, read2)
 
-    return:
+    Args:
+        read1: read1 of the pair
+        read2: read2 of the pair
 
-    True if 83 and 163 or 99 and 147 for their flags otherwise False
-    ==================================
+    Returns:
+        boolean: True if 83 and 163 or 99 and 147 for their flags otherwise False
     '''
     cdef:
         bool reverse_fragment = read1.flag == 83 and read2.flag == 163
@@ -103,15 +96,12 @@ cpdef bool concordant_pairs(AlignedSegment read1, AlignedSegment read2):
 cpdef bool concordant_alignment(AlignedSegment aln):
     '''
     Check if alignment is properly mapped flag == 99, 147, 163, 83
-    ==================================
-    parameter:
 
-    alignment: pysam alignment segment
+    Args:
+        alignment: pysam alignment segment
 
-    return:
-
-    boolean
-    ==================================
+    Returns:
+        boolean: True if 83 or 163 or 99 or 147 for their flags otherwise False
     '''
     cdef:
         bool qualify
@@ -128,33 +118,28 @@ def make_regions(chromosome_length, how_many_bases_to_look_at):
     return cigar_base
 
     ==================================
-    parameter:
+    Args:
+        chromosome_length: last base you want to look at
+        how_many_bases_every_time: segment size
 
-    chromosome_length: last base you want to look at
-    how_many_bases_every_time: segment size
+    Returns:
+        tuple: (start, end): start, end of segment
 
-    return:
+    Example::
 
-    start: start of segment
-    end: end of segment
+        for start, end in make_regions(100,10):
+            print start, end
 
-    example:
-
-    for start, end in make_regions(100,10):
-        print start, end
-
-    0 10
-    10 20
-    20 30
-    30 40
-    40 50
-    50 60
-    60 70
-    70 80
-    80 90
-    90 100
-
-    ==================================
+        0 10
+        10 20
+        20 30
+        30 40
+        40 50
+        50 60
+        60 70
+        70 80
+        80 90
+        90 100
     '''
     cdef:
         int start = 0
@@ -170,26 +155,21 @@ def make_cigar_seq(cigar_numbers, cigar_operator):
     '''
     Generator convert number and operator into a sequence of aligned status of bases, see split_cigar
 
-    usage: make_cigar_seq(cigar_numbers, cigar_operator)
+    Args:
+        cigar_numbers: list of numbers in string format
+        cigar_operator: list of single character
 
-    parameter:
+    Returns:
+        Generator: cigar_base, sequence of cigar base
 
-        cigar_numbers - list of numbers in string format
-        cigar_operator - list of single character
+    Example::
 
-    return:
-
-        generator cigar_base - sequence of cigar base
-
-    Example:
-
-    $ for c in make_cigar_seq(['3','5','1','3'],['S','M','I','M']):
-    $    print c
-
-    SSS
-    MMMMM
-    I
-    MMM
+        $ for c in make_cigar_seq(['3','5','1','3'],['S','M','I','M']):
+        $     print c
+        SSS
+        MMMMM
+        I
+        MMM
     '''
     cdef:
         str num, op
@@ -199,26 +179,20 @@ def make_cigar_seq(cigar_numbers, cigar_operator):
 
 cpdef str cigar_to_str(str cigar_string):
     '''
-    cigar string to string, only extract cigar op == M, I or S
+    Cigarstring to string, only extract cigar op == M, I or S
 
-    usage: cigar_to_str(cigar_string)
-    return: cigar_seq
+    Args:
+        cigar_string: standard cigar string from BAM file
 
-    ==================================
-    parameter:
+    Returns:
+        str: cigar_seq - same length string as sequence, with every character matched the aligned status of the base
 
-    cigar_string: standard cigar string from BAM file
+    Example::
 
-    return:
+        $ cigar_seq = cigar_to_str('3S5M1I3M')
+        $ print cigar_seq
+        'SSSMMMMMIMMM'
 
-    cigar_seq: same length string as sequence, with every character matched the aligned status of the base
-
-    example:
-    cigar_seq = cigar_to_str('3S5M1I3M')
-    print cigar_seq
-    'SSSMMMMMIMMM'
-
-    ==================================
     '''
     cigar_numbers = numbers.findall(cigar_string)
     cigar_operator = strings.findall(cigar_string)
@@ -227,21 +201,13 @@ cpdef str cigar_to_str(str cigar_string):
 
 cpdef str get_strand(AlignedSegment aln, str direction = 'fr'):
     '''
-    get strand of the paired fragment
+    Get strand of the paired fragment
 
-    usage: get_strand(alignment)
-    return: strand
+    Args:
+        alignment: an pysam aligned segment
 
-    ==================================
-    parameter:
-
-    alignment: an aligned segment in bam (see: pysam)
-
-    return:
-
-    strand: "+" if it is reverse read2 or forward read1
-            "-" if it is reverse read1 or forward read2
-    ==================================
+    Returns:
+        str: Strand -  "+" if it is reverse read2 or forward read1 "-" if it is reverse read1 or forward read2
     '''
     cdef:
         str strand = ''
@@ -271,23 +237,18 @@ cpdef str get_strand(AlignedSegment aln, str direction = 'fr'):
 
 def remove_insert(sequence, qual_seq, cigar):
     '''
-    iterator remove insertion base from aligned sequence
+    Iterator remove insertion base from aligned sequence
 
     usage: remove_insert(sequence, quality_string, cigar_seq)
     return: base, base_quality
 
-    ==================================
-    parameter:
+    Args:
+        sequence: DNA sequence from BAM
+        quality_string: qual string from BAM
+        cigar_seq: cigar seq from cigar_to_str
 
-    sequence: DNA sequence from BAM
-    quality_string: qual string from BAM
-    cigar_seq: cigar seq from cigar_to_str
-
-    yield:
-
-    base:        base that are not annotated as insertion
-    base_qual:   BAQ associated with the base
-    ==================================
+    Returns:
+        Generator(tuple): (base, base_qual) base that are not annotated as insertion, BAQ associated with the base
     '''
     cdef:
         str base, op
@@ -299,20 +260,14 @@ def remove_insert(sequence, qual_seq, cigar):
 
 cpdef check_concordant(AlignedSegment read_1, AlignedSegment read_2):
     '''
-    check if read pairs are concordant
+    Check if read pairs are concordant
 
-    usage: check_concordant(read1, read2)
-    return: boolean
+    Args:
+        read1: first pysam alignment 
+        read2: second pysam alignment 
 
-    ==================================
-    parameter:
-
-    read1: first pysam alignment 
-    read2: second pysam alignment 
-
-    return:
-    True: if they have same read ID, ref ID, are read 1 and read2, and is opposite strand
-    ==================================
+    Returns:
+        boolean: True if they have same read ID, ref ID, are read 1 and read2, and is opposite strand
     '''
     cdef:
         bool same_name = read_1.query_name == read_2.query_name
@@ -324,40 +279,49 @@ cpdef check_concordant(AlignedSegment read_1, AlignedSegment read_2):
 
 cpdef check_primary(AlignedSegment read_1, AlignedSegment read_2):
     '''
-    check if read pairs are both primary
+    Check if read pairs are both primary
 
-    usage: check_primary(read1, read2)
-    return: boolean
+    Args:
+        read1: first pysam alignment 
+        read2: second pysam alignment 
 
-    ==================================
-    parameter:
-
-    read1: first pysam alignment 
-    read2: second pysam alignment 
-
-    return:
-    True: if both of them are primary alignments
-    ==================================
+    Returns:
+        boolean: True if both of them are primary alignments
     '''
     return not read_1.is_secondary and not read_2.is_secondary
  
 def paired_bam(AlignmentFile bam_handle):
+    '''
+    iterator for paired end bam file
+
+    Args:
+        bam_handle: bam file handle opened by pysam.Samfile
+
+    Returns:
+        Generator(tuple): (read1, read2)
+
+    Example::
+
+        with pysam.Samfile('path/to/bam/file') as bam:
+            for read1, read2 in paired_bam(bam):
+                print(read1.query_name)
+                print(read2.query_name)
+    '''
     cdef:
         AlignedSegment read1
         AlignedSegment read2
 
     try:
         while True:
-            #try:
-                read1 = six.next(bam_handle)
-                read2 = six.next(bam_handle)
+            read1 = six.next(bam_handle)
+            read2 = six.next(bam_handle)
 
-                if not (read1.is_read1 and read2.is_read2):
-                    raise SeqUtilsError('First read is not read 1 or Second read is not read 2')
-                if read1.query_name.split('/')[0] != read2.query_name.split('/')[0]:
-                    raise SeqUtilsError("Read names doesn't match! %s and %s" %(read1.query_name, read2.query_name))
-                    
-                yield read1, read2
+            if not (read1.is_read1 and read2.is_read2):
+                raise SeqUtilsError('First read is not read 1 or Second read is not read 2')
+            if read1.query_name.split('/')[0] != read2.query_name.split('/')[0]:
+                raise SeqUtilsError("Read names doesn't match! %s and %s" %(read1.query_name, read2.query_name))
+                
+            yield read1, read2
 
     except StopIteration:
         pass

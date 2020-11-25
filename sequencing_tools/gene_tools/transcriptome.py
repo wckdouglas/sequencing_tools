@@ -101,6 +101,7 @@ class Transcript():
         self.exon_starts = transcript['exon_starts'].split(',')[:-1] #: list of exon start sites
         self.exon_ends = transcript['exon_ends'].split(',')[:-1] #: list of exon end sites
         self.five_UTR_length = self.tx_start - self.cds #: how long is the 5' UTR? 5' as of genomic coordinate
+        self.transcript_length = 0 #: transcript size
         if self.strand == '-': # reverse exon starts and ends for reverse strand
             self.exon_starts = self.exon_starts[::-1]
             self.exon_ends = self.exon_ends[::-1]
@@ -175,6 +176,7 @@ class Transcript():
             exon.add_cumulative_length(cumulative_transcript_length)
 
             self.exons[exon_num + 1] = exon
+        self.transcript_length = cumulative_transcript_length
     
     def blocks(self, tstart_pos: int, tend_pos: int):
         '''
@@ -197,6 +199,8 @@ class Transcript():
             list: list of tuples containing the (start, end) of each block
         '''
         assert (tend_pos > tstart_pos)
+        assert(tend_pos <= self.transcript_length)
+        assert(tstart > 0)
 
         start_collecting = 0
         collected_all_exon = 0
@@ -273,6 +277,29 @@ class Transcript():
         assert( sum(map(lambda x: x[1] - x[0], blocks)) == amplicon_size) 
         return blocks
 
+    def genomic_position(self, tpos):
+        '''
+        translate transcriptome position to genomic position
+
+        Args:
+            tpos: transcript position
+
+        Returns:
+            int: the corresponding genomic position
+
+        Illustration::
+
+                |-------------|-----------*---------|-----------|
+                /    exon1   /\        exon2      / \    exon3  \
+            /            /  \                 /   \           \
+            |------------|xxxx|---------*-----|xxxxx|----------|  
+                            intron              intron
+        '''
+        assert( 0 <= tpos <= self.transcript_length )
+        for exon in self.exons.values():
+            if tpos in exon:
+                offset = tpos - exon.transcript_start
+                return exon.start - offset
 
     
     def __FirstCodingExon__(self):
