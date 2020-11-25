@@ -56,9 +56,7 @@ cdef class fastqRecord:
 
 def readfq(fp): # this is a generator function
     '''
-    A fastq iterator
-        https://github.com/lh3/readfq/blob/master/readfq.py
-
+    A fastq iterator from `Heng li <https://github.com/lh3/readfq/blob/master/readfq.py>`_
 
     Args:
         fp: file handle of a fastq file
