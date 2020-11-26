@@ -98,6 +98,12 @@ class Bed12Record():
 class GTFRecord():
     '''
     parsing a GTF record line
+
+    Usage:: 
+
+        line = 'chr1\tensGene\texon\t14404\t14501\t.\t-\t.\tgene_id "ENSG00000227232"; transcript_id "ENST00000488147"; exon_number "1"; exon_id "ENST00000488147.1"; gene_name "ENSG00000227232";'
+        gtf = GTFRecord(line)
+        print(gtf.info['gene_id']) # 'ENSG00000227232'
     '''
     def __init__(self, gtf_line):
         self.fields = gtf_line.split('\t')
@@ -123,6 +129,8 @@ class GTFRecord():
 class TranscriptPlot():
     '''
     Transcript plotting
+
+
     '''
     def __init__(self, transcript_dict):
         '''
