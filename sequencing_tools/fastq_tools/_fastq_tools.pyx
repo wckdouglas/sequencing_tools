@@ -63,6 +63,12 @@ def readfq(fp): # this is a generator function
 
     Returns:
         Generator(FastqRecord): :class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`
+    
+    Usage::
+
+        with open('test.fq') as fastq:
+            for record in readfq(fastq):
+                print(record.id, record.seq, record.qual, record.description)
     '''
     cdef:
         str l, name, seq, description
@@ -138,9 +144,12 @@ def read_interleaved(infile):
     '''
     A interleaved fastq iterator
 
-    uUsage::
+    Usage::
 
-        parse_interleaved(fp)
+        with open('test.fq') as fastq:
+            for read1, read2 in parse_interleaved(fastq):
+                print(read1.id, read1.seq, read1.qual, read1.description)
+                print(read2.id, read2.seq, read2.qual, read2.description)
 
     Args:
         fp: file handle of a fastq file
@@ -196,9 +205,24 @@ def kmer_bag(str sequence, k_start = 1, k_end = 4):
     (from Zhang and Kamath. Learning the Language of the Genome using RNNs)
 
 
-    Usage::
+    Example::
 
-        kmer_bag(str sequence, k_start = 1, k_end = 4)
+        sequence = 'ACTGG'
+        kmer_bag(sequence, k_start = 1, k_end = 4) 
+        #defaultdict(int,
+        #    {'A': 1,
+        #     'C': 1,
+        #     'T': 1,
+        #     'G': 2,
+        #     'AC': 1,
+        #     'CT': 1,
+        #     'TG': 1,
+        #     'GG': 1,
+        #     'ACT': 1,
+        #     'CTG': 1,
+        #     'TGG': 1,
+        #     'ACTG': 1,
+        #     'CTGG': 1})
     
     Args:
         sequence (str): the sequence for feature extraction
@@ -225,25 +249,36 @@ def kmer_bag(str sequence, k_start = 1, k_end = 4):
     return bag
 
 class onehot_sequence_encoder:
-    '''
+    """
     A onehot encoder for DNA sequence
 
     usage::
 
+        sequence = 'AAACTTTG'
         dna_encoder = onehot_sequence_encoder()
         onehot_encoded_matrix = dna_encoder.fit_transform(sequence)
+        onehot_encoded_matrix                                                                                                                                                           
+        #array([[1., 0., 0., 0.],
+        #    [1., 0., 0., 0.],
+        #    [1., 0., 0., 0.],
+        #    [0., 1., 0., 0.],
+        #    [0., 0., 0., 1.],
+        #    [0., 0., 0., 1.],
+        #    [0., 0., 0., 1.],
+        #    [0., 0., 1., 0.]])
         dna_encoder.base_encoder  # check which base each column represents
-    '''
+        # {'A': 0, 'C': 1, 'G': 2, 'T': 3}
+    """
 
     def __init__(self, bases = 'ACTGN'):
         self.fit(sequence = bases)
     
 
     def fit(self, sequence='ACTGN'):
-        '''
+        """
         Args:
             sequence (str): the bases to be extract
-        '''
+        """
         self.bases = list(set(sequence))
         self.bases.sort()
         self.base_encoder = {b:i for i, b in enumerate(self.bases)}
@@ -298,6 +333,20 @@ class onehot_sequence_encoder:
 
         Returns:
             str: Sequence, the decoded sequence
+        
+
+        Usage::
+
+            mat = np.array([[1., 0., 0., 0.], 
+                            [1., 0., 0., 0.], 
+                            [1., 0., 0., 0.], 
+                            [0., 1., 0., 0.], 
+                            [0., 0., 0., 1.], 
+                            [0., 0., 0., 1.], 
+                            [0., 0., 0., 1.], 
+                            [0., 0., 1., 0.]]) 
+            dna_encoder.decode(mat)   #'AAACTTTG'
+            
         '''
 
         decoded = np.matmul(encoded_mat, np.arange(len(self.bases)))
