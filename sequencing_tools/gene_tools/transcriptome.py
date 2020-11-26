@@ -200,7 +200,7 @@ class Transcript():
         '''
         assert (tend_pos > tstart_pos)
         assert(tend_pos <= self.transcript_length)
-        assert(tstart > 0)
+        assert(tstart_pos > 0)
 
         start_collecting = 0
         collected_all_exon = 0
