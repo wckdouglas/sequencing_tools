@@ -200,7 +200,7 @@ class Transcript():
         '''
         assert (tend_pos > tstart_pos)
         assert(tend_pos <= self.transcript_length)
-        assert(tstart_pos > 0)
+        assert(tstart_pos >= 0)
 
         start_collecting = 0
         collected_all_exon = 0
@@ -315,6 +315,18 @@ class Transcriptome():
         refflat:  refflat file or `url <http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz>`_
         sqldb: Can be found under `Annotationhub <https://annotationhub.bioconductor.org/package2/AHEnsDbs>`_
         coding_only: only index coding transcript?
+    
+
+    Usage::
+
+            url = 'http://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/refFlat.txt.gz'
+            txome = Transcriptome(refflat=url, coding_only=False)
+            gene = txome.get_gene('WASH7P')
+            tx = gene['NR_024540']
+            print(tx.exons[1].start, tx.exons[2].end) # 29320 24891
+            print(tx.genomic_position(300)) #18171
+            print(tx.blocks(0, 300))
+            #[(29320, 29370), (24737, 24891), (18270, 18366)]
     """
 
     def __init__(self, refflat = None, sqldb=None, coding_only=True):
@@ -405,6 +417,7 @@ class Transcriptome():
 
         Returns:
             dict: dictionary with key as transcript id as key and values are :class:`sequencing_tools.gene_tools.transcriptome.Transcript`
+
         '''
         if gene_name not in self.transcript_dict.keys():
             raise SeqUtilsError('%s not in database' %gene_name)
