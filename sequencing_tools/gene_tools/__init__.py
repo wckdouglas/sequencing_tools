@@ -61,7 +61,7 @@ class Bed12Record():
                             start = start + 1,
                             end = end,
                             tid = self.transcript.id,
-                            intron_count = intron_count,
+                            intron_count = intron_count + 1,
                             strand = self.transcript.strand)
             yield intron_line
 
