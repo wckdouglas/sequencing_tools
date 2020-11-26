@@ -81,6 +81,16 @@ class Bed12Record():
             yield intron_line
 
     def genomic_position(self, tpos):
+        """
+        Translating transcript position into genomic position
+
+        Args: 
+            tpos (int): position on transcript
+
+        Returns:
+            int: genomic position
+
+        """
         return self.transcript.genomic_position(tpos)
 
 
