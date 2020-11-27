@@ -97,7 +97,7 @@ def readfa(file_handle):
 
 class MultiAlignments():
     """
-    Plotting multiple-alignment fasta
+    Plotting multiple-alignment fasta, sequences must be of the same length
 
     Args:
         fa_file (str): fasta file
@@ -187,19 +187,20 @@ class MultiAlignments():
         # array([1.])])
     """
     def __init__(self, fa_file, RNA=False):
-        self.records = []
+        records = [] 
         with open(fa_file) as fa:
             for seqid, seq in readfa(fa):
                 if RNA:
                     seq = seq.replace('T','U').replace('t','u')
-                self.records.append([seqid] + list(seq))
+                records.append([seqid] + list(seq))
 
         
-        self.mul_df = pd.DataFrame(self.records)\
-            .rename(columns = {0:'seq_id'})
-        self.pairwise = None
+        self.mul_df = pd.DataFrame(records)\
+            .rename(columns = {0:'seq_id'}) #: sequence matrix, each column is a position, and nucleotide as value
+        self.pairwise = None # pairwise matrix computed by :py:meth:`sequencing_tools.fasta_tools.MultiAlignment.PairMatrix`
+
         self.colors = {'A':'red','C':'blue','U':'green','G': 'orange', '-': 'black',
-                      'a':'red','c':'blue','u':'green','g':'orange','t':'green'}
+                      'a':'red','c':'blue','u':'green','g':'orange','t':'green'} # color dictionary guiding the multiplex alignment plotting
 
         
     def plot(self, ax, 
