@@ -96,97 +96,97 @@ def readfa(file_handle):
        
 
 class MultiAlignments():
-    """
-    Plotting multiple-alignment fasta, sequences must be of the same length
-
-    Args:
-        fa_file (str): fasta file
-    
-    Example::
-
-        # $ cat test.fa
-        # >1
-        # GGGGAATTAGCTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
-        # >2
-        # GGGGAATTAGCTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
-        # >3
-        # GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
-        # >4
-        # GGGCAACTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
-        # >5
-        # GCGCAACTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGAGG
-        # >6
-        # GGGGAATTAGTTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
-
-        ma = multi_alignment('test.fa')
-
-        ax = plt.subplot()
-        ma.plot(ax = ax)
-
-        ma.concensus()
-        #('GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG',
-        # [array([1.]),
-        # array([0.16666667, 0.83333333]),
-        # array([1.]),
-        # array([0.33333333, 0.66666667]),
-        # array([1.]),
-        # array([1.]),
-        # array([0.33333333, 0.66666667]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([0.83333333, 0.16666667]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([0.5, 0.5]),
-        # array([1.]),
-        # array([0.5, 0.5]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([1.]),
-        # array([0.16666667, 0.83333333]),
-        # array([1.])])
-    """
     def __init__(self, fa_file, RNA=False):
+        """
+        Plotting multiple-alignment fasta, sequences must be of the same length
+
+        Args:
+            fa_file (str): fasta file
+        
+        Example::
+
+            # $ cat test.fa
+            # >1
+            # GGGGAATTAGCTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >2
+            # GGGGAATTAGCTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >3
+            # GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >4
+            # GGGCAACTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >5
+            # GCGCAACTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGAGG
+            # >6
+            # GGGGAATTAGTTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+
+            ma = multi_alignment('test.fa')
+
+            ax = plt.subplot()
+            ma.plot(ax = ax)
+
+            ma.concensus()
+            #('GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG',
+            # [array([1.]),
+            # array([0.16666667, 0.83333333]),
+            # array([1.]),
+            # array([0.33333333, 0.66666667]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.33333333, 0.66666667]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.83333333, 0.16666667]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.5, 0.5]),
+            # array([1.]),
+            # array([0.5, 0.5]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.16666667, 0.83333333]),
+            # array([1.])])
+        """
         records = [] 
         with open(fa_file) as fa:
             for seqid, seq in readfa(fa):
