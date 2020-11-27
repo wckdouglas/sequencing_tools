@@ -231,7 +231,7 @@ class Bootstrap:
     def __init__(self, seed=123):
         self.rng = np.random.RandomState(seed) 
 
-    def bootstrap(self, xs, group_size=100, n_boots = 100):
+    def generate(self, xs, group_size=100, n_boots = 100):
         '''
         boostrap 1d array
 
@@ -239,7 +239,7 @@ class Bootstrap:
 
             xs = np.arange(100)
             bs = Bootstrap(seed=123)
-            for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
+            for idx in bs.generate(xs, group_size=50, n_boots=10):
                 print(xs[idx].mean())
 
         Args:

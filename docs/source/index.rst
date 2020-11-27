@@ -81,6 +81,9 @@ This module contains some math functions
 .. autoclass:: sequencing_tools.stats_tools._stats_tools.Bootstrap
     :members:
 
+.. autoclass:: sequencing_tools.stats_tools.regression.GradientDescent
+    :members:
+
 
 utils
 =====
