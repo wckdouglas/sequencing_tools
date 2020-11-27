@@ -27,11 +27,11 @@ class Exon():
     
     '''
     def __init__(self, start, end, exon_num, strand):
-        self.start = int(start) 
-        self.end = int(end)
-        self.exon_num = int(exon_num)
-        self.strand = strand
-        self.length = self.end - self.start
+        self.start = int(start)  #: Exon start position on the chromosome
+        self.end = int(end) #: Exon end position on the chromosome
+        self.exon_num = int(exon_num) #: Exon rank
+        self.strand = strand #: Exon strand
+        self.length = self.end - self.start #: Exon size
         self.contain_cds = 0 #: 1 if this exon contains coding start site else 0
         self.contain_cde = 0 #: 1 if this exon contains coding end site else 0
         self.after_cds = 0 #: 1 if downstream of coding start site else 0

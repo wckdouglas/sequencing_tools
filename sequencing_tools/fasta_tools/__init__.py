@@ -197,10 +197,10 @@ class MultiAlignments():
         
         self.mul_df = pd.DataFrame(records)\
             .rename(columns = {0:'seq_id'}) #: sequence matrix, each column is a position, and nucleotide as value
-        self.pairwise = None # pairwise matrix computed by :py:meth:`sequencing_tools.fasta_tools.MultiAlignment.PairMatrix`
+        self.pairwise = None #: pairwise matrix computed by :py:meth:`sequencing_tools.fasta_tools.MultiAlignment.PairMatrix`
 
         self.colors = {'A':'red','C':'blue','U':'green','G': 'orange', '-': 'black',
-                      'a':'red','c':'blue','u':'green','g':'orange','t':'green'} # color dictionary guiding the multiplex alignment plotting
+                      'a':'red','c':'blue','u':'green','g':'orange','t':'green'} #: color dictionary guiding the multiplex alignment plotting
 
         
     def plot(self, ax, 
