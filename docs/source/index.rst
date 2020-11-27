@@ -25,6 +25,10 @@ fastq_tools
 ===========
 This module contains functions to interact with fastq files
 
+
+.. autoclass:: sequencing_tools.fastq_tools._fastq_tools.fastqRecord
+    :members:
+
 .. automodule:: sequencing_tools.fastq_tools._fastq_tools
     :members:
 
