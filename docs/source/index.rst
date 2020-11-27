@@ -31,6 +31,21 @@ This module contains functions to interact with fastq files
 .. autoclass:: sequencing_tools.fastq_tools.pe_align.ConsensusBuilder
     :members:
 
+
+fasta_tools
+===========
+This module contains functions to interact with fasta files
+
+.. automodule:: sequencing_tools.fasta_tools
+    :members:
+
+.. autoclass:: sequencing_tools.fasta_tools.IUPAC
+    :members:
+    
+.. autoclass:: sequencing_tools.fasta_tools.MultiAlignments
+    :members:
+
+
 bam_tools
 =========
 This module contains functions to interact with bam files and bed files

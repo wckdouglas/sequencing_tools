@@ -64,6 +64,21 @@ class IUPAC:
 
 
 def readfa(file_handle):
+    """
+    A fasta reader iterator 
+
+    Args:
+        fp: file handle of a fasta file
+
+    Returns:
+        (str, str): sequence id, sequence
+    
+    Usage::
+
+        with open('test.fa') as fasta:
+            for seq_id, seq in readfq(fasta):
+                print(seq_id, seq)
+    """
     seqid = ''
     seq = ''
     seq_count = 0
