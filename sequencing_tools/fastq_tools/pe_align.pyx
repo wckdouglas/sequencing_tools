@@ -53,6 +53,11 @@ class ConsensusBuilder:
             )
 
         out = consensus_builder.run(read1, read2)
+        print(out)                                                                                                                                                                     
+        # @NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG
+        # ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAA
+        # +
+        # IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
     """
     def __init__(self, error_toleration = 0.1, min_len = 15, 
                 report_all=False, conserved = False):

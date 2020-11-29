@@ -59,7 +59,10 @@ def binom_test(success_test, total_test, expected_p = 0.5):
 
     Usage::
 
-        binom_test(failed_test, total_test, expected_p = 0.5)
+        success_test = [10,10,10]
+        total_test = [100,100,100]
+        binom_test(success_test, total_test, expected_p = 0.5)
+        #array([1.53164509e-17, 1.53164509e-17, 1.53164509e-17])
 
     Args:
         success_test: number of success
@@ -81,14 +84,14 @@ cpdef double cy_mean(xs):
 
     Example::
 
-        In [1]: from sequencing_tools.stats_tools import cy_mean
-        In [2]: import numpy as np
-        In [3]: a = range(10)
-        In [4]: b = np.array(a)
-        In [5]: %timeit b.mean()
-        6.37 µs ± 323 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
-        In [6]: %timeit cy_mean(a)
-        385 ns ± 7.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
+        from sequencing_tools.stats_tools import cy_mean
+        import numpy as np
+        a = range(10)
+        b = np.array(a)
+        %timeit b.mean()
+        # 6.37 µs ± 323 ns per loop (mean ± std. dev. of 7 runs, 100000 loops each)
+        %timeit cy_mean(a)
+        # 385 ns ± 7.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
 
     Usage:: 
         
@@ -221,7 +224,14 @@ def normalize_count(count_mat, return_sf = False):
 
 
 class Bootstrap:
+    """
+    Args:
+        seed: seed for random number generater
+    """
     def __init__(self, seed=123):
+        self.rng = np.random.RandomState(seed) 
+
+    def generate(self, xs, group_size=100, n_boots = 100):
         '''
         boostrap 1d array
 
@@ -229,16 +239,9 @@ class Bootstrap:
 
             xs = np.arange(100)
             bs = Bootstrap(seed=123)
-            for idx in bs.bootstrap(xs, group_size=50, n_boots=10):
+            for idx in bs.generate(xs, group_size=50, n_boots=10):
                 print(xs[idx].mean())
- 
-        Args:
-            seed: seed for random number generater
-        '''
-        self.rng = np.random.RandomState(seed) 
 
-    def bootstrap(self, xs, group_size=100, n_boots = 100):
-        '''
         Args:
             xs: 1d np.array
             group_size: number of values in each bootstrap iteration

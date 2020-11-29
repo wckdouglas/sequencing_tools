@@ -24,9 +24,24 @@ class Bed12Record():
         
         Example::
 
-            with open('gene.bed12','r') as bed12:
-                for line in bed12:
-                    transcript = Bed12Record(line)
+                line = 'chr1\t14403\t29570\tENST00000488147.1\t0\t-\t14403\t14403\t0\t11\t98,34,152,159,198,136,137,147,99,154,37,\t0,601,1392,2203,2454,2829,3202,3511,3864,10334,15130,'
+                transcript = Bed12Record(line)
+                transcript.transcript.exons                                                                                                                                                    
+                # {1: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74eb978>,
+                # 2: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74eb9b0>,
+                # 3: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74eb9e8>,
+                # 4: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74eba20>,
+                # 5 : <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74eba58>,
+                # 6: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74eba90>,
+                # 7: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74ebac8>,
+                # 8: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74ebb00>,
+                # 9: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74ebb38>,
+                # 10: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74ebb70>,
+                # 11: <sequencing_tools.gene_tools.transcriptome.Exon at 0x7ff1b74ebba8>}
+                print(next(transcript.get_introns()))
+                # 'chr1\t24892\t29533\tENST00000488147.1\t0\t-'
+                print(transcript.genomic_position(300)) # 17904
+
         '''
         fields = line.strip().split('\t')
         exon_starts = fields[11].strip(',').split(',')
@@ -66,6 +81,16 @@ class Bed12Record():
             yield intron_line
 
     def genomic_position(self, tpos):
+        """
+        Translating transcript position into genomic position
+
+        Args: 
+            tpos (int): position on transcript
+
+        Returns:
+            int: genomic position
+
+        """
         return self.transcript.genomic_position(tpos)
 
 
@@ -73,6 +98,12 @@ class Bed12Record():
 class GTFRecord():
     '''
     parsing a GTF record line
+
+    Usage:: 
+
+        line = 'chr1\tensGene\texon\t14404\t14501\t.\t-\t.\tgene_id "ENSG00000227232"; transcript_id "ENST00000488147"; exon_number "1"; exon_id "ENST00000488147.1"; gene_name "ENSG00000227232";'
+        gtf = GTFRecord(line)
+        print(gtf.info['gene_id']) # 'ENSG00000227232'
     '''
     def __init__(self, gtf_line):
         self.fields = gtf_line.split('\t')
@@ -98,6 +129,8 @@ class GTFRecord():
 class TranscriptPlot():
     '''
     Transcript plotting
+
+
     '''
     def __init__(self, transcript_dict):
         '''

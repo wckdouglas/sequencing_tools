@@ -27,11 +27,11 @@ class Exon():
     
     '''
     def __init__(self, start, end, exon_num, strand):
-        self.start = int(start) 
-        self.end = int(end)
-        self.exon_num = int(exon_num)
-        self.strand = strand
-        self.length = self.end - self.start
+        self.start = int(start)  #: Exon start position on the chromosome
+        self.end = int(end) #: Exon end position on the chromosome
+        self.exon_num = int(exon_num) #: Exon rank
+        self.strand = strand #: Exon strand
+        self.length = self.end - self.start #: Exon size
         self.contain_cds = 0 #: 1 if this exon contains coding start site else 0
         self.contain_cde = 0 #: 1 if this exon contains coding end site else 0
         self.after_cds = 0 #: 1 if downstream of coding start site else 0
@@ -70,26 +70,26 @@ class Exon():
     
 
 class Transcript():
-    '''
-    Transcript object storing information of a transcript
-        
-        
-    Args:
-        transcript (dict): with the following keys:
-            1. chrom
-            2. tid
-            3. strand
-            4. tx_start
-            5. tx_end
-            6. cds
-            7. cde
-            8. exon_count
-            9. exon_starts: comma delimited
-            10. exon_ends: comma delimited
-
-    
-    '''
     def __init__(self, transcript):
+        """
+        Transcript object storing information of a transcript
+            
+            
+        Args:
+            transcript (dict): with the following keys:
+                        1. chrom
+                        2. tid
+                        3. strand
+                        4. tx_start
+                        5. tx_end
+                        6. cds
+                        7. cde
+                        8. exon_count
+                        9. exon_starts: comma delimited
+                        10. exon_ends: comma delimited
+
+        
+        """
         self.chrom = transcript['chrom'] #: chromosome name
         self.id = transcript['tid'] #: transcript ID
         self.strand = '+' if transcript['strand'] in ['+', 1] else '-' #: strand ('+' or '-')
@@ -200,7 +200,7 @@ class Transcript():
         '''
         assert (tend_pos > tstart_pos)
         assert(tend_pos <= self.transcript_length)
-        assert(tstart_pos > 0)
+        assert(tstart_pos >= 0)
 
         start_collecting = 0
         collected_all_exon = 0
@@ -313,8 +313,26 @@ class Transcriptome():
 
     Args: 
         refflat:  refflat file or `url <http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refFlat.txt.gz>`_
-        sqldb: Can be found under `Annotationhub <https://annotationhub.bioconductor.org/package2/AHEnsDbs>`_
+        sqldb: Can be found under `Annotationhub <https://annotationhub.bioconductor.org/package2/AHEnsDbs>`_ (if no refflat is supplied)
         coding_only: only index coding transcript?
+    
+
+    Usage::
+
+        url = 'http://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/refFlat.txt.gz'
+        txome = Transcriptome(refflat=url, coding_only=False)
+        gene = txome.get_gene('WASH7P')
+        tx = gene['NR_024540']
+        print(tx.exons[1].start, tx.exons[2].end) # 29320 24891
+        print(tx.genomic_position(300)) #18171
+        print(tx.blocks(0, 300))
+        #[(29320, 29370), (24737, 24891), (18270, 18366)]
+
+    Or::
+
+        # wget http://s3.amazonaws.com/annotationhub/AHEnsDbs/v87/EnsDb.Hsapiens.v87.sqlite
+        txome = Transcriptome(sqldb="EnsDb.Hsapiens.v87.sqlite", coding_only=False)
+
     """
 
     def __init__(self, refflat = None, sqldb=None, coding_only=True):
@@ -405,6 +423,7 @@ class Transcriptome():
 
         Returns:
             dict: dictionary with key as transcript id as key and values are :class:`sequencing_tools.gene_tools.transcriptome.Transcript`
+
         '''
         if gene_name not in self.transcript_dict.keys():
             raise SeqUtilsError('%s not in database' %gene_name)

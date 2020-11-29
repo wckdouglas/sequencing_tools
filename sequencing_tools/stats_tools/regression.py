@@ -11,37 +11,39 @@ class GradientDescent():
                  limit = 1e-4, verbose = False,
                  seed = 123, n_iter_no_change = 5,
                 method = 'mean'):
-        '''
+        """
         A stochastic gradient descent model using Adam optimizer on mini batches
         for solving linear regression with no intercept:
 
         y = X * B . solving for b
 
-        input:
-            lr: learning rate for how gradient should change the weight in each iteration
-            max_iter: how many iteration to run if not converging
-            limit: how small of a difference between iteration we would tolerate as converge?
-            method: mean or median for optimizing RMSE (root mean square error or root median square error)
-            verbose: Output logs for optimizer
-            seed: Set seed for the optimizer
-            n_iter_no_change: How many iteration with small change to call a stop? (avoiding random stop)
+        Args:
+            lr (float): learning rate for how gradient should change the weight in each iteration
+            max_iter (int): how many iteration to run if not converging
+            limit (float): how small of a difference between iteration we would tolerate as converge?
+            method (str): mean or median for optimizing RMSE (root mean square error or root median square error) ("mean" or "median")
+            verbose (boolean): Output logs for optimizer (True or False)
+            seed (int): Set seed for the optimizer
+            n_iter_no_change (int): How many iteration with small change to call a stop? (avoiding random stop)
 
-        test:
-        import logging
-        import numpy as np
-        logging.basicConfig(level=logging.INFO)    
-        np.random.seed(123)
+        Example::
 
-        X = 5 * np.random.rand(100,2) 
-        y = np.matmul(X, np.array([3,4]))+np.random.randn(100) 
-        gd = GradientDescent(verbose = True, 
-                            max_iter=100000, 
-                            lr = 1e-2, 
-                            method='mean', 
-                            limit=1e-5)
-        gd.fit(X,y)
+            import logging
+            import numpy as np
+            logging.basicConfig(level=logging.INFO)    
+            np.random.seed(123)
 
-        '''
+            X = 5 * np.random.rand(100,2) 
+            y = np.matmul(X, np.array([3,4]))+np.random.randn(100) 
+            gd = GradientDescent(verbose = True, 
+                                max_iter=100000, 
+                                lr = 1e-2, 
+                                method='mean', 
+                                limit=1e-5)
+            gd.fit(X,y)
+            
+        """
+
 
         # static parameter 
         assert(method in ['mean', 'median'])
@@ -146,7 +148,7 @@ class GradientDescent():
         self.diffs = np.zeros(self.n_coefficients) 
         self.losses = np.zeros(self.max_iter)
         self.gradients = np.zeros((self.max_iter, self.n_coefficients))
-        self.bootstrap_idx = self.bootstrap.bootstrap(X, 
+        self.bootstrap_idx = self.bootstrap.generate(X, 
                                                 group_size=len(X)//10, 
                                                 n_boots=int(self.max_iter * 2.5))
 

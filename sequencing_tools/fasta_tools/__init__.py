@@ -6,6 +6,17 @@ from ..stats_tools import hamming_distance
 
 
 class IUPAC:
+    """
+    Working with IUPAC bases
+
+    Usage::
+
+        iupac = IUPAC()
+        iupac.check_degenerate('ACTGN') # {'N'}
+        iupac.check_degenerate('ACTGY') # {'Y'}
+        list(IUPAC().expand('ACTGN')) #['ACTGA', 'ACTGC', 'ACTGT', 'ACTGG']
+        list(IUPAC().expand('ACTGY')) #['ACTGC', 'ACTGT']
+    """
     def __init__(self):
         self.IUPAC = {'R': ['A','G'],
                 'Y': ['C','T'],
@@ -20,13 +31,26 @@ class IUPAC:
                 'N': ['A','C','T','G']}
 
     def check_degenerate(self, seq):
+        """
+        Args:
+            seq (str): sequence with dengerate base
+
+        Returns:
+            set: all degenerated bases from this sequence
+        """
         bases = set(seq)
         return set(self.IUPAC.keys()).intersection(bases)
 
     def expand(self, seq):
-        '''
+        """
         output all possible sequence by looping over the dengerative base
-        '''
+
+        Args:
+            seq (str): sequence with dengerate base
+        
+        Returns:
+            Generator(str): all possible sequences from the DNA/RNA pool
+        """
         degenerative_bases = self.check_degenerate(seq)
         expandable_list = [self.IUPAC[b] for b in degenerative_bases ]
         for base_combination in product(*expandable_list):
@@ -40,6 +64,21 @@ class IUPAC:
 
 
 def readfa(file_handle):
+    """
+    A fasta reader iterator 
+
+    Args:
+        fp: file handle of a fasta file
+
+    Returns:
+        (str, str): sequence id, sequence
+    
+    Usage::
+
+        with open('test.fa') as fasta:
+            for seq_id, seq in readfq(fasta):
+                print(seq_id, seq)
+    """
     seqid = ''
     seq = ''
     seq_count = 0
@@ -57,32 +96,111 @@ def readfa(file_handle):
        
 
 class MultiAlignments():
-    '''
-    plotting multiple-alignment fasta
-    '''
     def __init__(self, fa_file, RNA=False):
-        '''
-        input:
-            fa_file: fasta file
+        """
+        Plotting multiple-alignment fasta, sequences must be of the same length
+
+        Args:
+            fa_file (str): fasta file
         
-        usage:
-            ma = multi_alignment("fasta file")
+        Example::
+
+            # $ cat test.fa
+            # >1
+            # GGGGAATTAGCTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >2
+            # GGGGAATTAGCTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >3
+            # GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >4
+            # GGGCAACTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+            # >5
+            # GCGCAACTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGAGG
+            # >6
+            # GGGGAATTAGTTCAAGCGGTAGAGCGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG
+
+            ma = multi_alignment('test.fa')
+
+            ax = plt.subplot()
             ma.plot(ax = ax)
-        '''
-        
-        self.records = []
+
+            ma.concensus()
+            #('GGGGAATTAGCTCAAGCGGTAAAACGCTTGCTTAGCATGCAAGAGGTAGTGGGATCGATG',
+            # [array([1.]),
+            # array([0.16666667, 0.83333333]),
+            # array([1.]),
+            # array([0.33333333, 0.66666667]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.33333333, 0.66666667]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.83333333, 0.16666667]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.5, 0.5]),
+            # array([1.]),
+            # array([0.5, 0.5]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([1.]),
+            # array([0.16666667, 0.83333333]),
+            # array([1.])])
+        """
+        records = [] 
         with open(fa_file) as fa:
             for seqid, seq in readfa(fa):
                 if RNA:
                     seq = seq.replace('T','U').replace('t','u')
-                self.records.append([seqid] + list(seq))
+                records.append([seqid] + list(seq))
 
         
-        self.mul_df = pd.DataFrame(self.records)\
-            .rename(columns = {0:'seq_id'})
-        self.pairwise = None
+        self.mul_df = pd.DataFrame(records)\
+            .rename(columns = {0:'seq_id'}) #: sequence matrix, each column is a position, and nucleotide as value
+        self.pairwise = None #: pairwise matrix computed by :py:meth:`sequencing_tools.fasta_tools.MultiAlignment.PairMatrix`
+
         self.colors = {'A':'red','C':'blue','U':'green','G': 'orange', '-': 'black',
-                      'a':'red','c':'blue','u':'green','g':'orange','t':'green'}
+                      'a':'red','c':'blue','u':'green','g':'orange','t':'green'} #: color dictionary guiding the multiplex alignment plotting
 
         
     def plot(self, ax, 
@@ -92,17 +210,14 @@ class MultiAlignments():
              labelsize=20,
              sample_regex = '[A-Za-z0-9_-]+'):
         '''
-        input:
-            ax: matplotlib axes
-            min_pos: start position to plot on the multialignments
-            max_pos: end position to plot on the mutlialignments
-            fontsize: fontsize for the nucleotides
-            labelsize: fontsize for sequence id
-            sample_regex: regex for including sequecne id
+        Args:
+            ax (plt.axes): matplotlib axes
+            min_pos (float): start position to plot on the multialignments
+            max_pos (float): end position to plot on the mutlialignments
+            fontsize (int): fontsize for the nucleotides
+            labelsize (int): fontsize for sequence id
+            sample_regex (str): regex for including sequecne id
         
-        usage:
-            ma = multi_alignment("fasta file")
-            ma.plot()
         '''
 
         if not max_pos:
@@ -135,7 +250,10 @@ class MultiAlignments():
 
     def concensus(self):
         '''
-        compute a concensus sequence
+        compute a consensus sequence from highest frequency base at each position
+
+        Returns:
+            tuple(str, list of numpy array: (consensus sequence, fraction of base making up the composition of the position)
         '''
         sequence_matrix = np.array(self.records)[:, 1:]
         consensus_seq = ''
@@ -158,6 +276,9 @@ class MultiAlignments():
 
 
     def PairMatrix(self):
+        """
+        Calculate the hamming distances between each sequence pair
+        """
         pairwise = []
         for id1, seq1 in self.mul_df\
                        .set_index('seq_id')\
