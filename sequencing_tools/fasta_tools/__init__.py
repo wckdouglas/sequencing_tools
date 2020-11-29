@@ -187,15 +187,15 @@ class MultiAlignments():
             # array([0.16666667, 0.83333333]),
             # array([1.])])
         """
-        records = [] 
+        self.records = [] 
         with open(fa_file) as fa:
             for seqid, seq in readfa(fa):
                 if RNA:
                     seq = seq.replace('T','U').replace('t','u')
-                records.append([seqid] + list(seq))
+                self.records.append([seqid] + list(seq))
 
         
-        self.mul_df = pd.DataFrame(records)\
+        self.mul_df = pd.DataFrame(self.records)\
             .rename(columns = {0:'seq_id'}) #: sequence matrix, each column is a position, and nucleotide as value
         self.pairwise = None #: pairwise matrix computed by :py:meth:`sequencing_tools.fasta_tools.MultiAlignment.PairMatrix`
 

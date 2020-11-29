@@ -57,7 +57,7 @@ def test_bootstrap():
     group_size = 10 
     a = np.random.rand(100)
     bs = Bootstrap()
-    for i, b in enumerate(bs.bootstrap(a, group_size=group_size, n_boots=n)):
+    for i, b in enumerate(bs.generate(a, group_size=group_size, n_boots=n)):
         assert( len(b) == group_size)
     
     assert( i == n-1 )
