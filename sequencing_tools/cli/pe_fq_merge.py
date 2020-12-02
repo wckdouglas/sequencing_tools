@@ -22,7 +22,7 @@ def getopt(subparsers):
     parser.add_argument('-a','--all',action='store_true',
         help='Output all bases (default: only overlapping regions)')
     parser.add_argument('--highlight',action='store_true',
-        help='Highlight the non overlapping base (only useful when --all is used)')
+        help='Highlight the non overlapping base (adapter sequences; only useful when --all is used)')
     parser.add_argument('-c','--conserved', action='store_true', 
                         help = 'Use of a voting algorithm, '\
                         'otherwise use posterior error from qualit')
