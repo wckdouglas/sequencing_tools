@@ -21,6 +21,8 @@ def getopt(subparsers):
             help='Maximum error rate of alignment (default: 0.1)')
     parser.add_argument('-a','--all',action='store_true',
         help='Output all bases (default: only overlapping regions)')
+    parser.add_argument('--highlight',action='store_true',
+        help='Highlight the non overlapping base (only useful when --all is used)')
     parser.add_argument('-c','--conserved', action='store_true', 
                         help = 'Use of a voting algorithm, '\
                         'otherwise use posterior error from qualit')
@@ -29,4 +31,4 @@ def run(args):
     outfile=args.outfile
     outfile_handle = sys.stdout if outfile == '-' or outfile == '/dev/stdin' else xopen(outfile,mode = 'w')
     merge_interleaved(args.interleaved, outfile_handle,
-            args.min_len, args.error, args.all, args.conserved)
+            args.min_len, args.error, args.all, args.conserved, args.highlight)

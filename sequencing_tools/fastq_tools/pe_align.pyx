@@ -60,7 +60,7 @@ class ConsensusBuilder:
         # IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
     """
     def __init__(self, error_toleration = 0.1, min_len = 15, 
-                report_all=False, conserved = False):
+                report_all=False, conserved = False, highlight=False):
 
         self.error_toleration = error_toleration
         self.min_len = min_len
@@ -68,6 +68,7 @@ class ConsensusBuilder:
     
         mode = 'vote' if conserved else 'prob'
         self.correction_module = ErrorCorrection(mode = mode)
+        self.highlight = self.report_all and highlight
                 
     
     def run(self, fastqRecord R1, fastqRecord R2):
@@ -141,14 +142,21 @@ class ConsensusBuilder:
                         right_add_seq = R1.seq[r1_end:] 
                         right_add_qual = R1.qual[r1_end:]
 
+                if self.highlight:
+                    left_add_seq = self.__highlight__(left_add_seq)
+                    right_add_seq = self.__highlight__(right_add_seq)
                 seq = left_add_seq + seq + right_add_seq
                 qual = left_add_qual + qual + right_add_qual
 
                 out_line = '@%s\n%s\n+\n%s' %(r1_id,seq, qual)
         return out_line
+    
+    def __highlight__(self, string):
+        return '\x1b[6;30;42m' + string + '\x1b[0m'
 
 
-def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_all, conserved=False):
+
+def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_all, conserved=False, highlight=False):
     cdef:
         fastqRecord R1, R2
         int record_count = 0
@@ -157,7 +165,7 @@ def merge_interleaved(infile, outfile_handle, min_len, error_toleration, report_
 
     infile_handle = sys.stdin if infile == '-' or infile == '/dev/stdin' else xopen(infile,mode = 'r')
 
-    concensus_builder = ConsensusBuilder(error_toleration, min_len, report_all, conserved)
+    concensus_builder = ConsensusBuilder(error_toleration, min_len, report_all, conserved, highlight)
 
     for R1, R2 in read_interleaved(infile_handle):
         out_line = concensus_builder.run(R1, R2)
