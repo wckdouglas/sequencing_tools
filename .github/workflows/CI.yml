@@ -29,10 +29,15 @@ jobs:
           show-channel-urls: true
           use-only-tar-bz2: true
           auto-update-conda: true
-      - runs: |
-          conda config --set always_yes yes --set changeps1 no 
-          conda update -q conda 
-          conda info -a
+#      - runs: |
+#          conda config --set always_yes yes --set changeps1 no 
+#          conda update -q conda 
+ #         conda info -a
+      - run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
 
 
     - name: Install dependencies
