@@ -26,9 +26,10 @@ include_path.append('/usr/include')
 include_path.extend(pysam.get_include())
 #include_path.extend(os.environ['INCLUDE_PATH'].split(':'))
 #include_path = filter(lambda x: x!= '', include_path)
-ext_modules=cythonize([
-        Extension('*', ['sequencing_tools/*tools/*.pyx'],
-                  include_dirs = list(include_path))])
+ext_modules=cythonize(
+        [Extension('*', ['sequencing_tools/*tools/*.pyx'],
+                  include_dirs = list(include_path))],
+         language_level = "3")
 for e in ext_modules:
     e.cython_directives = {"embedsignature": True}
 
