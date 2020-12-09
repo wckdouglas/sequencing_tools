@@ -77,10 +77,10 @@ cpdef int split_bam_pair(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFi
                         multibam.write(read2)
                         multi_written += 1
             if pair_count % 5000000 == 0:
-                print('Parsed %i alignment pairs' %pair_count, file = sys.stderr)
+                logger.info('Parsed %i alignment pairs' %pair_count)
         except StopIteration:
             break
-    print('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written), file = sys.stderr)
+    logger.info('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written))
     return 0
 
 cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, AlignmentFile multibam, aligner):
@@ -101,8 +101,8 @@ cpdef int split_bam_single(AlignmentFile bam, AlignmentFile uniquebam, Alignment
                 multibam.write(read)
                 multi_written += 1
         if count % 5000000 == 0:
-            print('Parsed %i alignment pairs' %count, file = sys.stderr)
-    print('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written), file = sys.stderr)
+            logger.info('Parsed %i alignment pairs' %count)
+    logger.info('Written %i to uniq bam, %i to multi bam' %(uniq_written, multi_written))
     return 0
 
 cpdef int split_N_bam(AlignmentFile inbam,
@@ -128,6 +128,6 @@ cpdef int split_N_bam(AlignmentFile inbam,
                     out += 2
         except StopIteration:
             break
-    print('Written %i unsplit and %i split alignments' %(out, split_out), file = sys.stderr)
+    logger.info('Written %i unsplit and %i split alignments' %(out, split_out))
     return 0
  

@@ -5,9 +5,13 @@ from builtins import range
 import fileinput
 from operator import itemgetter
 import sys
+import os
 import cython
 from itertools import groupby
 from .bed_dedup import fragment_coordinates
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 '''
@@ -78,5 +82,5 @@ cpdef parse_dedup(infile, outfile, int umi_nt, str read_prefix):
             print(outline, file = outfile)
             out_count += 1
 
-    print('[Poisson UMI adjustment] Written %i from %i fragments' %(out_count, in_count), file = sys.stderr)
+    logger.info('[Poisson UMI adjustment] Written %i from %i fragments' %(out_count, in_count))
     return out_count, in_count

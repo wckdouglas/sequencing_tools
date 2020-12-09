@@ -12,8 +12,12 @@ import seaborn as sns
 import pandas as pd
 from collections import defaultdict
 import time
+import logging
+import os
 from .read_cluster import readGroup
 from ..stats_tools import hamming_distance, levenshtein_distance
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 accpetable_flag = [99,147,
@@ -56,7 +60,7 @@ def plot_bc_member(member_count, filename):
     p.set_xlabels('Member in barcode family')
     p.set_ylabels('Barcode count')
     p.savefig(figurename)
-    print('Plotted: %s' %figurename, file = sys.stderr)
+    logger.info('Plotted: %s' %figurename)
 
 
 def cluster_bam(tag, bool conserved, AlignmentFile in_bam, out_fastq):
@@ -99,7 +103,7 @@ def cluster_bam(tag, bool conserved, AlignmentFile in_bam, out_fastq):
                     # reinitialize group
                     read_group = readGroup(aln, tag, conserved)
             if iter_count % 5000000 == 0 and iter_count != 0:
-                print('Parsed %i alignments' %iter_count, file = sys.stderr)
+                logger.info('Parsed %i alignments' %iter_count)
 
     #spit out the rest in the stupid list
     read_group.cluster()

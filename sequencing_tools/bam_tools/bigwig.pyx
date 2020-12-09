@@ -4,7 +4,11 @@ import pyBigWig as pbw
 import numpy as np
 import array
 import sys
+import os
 import six
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 long = six.integer_types[-1]
 
 class chrom_depth:
@@ -33,7 +37,7 @@ class chrom_depth:
         self.values = list(map(float, self.values))
         self.bw.addEntries(self.chrom, self.positions, values=self.values, span=1)
         self.bw.close()
-        print 'Written %s' %self.filename
+        logger.info('Written %s' %self.filename)
 
 
 def parse_depth_bed(bed_file, genome_file, output_prefix):

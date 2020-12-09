@@ -9,6 +9,10 @@ from builtins import zip, range
 import re
 from libc.stdlib cimport rand
 from itertools import groupby
+import logging
+import os
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 regular_chroms = list(range(1,23))
 regular_chroms.extend(list('XY'))
@@ -254,8 +258,8 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'
-    print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
-    print('Writing to: %s' %(out_bam), file = sys.stderr)
+    logger.info('Start processing bam file: %s' %(in_bam))
+    logger.info('Writing to: %s' %(out_bam))
     gene_tabix = pysam.Tabixfile(gene_file) if gene_file else None
     with pysam.Samfile(in_bam, read_flag) as in_sam:
         with pysam.Samfile(out_bam, write_flag, template = in_sam) as out_sam:
@@ -267,7 +271,7 @@ def process_pair_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
                 out_sam.write(read1_aln)
                 out_sam.write(read2_aln)
                 out_read_count += 1
-    print('Writting %i read pairs from %i groups' %(out_read_count, in_read_count), file = sys.stderr)
+    logger.info('Writting %i read pairs from %i groups' %(out_read_count, in_read_count))
     return 0
 
 def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
@@ -279,8 +283,8 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
 
     read_flag = 'rb' if bam_in_bool else 'r'
     write_flag = 'wb' if bam_out_bool else 'w'
-    print('Start processing bam file: %s' %(in_bam), file = sys.stderr)
-    print('Writing to: %s' %(out_bam), file = sys.stderr)
+    logger.info('Start processing bam file: %s' %(in_bam))
+    logger.info('Writing to: %s' %(out_bam))
     read_group = single_read()
 
     with pysam.Samfile(in_bam, read_flag) as in_sam:
@@ -291,5 +295,5 @@ def process_single_bam(in_bam, out_bam, bam_in_bool, bam_out_bool, gene_file):
                 read_aln = read_group.output_read()
                 out_sam.write(read_aln)
                 out_read_count += 1
-    print('Writting %i reads from %i groups' %(out_read_count, in_read_count + 1), file = sys.stderr)
+    logger.info('Writting %i reads from %i groups' %(out_read_count, in_read_count + 1))
     return 0

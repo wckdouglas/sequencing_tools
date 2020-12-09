@@ -3,10 +3,14 @@ from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 import pysam
 import re
 import sys
+import os
 import numpy as np
 from numpy cimport ndarray
 from cpython cimport bool
 from ._bam_tools import concordant_alignment, split_cigar, concordant_pairs
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 cdef class fragment_pairs:
@@ -108,7 +112,7 @@ def filter_bam_single_end(in_bam, out_bam, single_end_thresh,
                             output_count += 1
 
                 if aln_count % 1000000 == 0 and aln_count != 0:
-                    print('Parsed %i alignments' %(aln_count), file = sys.stderr)
+                    logger.info('Parsed %i alignments' %(aln_count))
     return output_count, aln_count
 
 def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
@@ -154,7 +158,7 @@ def filter_bam_pair_end(in_bam, out_bam, single_end_thresh,
                             output_count += 1
 
                 if pair_count % 1000000 == 0 and pair_count != 0:
-                    print('Parsed %i alignments' %(pair_count), file = sys.stderr)
+                    logger.info('Parsed %i alignments' %(pair_count))
             except StopIteration:
                 outbam.close()
                 break

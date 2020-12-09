@@ -5,6 +5,7 @@ mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 import matplotlib.pyplot as plt
 import sys
 import ujson
+import os
 import re
 from multiprocessing import Pool
 from builtins import zip, map, range
@@ -16,6 +17,9 @@ from ..fastq_tools._fastq_tools cimport fastqRecord
 from ..fastq_tools import readfq
 from ..io_tools import xopen
 from ..consensus_tools import ErrorCorrection
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 def plotBCdistribution(barcode_family_count, outputprefix):
@@ -35,7 +39,7 @@ def plotBCdistribution(barcode_family_count, outputprefix):
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     fig.savefig(figurename)
-    print('Plotted %s.' %figurename, file = sys.stderr)
+    logger.info('Plotted %s.' %figurename)
     return 0
 
 
@@ -43,7 +47,7 @@ def plotBCdistribution(barcode_family_count, outputprefix):
 def dictToJson(barcode_dict, json_file):
     with open(json_file,'w') as f:
         [f.write(ujson.encode(items) + '\n') for items in six.iteritems(barcode_dict)]
-    print('written %s' %(json_file) + '\n', file = sys.stderr)
+    logger.info('written %s' %(json_file))
     return 0
 
 
@@ -87,7 +91,7 @@ class Clustering():
                 output_cluster_count += write_func(output_cluster_count, result)
                 counter += 1
                 if counter % 1000000 == 0:
-                    print('Processed %i read clusters.' %(counter), file = sys.stderr)
+                    logger.info('Processed %i read clusters.' %(counter))
         pool.close()
         pool.join()
         return output_cluster_count, self.read1File, self.read2File
@@ -254,7 +258,7 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
         for read_num, (read1,read2) in iterator:
             discarded_sequence_count += cluster_reads(read1, read2)
             if read_num % 10000000 == 0:
-                print('[%s] Parsed: %i sequence' %(programname,read_num), file = sys.stderr)
+                logger.info('[%s] Parsed: %i sequence' %(programname,read_num))
 
     barcode_count = len(barcode_dict.keys())
     return barcode_dict, read_num, barcode_count, discarded_sequence_count

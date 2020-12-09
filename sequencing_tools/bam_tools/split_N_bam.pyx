@@ -2,6 +2,10 @@ from __future__ import print_function
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from .fragment_pairs import concordant_pairs, is_split_pair
 import sys
+import logging
+import os
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 cpdef int parse_bam(AlignmentFile inbam,
                     AlignmentFile out_split_bam,
@@ -26,5 +30,5 @@ cpdef int parse_bam(AlignmentFile inbam,
                     out += 2
         except StopIteration:
             break
-    print('Written %i unsplit and %i split alignments' %(out, split_out), file = sys.stderr)
+    logger.info('Written %i unsplit and %i split alignments' %(out, split_out))
     return 0

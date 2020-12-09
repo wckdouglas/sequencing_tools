@@ -16,6 +16,9 @@ from ._fastq_tools import readfq, reverse_complement
 from .cutadapt_align import locate
 from ..io_tools import xopen
 from ..stats_tools import hamming_distance
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(os.path.basename(__file__))
 
 
 class adapters():
@@ -181,8 +184,8 @@ def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
                     print(opposite_read +'\n' + umi_read, file = out_handle)
 
             if count % 10000000 == 0 and count != 0:
-                print('[%s] Parsed %i records'%(programname, count), file = sys.stderr)
+                logger.info('[%s] Parsed %i records'%(programname, count))
 
-    print('[%s] Parsed:           %i sequences' %(programname, count), file = sys.stderr)
-    print('[%s] Output:           %i sequences' %(programname, out_count), file = sys.stderr)
+    logger.info('[%s] Parsed:           %i sequences' %(programname, count))
+    logger.info('[%s] Output:           %i sequences' %(programname, out_count))
     return 0
