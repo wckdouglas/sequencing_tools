@@ -16,12 +16,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       uses: actions/setup-python@v2
+    - name: setup python
       with:
         python-version: 3.6
         miniconda-version: 'latest'
-        activate-environment: foo
+        activate-environment: test-environment
 
     - name: Install dependencies
+      with:
+        activate-environment: test-environment
       run: |
         $CONDA/bin/conda config --set always_yes yes --set changeps1 no
         $CONDA/bin/conda update -q conda
@@ -32,16 +35,24 @@ jobs:
         pip install .
 
     - name: make test files
+      with:
+        activate-environment: test-environment
       run: |
         $CONDA/bin/conda activate test-environment
         for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done
         samtools index test/data/MT_TF.bam
         samtools faidx test/data/MT_TF.fa
+
     - name: Test with pytest
+      with:
+        activate-environment: test-environment
       run: |
         $CONDA/bin/conda
         pytest --cov=./
         bash test_script.sh
+
     - name: codecov
+      with:
+        activate-environment: test-environment
       run: |
         codecov
