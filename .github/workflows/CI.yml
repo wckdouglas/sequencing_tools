@@ -31,8 +31,10 @@ jobs:
           auto-update-conda: true
       - run: |
           conda config --set always_yes yes --set changeps1 no
-          conda update -q conda
           conda info -a
+          conda list
+          conda config --show-sources
+          conda config --show
 
 
 #    - name: Install dependencies
