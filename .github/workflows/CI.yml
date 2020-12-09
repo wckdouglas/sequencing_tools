@@ -31,8 +31,6 @@ jobs:
         $CONDA/bin/conda config --add channels bioconda
         $CONDA/bin/conda install python=$TRAVIS_PYTHON_VERSION cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov
         pip install .
-      with:
-        activate-environment: test-environment
 
     - name: make test files
       run: |
