@@ -23,8 +23,6 @@ jobs:
         activate-environment: test-environment
 
     - name: Install dependencies
-      with:
-        activate-environment: test-environment
       run: |
         $CONDA/bin/conda config --set always_yes yes --set changeps1 no
         $CONDA/bin/conda update -q conda
@@ -33,10 +31,10 @@ jobs:
         $CONDA/bin/conda config --add channels bioconda
         $CONDA/bin/conda install python=$TRAVIS_PYTHON_VERSION cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov
         pip install .
-
-    - name: make test files
       with:
         activate-environment: test-environment
+
+    - name: make test files
       run: |
         $CONDA/bin/conda activate test-environment
         for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done
@@ -44,15 +42,11 @@ jobs:
         samtools faidx test/data/MT_TF.fa
 
     - name: Test with pytest
-      with:
-        activate-environment: test-environment
       run: |
         $CONDA/bin/conda
         pytest --cov=./
         bash test_script.sh
 
     - name: codecov
-      with:
-        activate-environment: test-environment
       run: |
         codecov
