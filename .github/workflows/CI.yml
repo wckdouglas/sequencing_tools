@@ -30,25 +30,25 @@ jobs:
           use-only-tar-bz2: true
           auto-update-conda: true
       - runs: |
-        conda config --set always_yes yes --set changeps1 no
-        conda update -q conda
+        conda config --set always_yes yes --set changeps1 no 
+        conda update -q conda 
         conda info -a
 
 
     - name: Install dependencies
       run: |
-        conda install  python=$TRAVIS_PYTHON_VERSION cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov
+        conda install  python=$TRAVIS_PYTHON_VERSION cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov 
         pip install .
 
     - name: make test files
       run: |
-        for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done
-        samtools index test/data/MT_TF.bam
-        samtools faidx test/data/MT_TF.fa
+        for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
+        samtools index test/data/MT_TF.bam 
+        samtools faidx test/data/MT_TF.fa 
 
     - name: Test with pytest
       run: |
-        pytest --cov=./
+        pytest --cov=./ 
         bash test_script.sh
 
     - name: codecov
