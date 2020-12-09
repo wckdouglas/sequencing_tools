@@ -1,7 +1,7 @@
 
 # Sequencing tools #
 
-[![Build Status](https://travis-ci.org/wckdouglas/sequencing_tools.svg?branch=master)](https://travis-ci.org/wckdouglas/sequencing_tools)[![Documentation Status](https://readthedocs.org/projects/sequencing-tools/badge/?version=latest)](https://sequencing-tools.readthedocs.io/en/latest/?badge=latest)
+![CI](https://github.com/wckdouglas/sequencing_tools/workflows/CI/badge.svg)[![Documentation Status](https://readthedocs.org/projects/sequencing-tools/badge/?version=latest)](https://sequencing-tools.readthedocs.io/en/latest/?badge=latest)
 
 
 This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of several [ready-to-use scripts](#scripts) and two [module](#modules) for operations on fastq files and BAM alignments.
