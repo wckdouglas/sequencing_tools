@@ -24,13 +24,14 @@ jobs:
 
     - name: Install dependencies
       run: |
+        $CONDA/bin/conda activate test-environment
         $CONDA/bin/conda config --set always_yes yes --set changeps1 no
         $CONDA/bin/conda update -q conda
         # Useful for debugging any issues with conda
         $CONDA/bin/conda info -a
         $CONDA/bin/conda config --add channels bioconda
         $CONDA/bin/conda install python=$TRAVIS_PYTHON_VERSION cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov
-        pip install .
+        $CONDA/bin/pip install .
 
     - name: make test files
       run: |
@@ -41,7 +42,7 @@ jobs:
 
     - name: Test with pytest
       run: |
-        $CONDA/bin/conda
+        $CONDA/bin/conda activate test-environment
         pytest --cov=./
         bash test_script.sh
 
