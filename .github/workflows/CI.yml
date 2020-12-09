@@ -30,9 +30,7 @@ jobs:
         # Useful for debugging any issues with conda
         conda info -a
         conda config --add channels bioconda
-        conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION
-              cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy 
-              matplotlib samtools future pytest-cov codecov
+        conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov
         source activate test-environment
         pip install .
 
