@@ -30,9 +30,9 @@ jobs:
           use-only-tar-bz2: true
           auto-update-conda: true
       - runs: |
-        conda config --set always_yes yes --set changeps1 no 
-        conda update -q conda 
-        conda info -a
+          conda config --set always_yes yes --set changeps1 no 
+          conda update -q conda 
+          conda info -a
 
 
     - name: Install dependencies
