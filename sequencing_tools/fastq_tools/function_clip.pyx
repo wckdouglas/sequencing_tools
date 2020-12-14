@@ -117,9 +117,7 @@ class ReadTrimmer:
             opposite_Read (:class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`): The opposite read in the read pair
         
         Returns:
-            int: return code (0: read pair doesn't pass filter, 1: read pair is good)
-            str: clipped UMI read (in 4-line fastq format)
-            str: clipped the other side of read pair (in 4-line fastq format)
+            tuple(int, str, str): return code (0: read pair doesn't pass filter, 1: read pair is good), clipped UMI read (in 4-line fastq format), clipped the other side of read pair (in 4-line fastq format)
         """
 
         ret_code = 0
