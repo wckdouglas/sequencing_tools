@@ -21,15 +21,65 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class adapters():
-    R1 = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
-    R2 = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+class Adapters():
+    TGIRT_R1 = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
+    TGIRT_R2 = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
 
 class ReadTrimmer:
     '''
-    Implementation for a read trimmer
+    Implementation for a paired end UMI read trimmer
+
+    1. Triming UMI bases from 5' of the UMI read sequence 
+    2. append the UMI bases to the supplied adapter, and use that to trim the other read from 3'
+    2. trimming adapter sequence if overhang bases are sequenced
+
+    input reads (suppose A is adapter, X is UMI and N is biological fragment):
+
+    Example 1::
+
+        Input:
+            Read 1:                         |--------------------------------->
+            library fragment:      AAAAAAAAAXXXXXXNNNNNNNNNNNNNNNNNNNNNNNNNNAAAAAAA
+            Read 2:                     <----------------------------------|
+            Trimming from Read 2:  AAAAAAAAAXXXXXX->
+            Trimming from Read 1:                                          <---
 
 
+        Output:
+            Read 1:                               |------------------------>
+            library fragment:      AAAAAAAAAXXXXXXNNNNNNNNNNNNNNNNNNNNNNNNNNAAAAAAA
+            Read 2:                               <------------------------|
+
+    Example 2::
+
+        Input:
+            Read 1:                         |--------------------->
+            library fragment:      AAAAAAAAAXXXXXXNNNNNNNNNNNNNNNNNNNNNNNNNNAAAAAAA
+            Read 2:                                <-----------------------|
+
+
+        Output:
+            Read 1:                               |------------------------>
+            library fragment:      AAAAAAAAAXXXXXXNNNNNNNNNNNNNNNNNNNNNNNNNNAAAAAAA
+            Read 2:                                <-----------------------|
+
+
+    Usage::
+
+        clipping = ReadTrimmer(barcode_cut_off, constant,
+                    constant_no_evaluation, umi_bases,
+                    usable_seq, hamming_threshold, adapter, 
+                    min_length)
+        with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
+            adapter = Adapters().TGIRT_R1
+            iterable = zip(readfq(in1), readfq(in2))
+            for count, (umi_read, opposite_read) in enumerate(iterable):
+                ret_code, umi_read, opposite_read = clipping.trim_reads(umi_read, opposite_read)
+                if ret_code == 1:
+                    if read == "read1":
+                        print(umi_read +'\n' + opposite_read)
+                    if read == "read2":
+                        print(opposite_read +'\n' + umi_read)
     '''
     def __init__(self, 
                 barcode_cut_off = 20, 
@@ -38,24 +88,35 @@ class ReadTrimmer:
                 umi_bases = 6, 
                 usable_seq = 6, 
                 hamming_threshold = 6, 
-                adapter = adapters.R1, 
+                adapter = Adapters.TGIRT_R1, 
                 min_length = 12):
 
-        self.barcode_cut_off = barcode_cut_off
-        self.constant = constant 
-        self.constant_no_evaluation = constant_no_evaluation
-        self.umi_bases = umi_bases 
-        self.usable_seq = usable_seq
-        self.hamming_threshold = hamming_threshold
-        self.adapter = adapter 
-        self.min_length = min_length
-        self.template = '@{UMI}_{READNAME}/1\n{SEQ}\n+\n{QUAL}'
+        self.barcode_cut_off = barcode_cut_off #: UMI average quality cute off, if UMI average Q-score lower than this, ther read pair will be discarded
+        self.constant = constant  #: constant region between the UMI and actual biological sequence
+        self.constant_no_evaluation = constant_no_evaluation #: Evaluate the hamming distance of constant region?
+        self.umi_bases = umi_bases  #: How many UMI bases are in the 5' end of the UMI read
+        self.usable_seq = usable_seq #: On which position is the biological fragment start 
+        self.hamming_threshold = hamming_threshold #: If evaluating constant region, what is the hamming distance (error) that we can tolerate?
+        self.adapter = adapter  #:  Adapter sequence the is directly attachning to the 3' end of the UMI base, suppose the read sequence is 5'- {5Adapter}{UMI}{Fragmnet}{3Adapter} -3', we should supply reverse_complement(5Adapter) for this argument
+        self.min_length = min_length #: Minimum size of either of the read, if either read (read1 or read2) is shorter than this, the read pair will be discarded
+        self.template = '@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}' #: Template of the fastq record for prining sequence out
 
     def trim_reads(self, umi_read, opposite_read):
         """
-        from each read1, clipped barcode and constant regions and make it as ID
-        only when 1. barcode quality > cutoff and
-                2. constant region matched
+        from each UMI read, clipped barcode and constant regions and make it as ID
+        only when:: 
+        
+        1. barcode quality > cutoff and
+        2. constant region matched
+
+        Args:
+            umi_reads (:class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`): Read containing UMI
+            opposite_Read (:class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`): The opposite read in the read pair
+        
+        Returns:
+            int: return code (0: read pair doesn't pass filter, 1: read pair is good)
+            str: clipped UMI read (in fastq format '@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}')
+            str: clipped the other side of read pair (in fastq format '@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}')
         """
 
         ret_code = 0
@@ -164,11 +225,11 @@ def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
     out_handle = sys.stdout if out_file in ['/dev/stdout','-'] else xopen(out_file, 'w')
     with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
         if read == 'read1':
-            adapter = adapters().R1
+            adapter = Adapters().TGIRT_R1
             iterable = zip(readfq(in1), readfq(in2))
 
         else:
-            adapter = adapters().R2
+            adapter = Adapters().TGIRT_R2
             iterable = zip(readfq(in2), readfq(in1))
 
         clipping = ReadTrimmer(barcode_cut_off, constant,
