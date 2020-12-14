@@ -8,19 +8,19 @@ from ..utils import SeqUtilsError
 
 # define fastq record type
 cdef class fastqRecord:
-    """
-    Fastq record
+   def __init__(self, str id, str seq, str qual, str description):
+        """
+        Fastq record
 
-    Args:
-        id (str): fastq record id
-        seq (str): fastq record seq
-        qual (str): fastq record quality string
-    """
-    def __init__(self, str id, str seq, str qual, str description):
+        Args:
+            id (str): fastq record id
+            seq (str): fastq record seq
+            qual (str): fastq record quality string
+        """
         self.id = id #: sequence id
-        self.seq = seq # sequence
-        self.qual = qual # quality score string
-        self.description = description # description for the fastq record
+        self.seq = seq #: sequence
+        self.qual = qual #: quality score string
+        self.description = description #: description for the fastq record
 
     @property
     def length(self):
@@ -36,6 +36,7 @@ cdef class fastqRecord:
         Args:
             start (int):  start position on the sequence
             end (str):  end position on the sequence
+        
         '''
         if start < 0 or start > self.__len__():
             raise SeqUtilsError('Start position must be positive and smaller than sequence length: %i' %self.__len__())
