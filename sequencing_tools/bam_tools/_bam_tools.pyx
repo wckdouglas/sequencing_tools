@@ -174,11 +174,12 @@ def make_cigar_seq(cigar_numbers, cigar_operator):
         str num, op
 
     for num, op in zip(cigar_numbers, cigar_operator):
-        yield int(num)*op
+        if strings.search(op):
+            yield int(num)*op
 
 cpdef str cigar_to_str(str cigar_string):
     '''
-    Cigarstring to string, only extract cigar op == M, I or S
+    Cigarstring to string, only extract cigar op == M, I or S, Deletions (D) are skipepd to return same length cigar_seq as the query_sequence
 
     Args:
         cigar_string: standard cigar string from BAM file
@@ -194,7 +195,7 @@ cpdef str cigar_to_str(str cigar_string):
 
     '''
     cigar_numbers = numbers.findall(cigar_string)
-    cigar_operator = strings.findall(cigar_string)
+    cigar_operator = all_strings.findall(cigar_string)
     cigar_str = ''.join(make_cigar_seq(cigar_numbers, cigar_operator))
     return cigar_str
 

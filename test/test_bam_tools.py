@@ -5,6 +5,7 @@ import pysam
 from pysam import AlignedRead
 from scipy.special import logsumexp
 import os
+import pytest
 
 
 def artificial_read(flag=163):
@@ -61,21 +62,30 @@ def test_make_cigar_seq():
     assert(seq == 'SSSMMMMMIMMM')
 
 
-def test_cigar_to_str():
-    cs = '3S5M1I3M'
-    assert(cigar_to_str(cs) == 'SSSMMMMMIMMM')
+@pytest.mark.parametrize('cigar, cigar_seq', [
+    ('3S5M1I3M', 'SSSMMMMMIMMM'),
+    ('5M4D6I10M','MMMMMIIIIIIMMMMMMMMMM'),
+])
+def test_cigar_to_str(cigar, cigar_seq):
+    assert(cigar_to_str(cigar) == cigar_seq)
 
 
-def test_get_strand():
-    assert(get_strand(artificial_read(flag = 83)) == '-')
-    assert(get_strand(artificial_read(flag = 163)) == '-')
-    assert(get_strand(artificial_read(flag = 99)) == '+')
-    assert(get_strand(artificial_read(flag = 147)) == '+')
+@pytest.mark.parametrize("flag, expected_result", [
+    (83, '-'),
+    (163, '-'),
+    (99, '+'),
+    (147, '+')
+])
+def test_get_strand(flag, expected_result):
+    assert(get_strand(artificial_read(flag = flag)) == expected_result)
 
 
-def test_check_concordant():
-    assert(check_concordant(artificial_read(flag=83), artificial_read(flag=163)))
-    assert(check_concordant(artificial_read(flag=99), artificial_read(flag=147)))
+@pytest.mark.parametrize("r1_flag, r2_flag", [
+    (83, 163),
+    (99, 147),
+    ])
+def test_check_concordant(r1_flag, r2_flag):
+    assert(check_concordant(artificial_read(flag=r1_flag), artificial_read(flag=r2_flag)))
 
 
 def test_check_primary():
