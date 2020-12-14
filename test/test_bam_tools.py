@@ -19,26 +19,34 @@ def artificial_read(flag=163):
     return aln
 
 
-def test_split_cigar():
-    assert(split_cigar('63M4S') == [[63,4],['M','S']])
+@pytest.mark.parametrize('cigar, result', [
+    ('63M4S', [[63,4], ['M','S']]),
+    ('5M4D6I10M', [[5,4,6,10],['M','D','I','M']]),
+])
+def test_split_cigar(cigar, result):
+    assert(split_cigar(cigar) == result)
 
 
-def test_read_ends():
+@pytest.mark.parametrize('function, result', [
+    (read_ends, (1000000,1000015))
+])
+def test_read_ends(function, result):
     aln = artificial_read()
-    assert(read_ends(aln) == (1000000,1000015))
+    assert(function(aln) == result)
 
 
-def test_fragment_ends():
+@pytest.mark.parametrize('function, result', [
+    (fragment_ends, (1000000,1000036)),
+    (concordant_pairs, True),
+
+])
+def test_fragment_ends(function, result):
     read1 = artificial_read(flag = 83)
     read2 = artificial_read(flag = 163)
-    assert(fragment_ends(read1, read2) == (1000000, 1000036))
+    assert(function(read1, read2) == result)
 
 
 def test_concordant_pairs():
-    read1 = artificial_read(flag = 83)
-    read2 = artificial_read(flag = 163)
-    assert(concordant_pairs(read1, read2))
-
     read1 = artificial_read(flag = 81)
     read2 = artificial_read(flag = 163)
     assert(concordant_pairs(read1, read2)==False)
@@ -50,16 +58,23 @@ def test_concordant_alignment():
     assert(concordant_alignment(read1)==False)
     assert(concordant_alignment(read2))
 
+@pytest.mark.parametrize('end, interval, output',[
+    (100, 51,  [(0, 51), (51, 100)]),
+    (10, 5,  [(0, 5), (5, 10)])
+])
+def test_make_regions(end, interval, output):
+    assert(list(make_regions(end, interval)) == output)
 
-def test_make_regions():
-    assert(list(make_regions(100,51)) == [(0, 51), (51, 100)])
 
-
-def test_make_cigar_seq():
+@pytest.mark.parametrize('cigar_nums, cigar_ops, result',[
+   (['3','5','1','3'],['S','M','I','M'], 'SSSMMMMMIMMM'),
+   (['10','5','2','5'],['M','D','I','M'], 'MMMMMMMMMMIIMMMMM') 
+])
+def test_make_cigar_seq(cigar_nums, cigar_ops, result):
     seq = ''
-    for c in make_cigar_seq(['3','5','1','3'],['S','M','I','M']):
+    for c in make_cigar_seq(cigar_nums, cigar_ops):
         seq += c
-    assert(seq == 'SSSMMMMMIMMM')
+    assert(seq == result)
 
 
 @pytest.mark.parametrize('cigar, cigar_seq', [
