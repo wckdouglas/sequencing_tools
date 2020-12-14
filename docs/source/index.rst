@@ -35,6 +35,9 @@ This module contains functions to interact with fastq files
 .. autoclass:: sequencing_tools.fastq_tools.pe_align.ConsensusBuilder
     :members:
 
+.. autoclass:: sequencing_tools.fastq_tools.function_clip.ReadTrimmer
+    :members:
+
 
 fasta_tools
 ===========

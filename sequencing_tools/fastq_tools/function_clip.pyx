@@ -25,9 +25,11 @@ class adapters():
     R1 = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
     R2 = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
 
-class clip_read:
+class ReadTrimmer:
     '''
-    implement read trimmer
+    Implementation for a read trimmer
+
+
     '''
     def __init__(self, 
                 barcode_cut_off = 20, 
@@ -169,7 +171,7 @@ def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
             adapter = adapters().R2
             iterable = zip(readfq(in2), readfq(in1))
 
-        clipping = clip_read(barcode_cut_off, constant,
+        clipping = ReadTrimmer(barcode_cut_off, constant,
                     constant_no_evaluation, umi_bases,
                     usable_seq, hamming_threshold, adapter, 
                     min_length)
