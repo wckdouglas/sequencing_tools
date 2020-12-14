@@ -111,6 +111,7 @@ class ReadTrimmer:
         1. barcode quality > cutoff and
         2. constant region matched
 
+
         Args:
             umi_reads (:class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`): Read containing UMI
             opposite_Read (:class:`sequencing_tools.fastq_tools._fastq_tools.fastqRecord`): The opposite read in the read pair
