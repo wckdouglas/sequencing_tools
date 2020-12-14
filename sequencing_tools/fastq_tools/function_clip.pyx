@@ -77,9 +77,11 @@ class ReadTrimmer:
                 ret_code, umi_read, opposite_read = clipping.trim_reads(umi_read, opposite_read)
                 if ret_code == 1:
                     if read == "read1":
-                        print(umi_read +'\n' + opposite_read)
+                        print(umi_read)
+                        print(opposite_read)
                     if read == "read2":
-                        print(opposite_read +'\n' + umi_read)
+                        print(opposite_read)
+                        print(umi_read)
     '''
     def __init__(self, 
                 barcode_cut_off = 20, 
@@ -115,8 +117,8 @@ class ReadTrimmer:
         
         Returns:
             int: return code (0: read pair doesn't pass filter, 1: read pair is good)
-            str: clipped UMI read (in fastq format '@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}')
-            str: clipped the other side of read pair (in fastq format '@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}')
+            str: clipped UMI read (in fastq format `@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}`)
+            str: clipped the other side of read pair (in fastq format `@{UMI}_{READNAME}\n{SEQ}\n+\n{QUAL}`)
         """
 
         ret_code = 0
