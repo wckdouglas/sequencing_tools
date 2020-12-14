@@ -7,8 +7,8 @@ from collections import defaultdict
 from ..utils import SeqUtilsError
 
 # define fastq record type
-cdef class fastqRecord:
-   def __init__(self, str id, str seq, str qual, str description):
+cdef class fastqRecord():
+    def __init__(self, str id, str seq, str qual, str description):
         """
         Fastq record
 
@@ -22,12 +22,12 @@ cdef class fastqRecord:
         self.qual = qual #: quality score string
         self.description = description #: description for the fastq record
 
+    def __len__(self):
+        return len(self.seq)
+
     @property
     def length(self):
         return self.__len__()
-    
-    def __len__(self):
-        return len(self.seq)
 
     def subseq(self, int start, int end):
         '''

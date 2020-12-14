@@ -41,7 +41,7 @@ class ReadTrimmer:
 
         1. Triming UMI bases from 5' of the UMI read sequence 
         2. append the UMI bases to the supplied adapter, and use that to trim the other read from 3'
-        2. trimming adapter sequence if overhang bases are sequenced
+        3. trimming adapter sequence if overhang bases are sequenced
 
         input reads (suppose A is adapter, X is UMI and N is biological fragment):
 
