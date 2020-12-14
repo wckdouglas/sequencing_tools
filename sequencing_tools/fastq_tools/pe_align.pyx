@@ -62,9 +62,9 @@ class ConsensusBuilder:
     def __init__(self, error_toleration = 0.1, min_len = 15, 
                 report_all=False, conserved = False, highlight=False):
 
-        self.error_toleration = error_toleration
-        self.min_len = min_len
-        self.report_all = report_all
+        self.error_toleration = error_toleration #: maximum fraction of error in the overlapped region 
+        self.min_len = min_len #: minimum overlapping positions to be considered as overlapped
+        self.report_all = report_all #: reporting the non-overlapping bases as well?
     
         mode = 'vote' if conserved else 'prob'
         self.correction_module = ErrorCorrection(mode = mode)

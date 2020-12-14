@@ -8,15 +8,16 @@ from ..utils import SeqUtilsError
 
 # define fastq record type
 cdef class fastqRecord():
-    def __init__(self, str id, str seq, str qual, str description):
-        """
-        Fastq record
+    """
+    Fastq record
 
-        Args:
-            id (str): fastq record id
-            seq (str): fastq record seq
-            qual (str): fastq record quality string
-        """
+    Args:
+        id (str): fastq record id
+        seq (str): fastq record seq
+        qual (str): fastq record quality string
+    """
+    def __init__(self, str id, str seq, str qual, str description):
+
         self.id = id #: sequence id
         self.seq = seq #: sequence
         self.qual = qual #: quality score string
