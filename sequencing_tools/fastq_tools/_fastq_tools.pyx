@@ -34,9 +34,8 @@ cdef class fastqRecord:
         Trim off sequences outside of start:end
 
         Args:
-            start (int): 
-            seq (str): fastq record seq
-            qual (str): fastq record quality string
+            start (int):  start position on the sequence
+            end (str):  end position on the sequence
         '''
         if start < 0 or start > self.__len__():
             raise SeqUtilsError('Start position must be positive and smaller than sequence length: %i' %self.__len__())
