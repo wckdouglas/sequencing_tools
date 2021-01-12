@@ -146,17 +146,17 @@ class ConsensusBuilder:
                         right_add_qual = R1.qual[r1_end:]
                         right_adapter = True
 
-                if self.highlight:
-                    if left_adapter:
-                        left_add_seq = self.__highlight__(left_add_seq)
-                    if right_adapter:
-                        right_add_seq = self.__highlight__(right_add_seq)
-                    
-                    if not left_adapter and not right_adapter:
-                        return ''
+                    if self.highlight:
+                        if left_adapter:
+                            left_add_seq = self.__highlight__(left_add_seq)
+                        if right_adapter:
+                            right_add_seq = self.__highlight__(right_add_seq)
 
-                seq = left_add_seq + seq + right_add_seq
-                qual = left_add_qual + qual + right_add_qual
+                        if not left_adapter and not right_adapter:
+                            return ''
+
+                    seq = left_add_seq + seq + right_add_seq
+                    qual = left_add_qual + qual + right_add_qual
 
                 out_line = '@%s\n%s\n+\n%s' %(r1_id,seq, qual) 
         return out_line
