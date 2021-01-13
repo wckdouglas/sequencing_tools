@@ -242,4 +242,4 @@ def test_pe_align_all_hightlight():
 
 
     out = consensus_builder.run(read1_no_dovetail, read2_nodovetail)
-    assert("" == out.strip().split('\n'))
+    assert([""] == out.strip().split('\n'))
