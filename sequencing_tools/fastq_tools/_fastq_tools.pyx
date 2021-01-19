@@ -49,7 +49,8 @@ cdef class fastqRecord():
         self.qual = self.qual[start:end]
 
     def __str__(self):
-        return '@{id}\n{seq}\n+\n{qual}'.format(id = self.id, 
+        id_str = self.description if self.description.startswith('@')  else self.id + ' ' + self.description
+        return '@{id}\n{seq}\n+\n{qual}'.format(id = id_str, 
                                                 seq = self.seq, 
                                                 qual = self.qual)
 

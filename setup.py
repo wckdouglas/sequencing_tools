@@ -23,6 +23,7 @@ except ImportError:
 include_path = [np.get_include()]
 #include_path.append('/services_data/workspace/douglaswu/src/miniconda3/include')
 include_path.append('/usr/include')
+include_path.append('/usr/include/x86_64-linux-gnu')
 include_path.extend(pysam.get_include())
 #include_path.extend(os.environ['INCLUDE_PATH'].split(':'))
 #include_path = filter(lambda x: x!= '', include_path)
@@ -47,15 +48,15 @@ setup(
     scripts = glob.glob('bin/seqtools'),
     ext_modules = ext_modules,
     cmdclass = {'build_ext': build_ext},
-    install_requires = [
-          'cython',
-          'numpy',
-          'pysam>0.12.0',
-          'matplotlib>=2.0.0',
-          'seaborn>-0.7.1',
-          'ujson',
-          'scipy>=0.19.0',
-          'networkx>=2.0',
-          'pytest'
-      ],
+#    install_requires = [
+#          'cython',
+#          'numpy',
+#          'pysam>0.12.0',
+#          'matplotlib>=2.0.0',
+#          'seaborn>-0.7.1',
+#          'ujson',
+#          'scipy>=0.19.0',
+#          'networkx>=2.0',
+#          'pytest'
+#      ],
 )
