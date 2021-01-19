@@ -94,7 +94,7 @@ class GradientDescent():
             self.summary = np.median 
         
     def cost_function(self, X, y):
-        residuals = y - np.matmul(X, self.B)
+        residuals = y - np.matmul(X, self.B) 
         cost = np.sqrt(self.summary(residuals ** 2))
         return cost, residuals
 

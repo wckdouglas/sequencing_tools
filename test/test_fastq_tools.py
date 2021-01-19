@@ -167,21 +167,35 @@ def test_insert_trimmer():
     assert(seq1 == new_seq1)
 
 
+read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
+    'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
+    'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
+    'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
+    )
+
+read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
+    'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
+    'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
+    'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
+    )
+
+read1_no_dovetail = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
+    'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCG',
+    'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE',
+    'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
+    )
+
+
+read2_nodovetail = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
+    'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAA',
+    'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</E',
+    'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
+    )
+
+ 
+
 def test_umi_trimmer():
     clipping = ReadTrimmer(umi_bases=6)
-
-    read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
-        'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
-        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
-        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
-        )
-
-    read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
-        'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
-        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
-        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
-        )
-                    
     ret_code, outread_1, outread_2 = clipping.trim_reads(read1, read2)
     assert(ret_code == 1)
     name1, seq1, _, qual1 = outread_1.strip().split('\n')
@@ -195,18 +209,6 @@ def test_umi_trimmer():
 def test_pe_align_only_overlap():
     consensus_builder = ConsensusBuilder(error_toleration = 0.1,
                                         min_len = 15, report_all=False)
-    read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
-        'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
-        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
-        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
-        )
-
-    read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
-        'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
-        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
-        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
-        )
-
     out = consensus_builder.run(read1, read2)
     id, seq, _, qual = out.strip().split('\n')
 
@@ -218,18 +220,6 @@ def test_pe_align_only_overlap():
 def test_pe_align_all():
     consensus_builder = ConsensusBuilder(error_toleration = 0.1,
                                         min_len = 15, report_all=True)
-    read1 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG',
-        'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAAAGATCGGAAGAGCACACGTCTGAA',
-        'A6AA6//EA/AEE/AEAE///EEE/AAA/6/EE/A//EEE/A//EE/AE//E/////AEE///////////////',
-        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 1:N:0:GAGTGG    Read1',
-        )
-
-    read2 = fastqRecord('NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG',
-        'TTTCCCGCACCGATAGCAGCCGCTCTGGTCTCCCATCCCGGGCAATTGTGTGATCGTCGGACTGTAGAACTCTGA',
-        'AAA//E/E/E/A/A///EEE/E///<//EE/EE6/</EEA/A</EE<AAE/E/</<<AAE/E<///EE/EA///A',
-        'NB501060:148:HNFYCBGX5:1:11101:10036:1116 2:N:0:GAGTGG    Read2',
-        )
-
     out = consensus_builder.run(read1, read2)
     id, seq, _, qual = out.strip().split('\n')
 
@@ -239,3 +229,17 @@ def test_pe_align_all():
     assert(res_seq == seq)
 
 
+def test_pe_align_all_hightlight():
+    consensus_builder = ConsensusBuilder(error_toleration = 0.1,
+                                        min_len = 15, report_all=True, highlight=True)
+    out = consensus_builder.run(read1, read2)
+    id, seq, _, qual = out.strip().split('\n')
+
+    res_seq ='\x1b[6;30;42mTCAGAGTTCTACAGTCCGACGATC\x1b[0m'\
+        'ACACAATTGCCCGGGATGGGAGACCAGAGCGGCTGCTATCGGTGCGGGAAA'\
+        '\x1b[6;30;42mAGATCGGAAGAGCACACGTCTGAA\x1b[0m'
+    assert(res_seq == seq)
+
+
+    out = consensus_builder.run(read1_no_dovetail, read2_nodovetail)
+    assert([""] == out.strip().split('\n'))

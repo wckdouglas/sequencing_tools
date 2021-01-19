@@ -151,7 +151,6 @@ class ConsensusBuilder:
                             left_add_seq = self.__highlight__(left_add_seq)
                         if right_adapter:
                             right_add_seq = self.__highlight__(right_add_seq)
-                        
                         if not left_adapter and not right_adapter:
                             return ''
 
