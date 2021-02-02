@@ -1,6 +1,11 @@
 FROM continuumio/miniconda:latest
 
-env PATH /opt/conda/bin:$PATH
+RUN apt-get update && \
+    apt-get -y install gcc mono-mcs && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/usr/bin:$PATH"
+ENV PATH="/opt/conda/bin:$PATH"
 RUN conda config --add channels defaults
 RUN conda config --add channels anaconda
 RUN conda config --add channels bioconda
@@ -12,3 +17,4 @@ COPY . /opt/sequencing_tools
 
 RUN cd /opt/sequencing_tools; pip install .
 ENV PATH="/opt/conda/bin:${PATH}"
+CMD ["/opt/conda/bin/seqtools"]
