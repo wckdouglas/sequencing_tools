@@ -1,7 +1,7 @@
 
 # Sequencing tools #
 
-[![CI](https://github.com/wckdouglas/sequencing_tools/workflows/CI/badge.svg)](https://github.com/wckdouglas/sequencing_tools/actions)[![Documentation Status](https://readthedocs.org/projects/sequencing-tools/badge/?version=latest)](https://sequencing-tools.readthedocs.io/en/latest/?badge=latest)[![Docker Cloud Build Status]](https://img.shields.io/docker/cloud/build/wckdouglas/sequencing_tools)
+[![CI](https://github.com/wckdouglas/sequencing_tools/workflows/CI/badge.svg)](https://github.com/wckdouglas/sequencing_tools/actions)[![Documentation Status](https://readthedocs.org/projects/sequencing-tools/badge/?version=latest)](https://sequencing-tools.readthedocs.io/en/latest/?badge=latest)[![Docker Cloud Build Status](https://hub.docker.com/repository/docker/wckdouglas/sequencing_tools/general)](https://img.shields.io/docker/cloud/build/wckdouglas/sequencing_tools)
 
 
 This repo stores different utils for TGIRT-seq/NGS pipelines. This consist of several [ready-to-use scripts](#scripts) and two [module](#modules) for operations on fastq files and BAM alignments.
