@@ -1,7 +1,7 @@
 FROM continuumio/miniconda:latest
 
 RUN apt-get update && \
-    apt-get -y install gcc mono-mcs && \
+    apt-get -y install gcc mono-mcs libz-dev && \
     rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/usr/bin:$PATH"
