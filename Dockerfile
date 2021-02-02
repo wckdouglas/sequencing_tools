@@ -6,12 +6,14 @@ RUN apt-get update && \
 
 ENV PATH="/usr/bin:$PATH"
 ENV PATH="/opt/conda/bin:$PATH"
-RUN conda config --add channels defaults
-RUN conda config --add channels anaconda
-RUN conda config --add channels bioconda
-RUN conda config --set always_yes yes --set changeps1 no
-RUN conda install -c bioconda python=3.6 cython numpy networkx seaborn pyBigwig six pysam \
-    ujson pytest scipy matplotlib samtools future pytest-cov codecov
+RUN conda config --add channels defaults && \
+    conda config --add channels anaconda && \
+    conda config --add channels bioconda && \
+    conda config --set always_yes yes --set changeps1 no && \
+    conda install -c bioconda python=3.6 cython numpy \
+                    networkx seaborn pyBigwig six pysam \
+                    ujson pytest scipy matplotlib samtools \
+                    future pytest-cov codecov
 
 COPY . /opt/sequencing_tools
 
