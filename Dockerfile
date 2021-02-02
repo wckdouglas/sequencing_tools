@@ -17,6 +17,8 @@ RUN conda config --add channels defaults && \
 
 COPY . /opt/sequencing_tools
 
-RUN cd /opt/sequencing_tools; pip install .
+RUN cd /opt/sequencing_tools &&\
+     pip install .
 ENV PATH="/opt/conda/bin:${PATH}"
-CMD ["/opt/conda/bin/seqtools"]
+ENTRYPOINT ["/opt/conda/bin/seqtools"]
+CMD ["--help"]
