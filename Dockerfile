@@ -13,7 +13,8 @@ RUN conda config --add channels defaults && \
     conda install -c bioconda python=3.6 cython numpy \
                     networkx seaborn pyBigwig six pysam \
                     ujson pytest scipy matplotlib samtools \
-                    future pytest-cov codecov
+                    future pytest-cov codecov && \
+    conda clean -afy
 
 COPY . /opt/sequencing_tools
 
