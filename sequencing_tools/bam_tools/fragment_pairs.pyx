@@ -172,6 +172,8 @@ def bam_to_bed(bam_file, out_file, int min_size, int max_size,
                     if line:
                         pair_count += 1
                         print(line, file=out_file)
+                else:
+                    raise SeqUtilsError("There are disconcordant pairs: %s and %s" %(read_1.query_name, read_2.query_name))
 #                else:
 #                    while not check_concordant(read_1, read_2):
 #                        if not read_1.is_secondary and not read_2.is_secondary:
