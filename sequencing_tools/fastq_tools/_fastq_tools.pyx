@@ -220,26 +220,23 @@ class GappedKmer:
         self.k = k
         self.m = m
         self.dna_bases = ["A","C","T","G"]
-        self.row = {}
-        self._init_row_()
 
     def compute(self, sequence):
-        self._clean_()
+        row = self._init_row_()
         for kmer in extract_kmer(sequence, k = self.k):
-            for key in self.row.keys():
+            for key in row.keys():
                 if levenshtein_distance(kmer, key) <= self.m:
-                    self.row[key] += 1
-        return self.row
+                    row[key] += 1
+        return row
 
 
     def _init_row_(self):
+        row = {}
         for kmer in product(self.dna_bases, repeat=self.k):
             kmer = ''.join(kmer)
-            self.row[kmer] = 0
+            row[kmer] = 0
+        return row
 
-    def _clean_(self):
-        for kmer in self.row.keys():
-            self.row[kmer] = 0
  
 
 def kmer_bag(str sequence, k_start = 1, k_end = 4):
