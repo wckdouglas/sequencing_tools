@@ -27,34 +27,16 @@ def test_fastq():
     assert(record.seq == 'AAAAAAAAAAAAAAAAAAAA')
     assert(record.qual=='EAEE6666EEEEEEEEEEEE')
 
-@pytest.mark.parametrize('k, m, out', [
-    (3,2, ['ACTGGA',
-        'ACT.GAA',
-        'ACT..AAT',
-        'CTGGAA',
-        'CTG.AAT',
-        'CTG..ATG',
-        'TGGAAT',
-        'TGG.ATG',
-        'GGAATG']),
-    (4,2, ['ACTGGAAT',
-        'ACTG.AATG',
-        'CTGGAATG']),
-    (3,3, ['ACTGGA',
-        'ACT.GAA',
-        'ACT..AAT',
-        'ACT...ATG',
-        'CTGGAA',
-        'CTG.AAT',
-        'CTG..ATG',
-        'TGGAAT',
-        'TGG.ATG',
-        'GGAATG'])
+@pytest.mark.parametrize('k, m, kmers, counts', [
+    (3,1, ["AAA", "AAT", "CGG","GTT"], [2,2,2, 0]),
+    (4,2, ["GCCA", "ATGA", "CTAG"], [1,4,2]),
 ])
-def test_gapped_kmer(k, m, out):
+def test_GappedKmer(k, m, kmers, counts):
+    gkm = GappedKmer(k=k, m = m)
     seq = 'ACTGGAATG'
-    gkms = [gkm for gkm in gapped_kmer(seq, k=k, m=m)]
-    assert(gkms==out)
+    res = gkm.compute(seq)
+    for kmer, count in zip(kmers, counts):
+        assert(res[kmer] == count)
 
 
 def test_kmer():

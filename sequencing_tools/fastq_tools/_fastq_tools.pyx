@@ -2,10 +2,12 @@ import os
 import re
 import string
 import six
+from itertools import product
 import numpy as np
 from collections import defaultdict
 from libc.stdint cimport uint32_t
 from ..utils import SeqUtilsError
+from ..stats_tools import levenshtein_distance
 
 
 # define fastq record type
@@ -197,41 +199,47 @@ def extract_kmer(str sequence, int k):
         yield(sequence[i:i+k])
 
 
-def gapped_kmer(str sequence, int k=3, int m=2):
+class GappedKmer:
     '''
-    Args:
-        sequence: sequence to be extracted feature from
-        k: kmer size 
-        m: maximum gap size
+    Making Gapped kmer feature vector
 
-    Returns:
-        generator(str): gapped kmer from the sequence
+    Args:
+        k: kmer size 
+        m: number of mismatch tolerated
 
     Example::
 
+        gkm = GappedKmer(k=3, m = 1)
         seq = 'ACTGGAATG'
-        for gkm in gapped_kmer(seq, km=3, m=2):
-            print(gkm)
-        # ACTGGA
-        # ACT.GAA
-        # ACT..AAT
-        # CTGGAA
-        # CTG.AAT
+        gkm.compute(seq)
     '''
-    cdef:
-        uint32_t i = 0
-        int gap = 0
-        int pos = 0
+    def __init__(self, k=6, m=2):
+        if not (k > 0 and  m > 0):
+            raise SeqUtilsError("k and m should be > 0; k={}, m={}".format(k,m))
+        
+        self.k = k
+        self.m = m
+        self.dna_bases = ["A","C","T","G"]
+        self.row = {}
+        self._init_row_()
 
-    bag = defaultdict(int)
-    if not (k > 0 and  m > 0):
-        raise SeqUtilsError("k and m should be > 0; k={}, m={}".format(k,m))
+    def compute(self, sequence):
+        self._clean_()
+        for kmer in extract_kmer(sequence, k = self.k):
+            for key in self.row.keys():
+                if levenshtein_distance(kmer, key) <= self.m:
+                    self.row[key] += 1
+        return self.row
 
-    for pos, kmer1 in enumerate(extract_kmer(sequence, k)):
-        for gap, kmer2 in enumerate(extract_kmer(sequence[(pos+k):], k)):
-            yield kmer1 + gap * '.' + kmer2
-            if gap == m:
-                break
+
+    def _init_row_(self):
+        for kmer in product(self.dna_bases, repeat=self.k):
+            kmer = ''.join(kmer)
+            self.row[kmer] = 0
+
+    def _clean_(self):
+        for kmer in self.row.keys():
+            self.row[kmer] = 0
  
 
 def kmer_bag(str sequence, k_start = 1, k_end = 4):
