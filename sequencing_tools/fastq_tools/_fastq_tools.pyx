@@ -220,9 +220,10 @@ class GappedKmer:
         self.k = k
         self.m = m
         self.dna_bases = ["A","C","T","G"]
+        self.default_row = self._init_row()
 
     def compute(self, sequence):
-        row = self._init_row_()
+        row = self.default.copy()
         for kmer in extract_kmer(sequence, k = self.k):
             for key in row.keys():
                 if levenshtein_distance(kmer, key) <= self.m:
