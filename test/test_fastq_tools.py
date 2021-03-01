@@ -3,6 +3,7 @@ from sequencing_tools.fastq_tools.function_clip import ReadTrimmer
 from sequencing_tools.fastq_tools.pe_align import ConsensusBuilder
 import six
 import numpy.random as random
+import pytest
 
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + '/data'
@@ -25,7 +26,36 @@ def test_fastq():
     record.subseq(0,20)
     assert(record.seq == 'AAAAAAAAAAAAAAAAAAAA')
     assert(record.qual=='EAEE6666EEEEEEEEEEEE')
-    
+
+@pytest.mark.parametrize('k, m, out', [
+    (3,2, ['ACTGGA',
+        'ACT.GAA',
+        'ACT..AAT',
+        'CTGGAA',
+        'CTG.AAT',
+        'CTG..ATG',
+        'TGGAAT',
+        'TGG.ATG',
+        'GGAATG']),
+    (4,2, ['ACTGGAAT',
+        'ACTG.AATG',
+        'CTGGAATG']),
+    (3,3, ['ACTGGA',
+        'ACT.GAA',
+        'ACT..AAT',
+        'ACT...ATG',
+        'CTGGAA',
+        'CTG.AAT',
+        'CTG..ATG',
+        'TGGAAT',
+        'TGG.ATG',
+        'GGAATG'])
+])
+def test_gapped_kmer(k, m, out):
+    seq = 'ACTGGAATG'
+    gkms = [gkm for gkm in gapped_kmer(seq, k=k, m=m)]
+    assert(gkms==out)
+
 
 def test_kmer():
     test_seq = 'ACTGACT'

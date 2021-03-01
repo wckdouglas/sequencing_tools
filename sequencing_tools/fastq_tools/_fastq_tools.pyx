@@ -4,7 +4,9 @@ import string
 import six
 import numpy as np
 from collections import defaultdict
+from libc.stdint cimport uint32_t
 from ..utils import SeqUtilsError
+
 
 # define fastq record type
 cdef class fastqRecord():
@@ -195,6 +197,42 @@ def extract_kmer(str sequence, int k):
         yield(sequence[i:i+k])
 
 
+def gapped_kmer(str sequence, int k=3, int m=2):
+    '''
+    Args:
+        sequence: sequence to be extracted feature from
+        k: kmer size 
+        m: maximum gap size
+
+    Returns:
+        generator(str): gapped kmer from the sequence
+
+    Example::
+
+        seq = 'ACTGGAATG'
+        for gkm in gapped_kmer(seq, km=3, m=2):
+            print(gkm)
+        # ACTGGA
+        # ACT.GAA
+        # ACT..AAT
+        # CTGGAA
+        # CTG.AAT
+    '''
+    cdef:
+        uint32_t i = 0
+        int gap = 0
+        int pos = 0
+
+    bag = defaultdict(int)
+    if not (k > 0 and  m > 0):
+        raise SeqUtilsError("k and m should be > 0; k={}, m={}".format(k,m))
+
+    for pos, kmer1 in enumerate(extract_kmer(sequence, k)):
+        for gap, kmer2 in enumerate(extract_kmer(sequence[(pos+k):], k)):
+            yield kmer1 + gap * '.' + kmer2
+            if gap == m:
+                break
+ 
 
 def kmer_bag(str sequence, k_start = 1, k_end = 4):
     '''
