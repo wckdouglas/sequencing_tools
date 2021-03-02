@@ -1,0 +1,52 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: miniconda build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - name: Install poetry
+        uses: abatilo/actions-poetry@v2.1.0
+        with:
+          poetry-version: 1.1.2
+
+      - name: Install
+        run: |
+          poetry install
+          pip install .
+
+      - name: make test files
+        run: |
+          for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
+          samtools index test/data/MT_TF.bam 
+          samtools faidx test/data/MT_TF.fa 
+
+      - name: Test with pytest
+        run: |
+          pytest --cov=./ 
+          bash test_script.sh
+
+      - name: codecov
+        run: |
+          codecov
+
