@@ -35,6 +35,11 @@ jobs:
           poetry install
           pip install .
 
+      - name: install samtools
+        run: |
+          sudo apt update
+          sudo apt install samtools
+
       - name: make test files
         run: |
           for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
