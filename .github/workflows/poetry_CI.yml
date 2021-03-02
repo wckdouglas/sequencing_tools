@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    name: miniconda build
+    name: Poetry build
     runs-on: ubuntu-latest
     defaults:
       run:
