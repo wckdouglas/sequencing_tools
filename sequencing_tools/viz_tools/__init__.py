@@ -301,8 +301,8 @@ def plot_upset(fig, upset_df,
     ticks = np.linspace(0, ymax, 5)
     ticks = np.round(ticks, -1)[1:]
     ticks = np.array(ticks, dtype='int')
-    bar_ax.set_yticks(ticks)
-    bar_ax.set_yticklabels(ticks, fontsize=fontsize)
+    #bar_ax.set_yticks(ticks)
+    #bar_ax.set_yticklabels(ticks, fontsize=fontsize)
     [bar_ax.spines[s].set_visible(False) for s in ['top','right']]
     bar_ax.set_ylabel(ylab, fontsize=fontsize)
     bar_ax.set_xlim(-0.5,upset_df.shape[0]-0.5)

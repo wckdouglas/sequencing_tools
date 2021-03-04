@@ -220,7 +220,7 @@ class GappedKmer:
         self.k = k
         self.m = m
         self.dna_bases = ["A","C","T","G"]
-        self.default_row = self._init_row()
+        self.default_row = self._init_row_()
 
     def compute(self, sequence):
         row = self.default.copy()
