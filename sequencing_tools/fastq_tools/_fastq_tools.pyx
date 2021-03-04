@@ -223,7 +223,7 @@ class GappedKmer:
         self.default_row = self._init_row_()
 
     def compute(self, sequence):
-        row = self.default.copy()
+        row = self.default_row.copy()
         for kmer in extract_kmer(sequence, k = self.k):
             for key in row.keys():
                 if levenshtein_distance(kmer, key) <= self.m:
