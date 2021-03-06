@@ -8,4 +8,5 @@ class SeqUtilsError(ValueError):
         if a < 0:
            raise SeqUtilsError("a should be > 0")
     """
+
     pass
