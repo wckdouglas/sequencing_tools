@@ -30,9 +30,12 @@ jobs:
         with:
           poetry-version: 1.1.2
 
-      - name: Install
+      - name: Install dependencies
         run: |
           poetry install
+
+      - name: Install sequencing_tools
+        run: |
           pip install .
 
       - name: install samtools
