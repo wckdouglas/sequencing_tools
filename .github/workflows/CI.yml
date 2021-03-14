@@ -45,7 +45,7 @@ jobs:
 
       - name: Install sequencing_tools
         run: |
-          pip install .
+          python setup.py install
 
       - name: make test files
         run: |
