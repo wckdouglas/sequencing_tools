@@ -41,7 +41,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          conda install -c bioconda python=3.6 cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools future pytest-cov codecov 
+          conda install -c bioconda python=3.6 cython numpy networkx seaborn pyBigwig six pysam ujson pytest scipy matplotlib samtools=1.9 future pytest-cov codecov 
 
       - name: Install sequencing_tools
         run: |
