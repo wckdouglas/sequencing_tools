@@ -30,6 +30,11 @@ jobs:
         with:
           poetry-version: 1.1.2
 
+      - name: install samtools
+        run: |
+          sudo apt update
+          sudo apt install Libhts-dev=1.7.2
+
       - name: Install dependencies
         run: |
           poetry install
@@ -37,11 +42,6 @@ jobs:
       - name: Install sequencing_tools
         run: |
           poetry run python setup.py install
-
-      - name: install samtools
-        run: |
-          sudo apt update
-          sudo apt install Libhts-dev=1.7.2
 
       - name: make test files
         run: |
