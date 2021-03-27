@@ -36,7 +36,8 @@ jobs:
           cd /usr/bin
           wget https://github.com/samtools/htslib/archive/refs/tags/1.7.zip
           unzip 1.7.zip
-          cd 1.7
+          rm 1.7.zip
+          cd htslib-1.7
           make
 
       - name: install samtools
@@ -44,7 +45,7 @@ jobs:
           cd /usr/bin
           wget https://github.com/samtools/samtools/archive/refs/tags/1.7.zip
           unzip 1.7.zip
-          cd 1.7
+          cd samtools-1.7
           make
 
 
