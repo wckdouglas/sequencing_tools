@@ -41,7 +41,7 @@ jobs:
       - name: install samtools
         run: |
           sudo apt update
-          sudo apt install samtools
+          sudo apt install Libhts-dev=1.7.2
 
       - name: make test files
         run: |
