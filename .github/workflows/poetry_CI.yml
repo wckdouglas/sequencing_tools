@@ -33,7 +33,7 @@ jobs:
       - name: install samtools
         run: |
           sudo apt update
-          sudo apt install libhts-dev=1.7.2
+          sudo apt install libhts-dev=1.7-2
 
       - name: Install dependencies
         run: |
