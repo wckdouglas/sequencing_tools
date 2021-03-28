@@ -11,7 +11,9 @@ logger = logging.getLogger(os.path.basename(__file__))
 PROG_PREFIX = ""
 if os.environ["_"].endswith("poetry"):
     PROG_PREFIX = "poetry run "
-    logger.info
+    logger.info('Using poetry')
+else:
+    logger.info('Using python')
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
 
