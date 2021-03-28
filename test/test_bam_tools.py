@@ -92,7 +92,8 @@ def test_make_cigar_seq(cigar_nums, cigar_ops, result):
     ],
 )
 def test_cigar_to_str(cigar, cigar_seq):
-    assert cigar_to_str(cigar) == cigar_seq
+    result = cigar_to_str(cigar) 
+    assert result == cigar_seq
 
 
 @pytest.mark.parametrize(
