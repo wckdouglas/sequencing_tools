@@ -36,7 +36,7 @@ jobs:
           tar -xvjf htslib-1.7.tar.bz2
           cd htslib-1.7
           make
-          make install
+          sudo make install
 
       - name: install samtools
         run: |
@@ -44,7 +44,7 @@ jobs:
           tar -vxjf samtools-1.7.tar.bz2
           cd samtools-1.7
           make
-          make install
+          sudo make install
 
 
 
