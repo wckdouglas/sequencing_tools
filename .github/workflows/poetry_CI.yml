@@ -63,8 +63,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry shell
-          pytest --cov=./ 
+          poetry run pytest --cov=./ 
 
       - name: codecov
         run: |
