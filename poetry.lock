@@ -215,7 +215,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "pysam"
-version = "0.16.0"
+version = "0.16.0.1"
 description = "pysam"
 category = "main"
 optional = false
@@ -350,7 +350,7 @@ testing = ["pytest (>=3.5,!=3.7.3)", "pytest-checkdocs (>=1.2.3)", "pytest-flake
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "59e9e6da7aacbd0665b0168ecbb3293e44b2342aaa4bdffb0d2b847bec3dbecf"
+content-hash = "c1c728e124f125da58aa101a8b15c2ff0ba5243043de5d91d82694d86eb122cf"
 
 [metadata.files]
 atomicwrites = [
@@ -586,13 +586,13 @@ pyparsing = [
     {file = "pyparsing-2.4.7.tar.gz", hash = "sha256:c203ec8783bf771a155b207279b9bccb8dea02d8f0c9e5f8ead507bc3246ecc1"},
 ]
 pysam = [
-    {file = "pysam-0.16.0-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:688ac7f4d7f134a8c7193963c7cccbb3f3f630c51909bb76d809b4db35aaf8f0"},
-    {file = "pysam-0.16.0-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:1cb17ff9562a5b075a609f070ab4b3290e8a8021eaf2016f4248ee4202e47957"},
-    {file = "pysam-0.16.0-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:d01e72eafea1867c714f0754339b3c549c44dc535e5c497601789ba1dc1f3fca"},
-    {file = "pysam-0.16.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:f4e31ffd685d333431ac7e7dd74f83f4e14eff1905a4ef1188b2b03da8854f01"},
-    {file = "pysam-0.16.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:9c532f33b5379744941d8fcdf00e6d75aef48319372789836ff1c3f717b84563"},
-    {file = "pysam-0.16.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:e1aa22051efa4305ca045209bb184731f8f8e20afc833716ed91e89f1533ff53"},
-    {file = "pysam-0.16.0.tar.gz", hash = "sha256:07c9d3a772f90e9907a68bc3f495e2c608018a92888b9cf9f1197cb3a35aa9c3"},
+    {file = "pysam-0.16.0.1-cp27-cp27m-manylinux1_x86_64.whl", hash = "sha256:9e3597a49e4bc72c31199d6231018ad3034e08a8243b9f8086953afb2ab5a3af"},
+    {file = "pysam-0.16.0.1-cp27-cp27mu-manylinux1_x86_64.whl", hash = "sha256:a5a0fc1f0d724d0b7789341add26ba181ac009430021f0998f6083fb62432193"},
+    {file = "pysam-0.16.0.1-cp35-cp35m-manylinux1_x86_64.whl", hash = "sha256:9da29490c666a963e5a7f6f5114e86c9b36a8a6adc2227f5772bdc38c09d2d37"},
+    {file = "pysam-0.16.0.1-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:107eca9050d8140910b5ea5c5a9e66313e1155eb44cc180e10f48f9cb71e8095"},
+    {file = "pysam-0.16.0.1-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:f65659deadc4904984de24cb6f3878b6052cf504a2a85a50b80f2ff7939f96db"},
+    {file = "pysam-0.16.0.1-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:3eb70111a5ed86cc7a048c9b2205087b1184093e6135f02ad7f144b206951452"},
+    {file = "pysam-0.16.0.1.tar.gz", hash = "sha256:d428a9768691d5ea3c28cc52a949c920ae691aa4c110a8b7328dc4d165ef1ad6"},
 ]
 pytest = [
     {file = "pytest-5.4.2-py3-none-any.whl", hash = "sha256:95c710d0a72d91c13fae35dce195633c929c3792f54125919847fdcdf7caa0d3"},
