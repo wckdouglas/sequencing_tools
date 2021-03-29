@@ -51,7 +51,7 @@ jobs:
 
       - name: Test with pytest
         run: |
-          poetry run pytest --cov=./ 
+          poetry run pytest --cov=./ -l  -rPap -vvv -p no:warnings
 
       - name: codecov
         run: |
