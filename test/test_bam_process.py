@@ -17,6 +17,10 @@ else:
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
 
+def run_system(cmd):
+    logger.info('Running %s' %cmd)
+    os.system(cmd)
+
 
 def test_bam():
     in_bam = test_data_path + "/test.bam"
@@ -27,7 +31,7 @@ def test_bam():
         "| {PREFIX} seqtools dedup -i - "
         "> {out_bed}".format(in_bam=in_bam, out_bed=out_bed, PREFIX=PROG_PREFIX)
     )
-    os.system(command)
+    run_system(command)
     assert filecmp.cmp(out_bed, test_data_path + "/test.bed")
     os.remove(out_bed)
 
@@ -38,7 +42,7 @@ def test_multi():
     command = "{PREFIX} seqtools filterMulti -i  {in_bam} -o - | samtools view > {out_bam}".format(
         in_bam=in_bam, out_bam=out_bam, PREFIX=PROG_PREFIX
     )
-    os.system(command)
+    run_system(command)
     assert filecmp.cmp(out_bam, test_data_path + "/multi.result")
     os.remove(out_bam)
 
@@ -60,13 +64,13 @@ def test_correct():
     command = "{PREFIX} seqtools demux -i  {in_bam} -o {out_fq} -c -t RX".format(
         in_bam=in_bam, out_fq=out_fq, PREFIX=PROG_PREFIX
     )
-    os.system(command)
+    run_system(command)
     assert same_fq(out_fq, test_data_path + "/corrected.conserve.fq")
 
     command = "{PREFIX} seqtools demux -i  {in_bam} -o {out_fq} -t RX".format(
         in_bam=in_bam, out_fq=out_fq, PREFIX=PROG_PREFIX
     )
-    os.system(command)
+    run_system(command)
     assert same_fq(out_fq, test_data_path + "/corrected.qual.fq")
     os.remove(out_fq)
 
@@ -77,7 +81,7 @@ def test_filter():
     command = "{PREFIX} seqtools filterSoftClip  --pe -s 0 -i {in_bam} -o - | samtools view > {out_bam}".format(
         in_bam=in_bam, out_bam=out_bam, PREFIX=PROG_PREFIX
     )
-    os.system(command)
+    run_system(command)
     assert filecmp.cmp(out_bam, test_data_path + "/clipped.result")
     os.remove(out_bam)
 
@@ -90,5 +94,5 @@ def test_stranded_base_count():
         "> {path}/test_pileup.txt".format(path=test_data_path, PREFIX=PROG_PREFIX)
     )
 
-    os.system(command)
+    run_system(command)
     assert filecmp.cmp(golden_file, test_data_path + "/test_pileup.txt")
