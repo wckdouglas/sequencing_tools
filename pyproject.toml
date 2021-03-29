@@ -18,6 +18,7 @@ scipy = "1.4.1"
 ujson = "2.0.3"
 Cython = "^0.29.22"
 pytest-cov = "^2.11.1"
+pytest-xdist = "^2.2.1"
 
 [tool.poetry.dev-dependencies]
 

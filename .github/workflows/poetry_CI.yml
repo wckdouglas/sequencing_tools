@@ -39,10 +39,6 @@ jobs:
         run: |
           poetry install
 
-      - name: Install sequencing_tools
-        run: |
-          poetry run python setup.py install
-
       - name: make test files
         run: |
           for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
