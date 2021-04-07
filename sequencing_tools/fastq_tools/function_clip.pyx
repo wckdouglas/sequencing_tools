@@ -5,18 +5,18 @@ from multiprocessing import Pool
 from functools import partial
 import numpy as np
 import gzip
-cimport numpy as np
 import sys
-from cpython cimport bool
+import logging
 import io
 import os
-from libc.math cimport fmin
-from ._fastq_tools cimport fastqRecord
 from ._fastq_tools import readfq, reverse_complement
 from .cutadapt_align import locate
 from ..io_tools import xopen
 from ..stats_tools import hamming_distance
-import logging
+from libc.math cimport fmin
+from ._fastq_tools cimport fastqRecord
+from cpython cimport bool
+cimport numpy as np
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -24,6 +24,7 @@ logger = logging.getLogger(os.path.basename(__file__))
 class Adapters():
     TGIRT_R1 = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
     TGIRT_R2 = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
+
 
 class ReadTrimmer:
     """
