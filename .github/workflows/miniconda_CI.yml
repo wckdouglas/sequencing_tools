@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    timeout-minutes: 20
     name: miniconda build
     runs-on: ubuntu-latest
     defaults:

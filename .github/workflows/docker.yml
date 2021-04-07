@@ -5,8 +5,8 @@ on:
 
 
 jobs:
-
   build:
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
   
