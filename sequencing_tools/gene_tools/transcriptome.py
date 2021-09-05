@@ -5,11 +5,13 @@ Modeul for manipulating transcriptome annotation data
 
 """
 
+import logging
+import sqlite3
 import sys
 from collections import defaultdict
+
 from pandas import read_csv, read_sql_query
-import sqlite3
-import logging
+
 from ..utils import SeqUtilsError
 
 logging.basicConfig(level=logging.INFO)

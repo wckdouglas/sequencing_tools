@@ -1,17 +1,21 @@
 from __future__ import division, print_function
-import numpy as np
-import pysam
-from builtins import zip, map
-from libc.math cimport log10, exp, log
+
+import logging
 import os
 import sys
-from cpython cimport bool
+from builtins import map, zip
+
+import numpy as np
+import pysam
 from scipy.special import logsumexp
 from six.moves import xrange
-import logging
+
+from libc.mathcimportlog10 import exp, log
+
 from ..consensus_tools import ErrorCorrection
 from ..fastq_tools import reverse_complement
 from ..utils import SeqUtilsError
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

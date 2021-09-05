@@ -1,6 +1,7 @@
+import gzip
 import os
 from urllib.request import Request, urlopen
-import gzip
+
 from sequencing_tools.gene_tools import transcriptome
 
 DataDir = os.path.dirname(os.path.abspath(__file__))

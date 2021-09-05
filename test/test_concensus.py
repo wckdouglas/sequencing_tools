@@ -1,8 +1,10 @@
 import os
+
 import numpy as np
 import pysam
-from sequencing_tools.consensus_tools import ConsensusAlignments
+
 from sequencing_tools.bam_tools.pileup_errors import analyze_region
+from sequencing_tools.consensus_tools import ConsensusAlignments
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
 

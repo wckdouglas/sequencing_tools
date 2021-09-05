@@ -1,11 +1,14 @@
-from sequencing_tools.bam_tools import *
-from sequencing_tools.consensus_tools import ErrorCorrection, calculatePosterior
+import os
+
 import numpy as np
 import pysam
+import pytest
 from pysam import AlignedRead
 from scipy.special import logsumexp
-import os
-import pytest
+
+from sequencing_tools.bam_tools import *
+from sequencing_tools.consensus_tools import (ErrorCorrection,
+                                              calculatePosterior)
 
 
 def artificial_read(flag=163):
@@ -92,7 +95,7 @@ def test_make_cigar_seq(cigar_nums, cigar_ops, result):
     ],
 )
 def test_cigar_to_str(cigar, cigar_seq):
-    result = cigar_to_str(cigar) 
+    result = cigar_to_str(cigar)
     assert result == cigar_seq
 
 

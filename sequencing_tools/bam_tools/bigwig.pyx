@@ -1,12 +1,13 @@
-from cpython cimport array
-from builtins import map, range
-import pyBigWig as pbw
-import numpy as np
 import array
-import sys
-import os
-import six
 import logging
+import os
+import sys
+from builtins import map, range
+
+import numpy as np
+import pyBigWig as pbw
+import six
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 long = six.integer_types[-1]

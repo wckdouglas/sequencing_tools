@@ -1,14 +1,14 @@
 import os
 import re
 import string
-import six
-from itertools import product
-import numpy as np
 from collections import defaultdict
-from libc.stdint cimport uint32_t
-from ..utils import SeqUtilsError
-from ..stats_tools import levenshtein_distance
+from itertools import product
 
+import numpy as np
+import six
+
+from ..stats_tools import levenshtein_distance
+from ..utils import SeqUtilsError
 
 # define fastq record type
 cdef class fastqRecord():

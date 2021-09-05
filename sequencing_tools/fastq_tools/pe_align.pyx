@@ -1,15 +1,17 @@
 from __future__ import print_function
+
+import logging
 import sys
 from builtins import zip
 from functools import partial
-from cpython cimport bool
-from ._fastq_tools import read_interleaved, reverse_complement
-from ._fastq_tools cimport fastqRecord
-from .cutadapt_align import locate
-from ..io_tools import xopen
-from ..consensus_tools import ErrorCorrection
+
 import numpy as np
-import logging 
+
+from ..consensus_tools import ErrorCorrection
+from ..io_tools import xopen
+from ._fastq_tools import read_interleaved, reverse_complement
+from .cutadapt_align import locate
+
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger('PE align')
 cdef:

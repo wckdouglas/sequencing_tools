@@ -1,15 +1,19 @@
-from __future__ import print_function, division
-from libc.math cimport log, ceil, round
-from libc.stdint cimport uint32_t
-from builtins import range
+from __future__ import division, print_function
+
 import fileinput
-from operator import itemgetter
-import sys
-import os
-import cython
-from itertools import groupby
-from .bed_dedup import fragment_coordinates
 import logging
+import os
+import sys
+from builtins import range
+from itertools import groupby
+from operator import itemgetter
+
+import cython
+
+from libc.mathcimportlog import ceil, round
+
+from .bed_dedup import fragment_coordinates
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

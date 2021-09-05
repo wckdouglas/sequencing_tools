@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-import pysam
-import numpy as np
 import sys
-from ..bam_tools.filter_multi import process_pair_bam, process_single_bam
 from functools import partial
+
+import numpy as np
+import pysam
+
+from ..bam_tools.filter_multi import process_pair_bam, process_single_bam
 
 
 def getopt(subparsers):

@@ -1,23 +1,25 @@
 from __future__ import print_function
-import numpy as np
-from matplotlib import use as mpl_use
-mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
-import matplotlib.pyplot as plt
-import sys
-import ujson
+
+import logging
 import os
 import re
-from multiprocessing import Pool
-from builtins import zip, map, range
+import sys
+from builtins import map, range, zip
 from functools import partial
-from cpython cimport bool
+from multiprocessing import Pool
+
+import matplotlib.pyplot as plt
+import numpy as np
 import six
-from ..stats_tools import cy_mean, hamming_distance
-from ..fastq_tools._fastq_tools cimport fastqRecord
+import ujson
+from matplotlib import use as mpl_use
+
+from ..consensus_tools import ErrorCorrection
 from ..fastq_tools import readfq
 from ..io_tools import xopen
-from ..consensus_tools import ErrorCorrection
-import logging
+from ..stats_tools import cy_mean, hamming_distance
+
+mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -262,5 +264,3 @@ def recordsToDict(str outputprefix, str inFastq1, str inFastq2, int idx_base, in
 
     barcode_count = len(barcode_dict.keys())
     return barcode_dict, read_num, barcode_count, discarded_sequence_count
-
-

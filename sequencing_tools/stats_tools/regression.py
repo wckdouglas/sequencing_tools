@@ -1,5 +1,7 @@
-import numpy as np
 import logging
+
+import numpy as np
+
 from ..utils import SeqUtilsError
 from ._stats_tools import Bootstrap
 

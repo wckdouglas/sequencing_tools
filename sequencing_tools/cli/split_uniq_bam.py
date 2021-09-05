@@ -1,8 +1,10 @@
 #!/usrbin/env python
 
-import pysam
-import sys
 import re
+import sys
+
+import pysam
+
 from ..bam_tools.split_bam_tools import split_bam_pair, split_bam_single
 
 

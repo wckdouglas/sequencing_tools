@@ -1,21 +1,24 @@
 from __future__ import print_function
-from matplotlib import use as mpl_use
-mpl_use('Agg')
-import numpy as np
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from cpython cimport bool
-import pysam
+
 import array
-import sys
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-from collections import defaultdict
-import time
 import logging
 import os
-from .read_cluster import readGroup
+import sys
+import time
+from collections import defaultdict
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import pysam
+import seaborn as sns
+from matplotlib import use as mpl_use
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
 from ..stats_tools import hamming_distance, levenshtein_distance
+from .read_cluster import readGroup
+
+mpl_use('Agg')
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

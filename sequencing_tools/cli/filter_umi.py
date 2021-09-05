@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+
 from ..bam_tools.umi_tag import filter_umi
 
 

@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import pysam
-import time
-import sys
 import glob
-import os
-from functools import partial
 import logging
+import os
+import sys
+import time
+from functools import partial
+
+import pysam
+
 from ..bam_tools.bam_cluster import cluster_bam
 
 logging.basicConfig(level=logging.INFO)

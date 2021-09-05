@@ -1,8 +1,11 @@
 from __future__ import print_function
+
 import os
-from sequencing_tools.fasta_tools import readfa, MultiAlignments
-from sequencing_tools.fastq_tools import readfq
+
 import numpy as np
+
+from sequencing_tools.fasta_tools import MultiAlignments, readfa
+from sequencing_tools.fastq_tools import readfq
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
 

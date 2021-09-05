@@ -1,16 +1,18 @@
 from __future__ import division, print_function
+
+import sys
+from builtins import map, zip
+from functools import partial
+
 import numpy as np
 import pysam
-from builtins import zip, map
-from libc.math cimport log10, exp, log
-import sys
-from cpython cimport bool
 from scipy.special import logsumexp
 from six.moves import xrange
-from functools import partial
+
+from libc.mathcimportlog10 import exp, log
+
 from ..fastq_tools import reverse_complement
 from ..utils import SeqUtilsError
-
 
 cdef:
     double MIN_Q = 33.0

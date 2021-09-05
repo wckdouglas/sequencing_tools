@@ -1,21 +1,22 @@
-from __future__ import print_function, division
-from itertools import product
-from builtins import zip, map
-from multiprocessing import Pool
-from functools import partial
-import numpy as np
+from __future__ import division, print_function
+
 import gzip
-import sys
-import logging
 import io
+import logging
 import os
-from ._fastq_tools import readfq, reverse_complement
-from .cutadapt_align import locate
+import sys
+from builtins import map, zip
+from functools import partial
+from itertools import product
+from multiprocessing import Pool
+
+import numpy as np
+
 from ..io_tools import xopen
 from ..stats_tools import hamming_distance
-from libc.math cimport fmin
-from ._fastq_tools cimport fastqRecord
-from cpython cimport bool
+from ._fastq_tools import readfq, reverse_complement
+from .cutadapt_align import locate
+
 cimport numpy as np
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

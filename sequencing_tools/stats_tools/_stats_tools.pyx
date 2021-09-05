@@ -1,11 +1,14 @@
 from __future__ import print_function
-import numpy as np
-cimport numpy as np
-from cython cimport floating
-from scipy.stats import binom
-import pandas as pd
+
 import logging
+
+import numpy as np
+import pandas as pd
+from scipy.stats import binom
+
 from ..utils import SeqUtilsError
+
+cimport numpy as np
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger('Stat tool')
 

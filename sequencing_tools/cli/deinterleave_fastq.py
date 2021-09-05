@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import sys
+
+import logging
 import os
+import sys
+
 from ..fastq_tools import read_interleaved
 from ..io_tools import xopen
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

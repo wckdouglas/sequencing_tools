@@ -1,7 +1,8 @@
 from __future__ import print_function
-from sequencing_tools.bam_tools import bed_dedup
-from sequencing_tools.bam_tools import poisson_umi_tools
+
 from itertools import groupby
+
+from sequencing_tools.bam_tools import bed_dedup, poisson_umi_tools
 
 
 def test_fragment_group():

@@ -1,8 +1,9 @@
-from pandas import Series
-from builtins import zip, range
-import numpy as np
 import re
+from builtins import range, zip
 from collections import OrderedDict
+
+import numpy as np
+from pandas import Series
 
 
 def douglas_palette():

@@ -1,9 +1,11 @@
 from __future__ import print_function
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-import pysam
+
+import re
 import sys
 from functools import partial
-import re
+
+import pysam
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
 
 cpdef add_umi_tag(str in_bam, str out_bam, str tag, str delim, int frag):
     cdef:

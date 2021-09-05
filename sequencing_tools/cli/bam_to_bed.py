@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import argparse
-import sys
 import logging
 import os
+import sys
+
 from ..bam_tools.fragment_pairs import bam_to_bed
 from ..utils import SeqUtilsError
 

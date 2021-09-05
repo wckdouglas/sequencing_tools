@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import sys
-from ..bam_tools.fragment_pairs import process_bedpe
 import argparse
+import sys
+
+from ..bam_tools.fragment_pairs import process_bedpe
 
 
 def getopt(subparsers):

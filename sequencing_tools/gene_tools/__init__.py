@@ -1,8 +1,10 @@
 import os
-from operator import itemgetter
 from collections import defaultdict
+from operator import itemgetter
+
 import numpy as np
 import pysam
+
 from .transcriptome import Exon, Transcript
 
 

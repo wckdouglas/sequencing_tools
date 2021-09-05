@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-import numpy as np
-import time
-import sys
-import re
-import os
-from ..fastq_tools.function_clip import clip_pairs
 import logging
+import os
+import re
+import sys
+import time
+
+import numpy as np
+
+from ..fastq_tools.function_clip import clip_pairs
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

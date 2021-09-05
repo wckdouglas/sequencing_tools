@@ -1,5 +1,6 @@
-from sequencing_tools.gene_tools import Bed12Record, GTFRecord
 import pytest
+
+from sequencing_tools.gene_tools import Bed12Record, GTFRecord
 
 
 def gtfline():

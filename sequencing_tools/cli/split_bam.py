@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pysam
+
 from ..bam_tools.split_bam_tools import split_N_bam
 
 

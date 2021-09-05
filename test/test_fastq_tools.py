@@ -1,10 +1,10 @@
+import numpy.random as random
+import pytest
+import six
+
 from sequencing_tools.fastq_tools import *
 from sequencing_tools.fastq_tools.function_clip import ReadTrimmer
 from sequencing_tools.fastq_tools.pe_align import ConsensusBuilder
-import six
-import numpy.random as random
-import pytest
-
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
 

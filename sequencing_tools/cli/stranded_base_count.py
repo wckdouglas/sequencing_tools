@@ -1,20 +1,24 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import pysam
-import numpy as np
-from functools import partial
-from collections import defaultdict
-import re
-import os
-import sys
-import string
+
 import argparse
-from ..bam_tools.pileup_errors import extract_bases, analyze_region, make_regions
-from ..io_tools import xopen
-from operator import itemgetter
-import six
 import logging
+import os
+import re
+import string
+import sys
+from collections import defaultdict
+from functools import partial
+from operator import itemgetter
+
+import numpy as np
+import pysam
+import six
+
+from ..bam_tools.pileup_errors import (analyze_region, extract_bases,
+                                       make_regions)
+from ..io_tools import xopen
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

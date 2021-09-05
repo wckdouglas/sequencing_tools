@@ -1,24 +1,27 @@
 #!/usr/bin/env python
 
-import os
 import filecmp
-from collections import defaultdict
 import logging
+import os
+from collections import defaultdict
+
 from sequencing_tools.fastq_tools import readfq
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
 PROG_PREFIX = ""
 if os.environ["_"].endswith("poetry"):
     PROG_PREFIX = "poetry run "
-    logger.info('Using poetry')
+    logger.info("Using poetry")
 else:
-    logger.info('Using python')
+    logger.info("Using python")
 
 test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
 
+
 def run_system(cmd):
-    logger.info('Running %s' %cmd)
+    logger.info("Running %s" % cmd)
     os.system(cmd)
 
 

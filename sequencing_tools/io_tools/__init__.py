@@ -3,16 +3,16 @@ Modified from https://github.com/marcelm/xopen
 Provide utils for fast opening of files
 Open compressed files transparently.
 """
-from __future__ import print_function, division, absolute_import
+from __future__ import absolute_import, division, print_function
 
 import gzip
-import sys
 import io
 import os
 import re
+import sys
 import time
-import pandas as pd
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
+
 import pandas as pd
 
 __version__ = "0.3.2"

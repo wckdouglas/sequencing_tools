@@ -1,15 +1,17 @@
 from __future__ import print_function
-import os
-import pysam
-from operator import itemgetter
-from cpython cimport bool
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+
 import logging
+import os
 import sys
-from ._bam_tools import concordant_pairs, read_ends,\
-                                        fragment_ends, check_concordant, \
-                                        check_primary
+from operator import itemgetter
+
+import pysam
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
 from ..utils import SeqUtilsError
+from ._bam_tools import (check_concordant, check_primary, concordant_pairs,
+                         fragment_ends, read_ends)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

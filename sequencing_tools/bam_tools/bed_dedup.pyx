@@ -1,18 +1,21 @@
 from __future__ import print_function
-import sys
-import os
-import fileinput 
-from operator import itemgetter
-from itertools import combinations, groupby
-from functools import partial
-from collections import Counter, defaultdict
-from networkx import Graph, connected_components
-import six
+
+import fileinput
 import logging
-from libc.stdint cimport uint32_t
+import os
+import sys
+from collections import Counter, defaultdict
+from functools import partial
+from itertools import combinations, groupby
+from operator import itemgetter
+
+import six
+from networkx import Graph, connected_components
+
 from ..stats_tools import hamming_distance, levenshtein_distance
-from .umi_network import demultiplex_directional, demultiplex_adj
 from ..utils import SeqUtilsError
+from .umi_network import demultiplex_adj, demultiplex_directional
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

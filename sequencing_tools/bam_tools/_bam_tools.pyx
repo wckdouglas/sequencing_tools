@@ -1,10 +1,11 @@
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from builtins import map, zip, range
-from cpython cimport bool
-import pysam
 import re
+from builtins import map, range, zip
 from operator import itemgetter
+
+import pysam
 import six
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
 from ..utils import SeqUtilsError
 
 numbers = re.compile(r'[0-9]+')
@@ -325,4 +326,3 @@ def paired_bam(AlignmentFile bam_handle):
 
     except StopIteration:
         pass
-

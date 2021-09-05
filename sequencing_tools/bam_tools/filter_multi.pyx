@@ -1,16 +1,15 @@
 from __future__ import print_function
-import pysam
-from cpython cimport bool
-import sys
-from pysam.libcalignmentfile cimport AlignedSegment
-from pysam.libctabix cimport TabixFile
-import numpy as np
-from builtins import zip, range
-import re
-from libc.stdlib cimport rand
-from itertools import groupby
+
 import logging
 import os
+import re
+import sys
+from builtins import range, zip
+from itertools import groupby
+
+import numpy as np
+import pysam
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

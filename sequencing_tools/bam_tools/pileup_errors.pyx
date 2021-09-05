@@ -1,8 +1,10 @@
 from __future__ import print_function
-from builtins import zip, map
+
+from builtins import map, zip
 from collections import defaultdict
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from cpython cimport bool
+
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
 from ..bam_tools import *
 
 

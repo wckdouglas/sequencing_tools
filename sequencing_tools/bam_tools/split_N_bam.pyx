@@ -1,9 +1,13 @@
 from __future__ import print_function
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from .fragment_pairs import concordant_pairs, is_split_pair
-import sys
+
 import logging
 import os
+import sys
+
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
+from .fragment_pairs import concordant_pairs, is_split_pair
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

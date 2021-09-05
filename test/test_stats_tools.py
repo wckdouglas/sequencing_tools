@@ -1,11 +1,8 @@
-from sequencing_tools.stats_tools import (
-    p_adjust,
-    levenshtein_distance,
-    hamming_distance,
-    Bootstrap,
-)
-from sequencing_tools.stats_tools.regression import GradientDescent
 import numpy as np
+
+from sequencing_tools.stats_tools import (Bootstrap, hamming_distance,
+                                          levenshtein_distance, p_adjust)
+from sequencing_tools.stats_tools.regression import GradientDescent
 
 
 def test_padjust():

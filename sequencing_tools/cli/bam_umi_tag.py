@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-from ..bam_tools.umi_tag import add_umi_tag
 import argparse
+
+from ..bam_tools.umi_tag import add_umi_tag
 
 
 def getopt(subparsers):

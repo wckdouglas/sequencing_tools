@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-from sequencing_tools.bam_tools import umi_network
 import time
 from collections import Counter
+
+from sequencing_tools.bam_tools import umi_network
 
 
 def test_umi_dedup_directional():

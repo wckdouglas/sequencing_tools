@@ -1,14 +1,17 @@
 from __future__ import print_function
-import sys
-import re
+
+import logging
 import os
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-from cpython cimport bool
-from functools import partial
+import re
+import sys
 from builtins import zip
+from functools import partial
+
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
 from ._bam_tools import split_cigar
 from .fragment_pairs import concordant_pairs, is_split_pair
-import logging
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
@@ -130,4 +133,3 @@ cpdef int split_N_bam(AlignmentFile inbam,
             break
     logger.info('Written %i unsplit and %i split alignments' %(out, split_out))
     return 0
- 

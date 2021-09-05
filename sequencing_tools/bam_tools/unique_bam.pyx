@@ -1,14 +1,16 @@
 from __future__ import print_function
-from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
-import pysam
+
+import logging
+import os
 import re
 import sys
-import os
+
 import numpy as np
-from numpy cimport ndarray
-from cpython cimport bool
-from ._bam_tools import concordant_alignment, split_cigar, concordant_pairs
-import logging
+import pysam
+from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
+from ._bam_tools import concordant_alignment, concordant_pairs, split_cigar
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
