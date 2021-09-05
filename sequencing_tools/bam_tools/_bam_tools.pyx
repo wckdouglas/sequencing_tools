@@ -1,6 +1,7 @@
 import re
 from builtins import map, range, zip
 from operator import itemgetter
+from libcpp cimport bool
 
 import pysam
 import six
