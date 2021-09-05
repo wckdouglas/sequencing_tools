@@ -6,6 +6,7 @@ import logging
 import os
 import sys
 from builtins import map, zip
+from enum import Enum
 from functools import partial
 from itertools import product
 from multiprocessing import Pool
@@ -22,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 
 
-class Adapters():
+class Adapters(Enum):
     TGIRT_R1 = 'GATCGTCGGACTGTAGAACTCTGAACGTGTAGA'
     TGIRT_R2 = 'AAGATCGGAAGAGCACACGTCTGAACTCCAGTCAC'
 
@@ -73,7 +74,7 @@ class ReadTrimmer:
                     usable_seq, hamming_threshold, adapter, 
                     min_length)
         with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
-            adapter = Adapters().TGIRT_R1
+            adapter = Adapters.TGIRT_R1.value
             iterable = zip(readfq(in1), readfq(in2))
             for count, (umi_read, opposite_read) in enumerate(iterable):
                 ret_code, umi_read, opposite_read = clipping.trim_reads(umi_read, opposite_read)
@@ -93,7 +94,7 @@ class ReadTrimmer:
                 umi_bases = 6, 
                 usable_seq = 6, 
                 hamming_threshold = 6, 
-                adapter = Adapters.TGIRT_R1, 
+                adapter = Adapters.TGIRT_R1.value, 
                 min_length = 12):
 
         self.barcode_cut_off = barcode_cut_off #: UMI average quality cute off, if UMI average Q-score lower than this, ther read pair will be discarded
@@ -229,11 +230,11 @@ def clip_pairs(inFastq1, inFastq2, out_file, umi_bases,
     out_handle = sys.stdout if out_file in ['/dev/stdout','-'] else xopen(out_file, 'w')
     with xopen(inFastq1, mode = 'r') as in1, xopen(inFastq2, mode = 'r') as in2:
         if read == 'read1':
-            adapter = Adapters().TGIRT_R1
+            adapter = Adapters.TGIRT_R1.value
             iterable = zip(readfq(in1), readfq(in2))
 
         else:
-            adapter = Adapters().TGIRT_R2
+            adapter = Adapters.TGIRT_R2.value
             iterable = zip(readfq(in2), readfq(in1))
 
         clipping = ReadTrimmer(barcode_cut_off, constant,
