@@ -5,7 +5,7 @@ from libcpp cimport bool
 
 import pysam
 import six
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfilecimportAlignmentFile cimport AlignedSegment
 
 from ..utils import SeqUtilsError
 
