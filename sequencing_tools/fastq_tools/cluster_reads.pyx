@@ -14,10 +14,13 @@ import six
 import ujson
 from matplotlib import use as mpl_use
 
+from ..fastq_tools._fastq_tools cimport fastqRecord
 from ..consensus_tools import ErrorCorrection
 from ..fastq_tools import readfq
 from ..io_tools import xopen
 from ..stats_tools import cy_mean, hamming_distance
+
+from cpython cimport bool
 
 mpl_use('Agg')  # Must be before importing matplotlib.pyplot or pylab
 logging.basicConfig(level=logging.INFO)

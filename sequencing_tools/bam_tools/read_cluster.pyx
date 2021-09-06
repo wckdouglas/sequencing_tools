@@ -10,7 +10,8 @@ import pysam
 from scipy.special import logsumexp
 from six.moves import xrange
 
-from libc.mathcimportlog10 import exp, log
+from libc.math cimport log10, exp, log
+from cpython cimport bool
 
 from ..consensus_tools import ErrorCorrection
 from ..fastq_tools import reverse_complement

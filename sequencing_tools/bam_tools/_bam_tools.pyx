@@ -1,11 +1,12 @@
 import re
 from builtins import map, range, zip
 from operator import itemgetter
-from libcpp cimport bool
+from cpython cimport bool
 
 import pysam
 import six
-from pysam.libcalignmentfilecimportAlignmentFile cimport AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+
 
 from ..utils import SeqUtilsError
 

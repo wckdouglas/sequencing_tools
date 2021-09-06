@@ -18,7 +18,10 @@ from ..stats_tools import hamming_distance
 from ._fastq_tools import readfq, reverse_complement
 from .cutadapt_align import locate
 
+from libc.math cimport fmin
 cimport numpy as np
+from ._fastq_tools cimport fastqRecord
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

@@ -5,7 +5,8 @@ import sys
 from functools import partial
 
 import pysam
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+
 
 cpdef add_umi_tag(str in_bam, str out_bam, str tag, str delim, int frag):
     cdef:

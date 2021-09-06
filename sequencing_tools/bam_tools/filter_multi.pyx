@@ -10,6 +10,12 @@ from itertools import groupby
 import numpy as np
 import pysam
 
+from pysam.libcalignmentfile cimport AlignedSegment
+from pysam.libctabix cimport TabixFile
+
+from libc.stdlib cimport rand
+
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
 

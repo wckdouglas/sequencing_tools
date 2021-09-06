@@ -3,9 +3,10 @@ from __future__ import print_function
 from builtins import map, zip
 from collections import defaultdict
 
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 
 from ..bam_tools import *
+from cpython cimport bool
 
 
 def extract_bases(base_dict, pos):

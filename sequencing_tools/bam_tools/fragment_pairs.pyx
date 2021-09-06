@@ -6,7 +6,8 @@ import sys
 from operator import itemgetter
 
 import pysam
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+from cpython cimport bool
 
 from ..utils import SeqUtilsError
 from ._bam_tools import (check_concordant, check_primary, concordant_pairs,

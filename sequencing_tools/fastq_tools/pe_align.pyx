@@ -12,6 +12,9 @@ from ..io_tools import xopen
 from ._fastq_tools import read_interleaved, reverse_complement
 from .cutadapt_align import locate
 
+from ._fastq_tools cimport fastqRecord
+from cpython cimport bool
+
 logging.basicConfig(level = logging.INFO)
 logger = logging.getLogger('PE align')
 cdef:

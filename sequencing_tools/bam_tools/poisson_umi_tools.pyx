@@ -10,7 +10,8 @@ from operator import itemgetter
 
 import cython
 
-from libc.mathcimportlog import ceil, round
+from libc.math cimport log, ceil, round
+from libc.stdint cimport uint32_t
 
 from .bed_dedup import fragment_coordinates
 

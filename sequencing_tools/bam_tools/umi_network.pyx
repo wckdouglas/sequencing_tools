@@ -4,8 +4,6 @@ from itertools import combinations
 import six
 from networkx import Graph, connected_components
 
-from sequencing_tools.stats_tools import hamming_distance
-
 from ..stats_tools import hamming_distance, levenshtein_distance
 
 

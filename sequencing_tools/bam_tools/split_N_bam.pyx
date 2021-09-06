@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 
 from .fragment_pairs import concordant_pairs, is_split_pair
 

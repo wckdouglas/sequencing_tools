@@ -7,13 +7,14 @@ import sys
 import time
 from collections import defaultdict
 
+from cpython cimport bool
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pysam
 import seaborn as sns
 from matplotlib import use as mpl_use
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 
 from ..stats_tools import hamming_distance, levenshtein_distance
 from .read_cluster import readGroup

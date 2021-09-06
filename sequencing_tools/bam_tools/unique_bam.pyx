@@ -7,7 +7,9 @@ import sys
 
 import numpy as np
 import pysam
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+from numpy cimport ndarray
 
 from ._bam_tools import concordant_alignment, concordant_pairs, split_cigar
 

@@ -12,6 +12,8 @@ from operator import itemgetter
 import six
 from networkx import Graph, connected_components
 
+from libc.stdint cimport uint32_t
+
 from ..stats_tools import hamming_distance, levenshtein_distance
 from ..utils import SeqUtilsError
 from .umi_network import demultiplex_adj, demultiplex_directional

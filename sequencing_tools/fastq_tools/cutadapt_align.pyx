@@ -1,6 +1,6 @@
 # cython: profile=False, emit_code_comments=False
 # Module from cutadapt 
-from cpython.memcimportPyMem_Malloc import PyMem_Free, PyMem_Realloc
+from cpython.mem cimport PyMem_Malloc, PyMem_Free, PyMem_Realloc
 
 DEF START_WITHIN_SEQ1 = 1
 DEF START_WITHIN_SEQ2 = 2

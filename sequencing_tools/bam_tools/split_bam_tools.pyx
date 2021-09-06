@@ -7,7 +7,8 @@ import sys
 from builtins import zip
 from functools import partial
 
-from pysam.libcalignmentfilecimportAlignmentFile import AlignedSegment
+from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
+from cpython cimport bool
 
 from ._bam_tools import split_cigar
 from .fragment_pairs import concordant_pairs, is_split_pair

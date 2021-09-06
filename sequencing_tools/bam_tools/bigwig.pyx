@@ -7,6 +7,8 @@ from builtins import map, range
 import numpy as np
 import pyBigWig as pbw
 import six
+from cpython cimport array
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))
