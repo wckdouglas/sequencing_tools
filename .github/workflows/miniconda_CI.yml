@@ -38,11 +38,12 @@ jobs:
           conda list
           conda config --show-sources
           conda config --show
+          conda install -c conda-forge mamba
 
 
       - name: Install dependencies
         run: |
-          conda install -c bioconda -c conda-forge \
+          mamba install -c bioconda -c conda-forge \
                 python=3.6 cython \
                 numpy=1.18.4 networkx=2.4 seaborn pandas=1.0.4 \
                 pyBigwig=0.3.17 six pysam=0.16.0.1 ujson pytest \
