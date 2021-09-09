@@ -1,19 +1,18 @@
-#!/usr/bin/env python
-
-import argparse
-import glob
 import logging
 import os
-import sys
 import time
 from collections import defaultdict
 from sys import stderr
 
 import numpy as np
 
-from ..fastq_tools.cluster_reads import (Clustering, dictToJson,
-                                         plotBCdistribution, recordsToDict)
-from ..utils import SeqUtilsError
+from sequencing_tools.fastq_tools.cluster_reads import (
+    Clustering,
+    dictToJson,
+    plotBCdistribution,
+    recordsToDict,
+)
+from sequencing_tools.utils import SeqUtilsError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

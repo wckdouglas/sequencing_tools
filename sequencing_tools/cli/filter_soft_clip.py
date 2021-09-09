@@ -1,14 +1,9 @@
-#!/usr/bin/env python
-
 import logging
 import os
-import sys
 from functools import partial
 
-import numpy as np
-import pysam
 
-from ..bam_tools.unique_bam import filter_bam_pair_end, filter_bam_single_end
+from sequencing_tools.bam_tools.unique_bam import filter_bam_pair_end, filter_bam_single_end
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

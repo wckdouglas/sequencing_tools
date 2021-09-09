@@ -8,10 +8,10 @@ import sys
 import numpy as np
 import pysam
 
+from sequencing_tools.bam_tools._bam_tools import concordant_alignment, concordant_pairs, split_cigar
+
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from numpy cimport ndarray
-
-from ._bam_tools import concordant_alignment, concordant_pairs, split_cigar
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

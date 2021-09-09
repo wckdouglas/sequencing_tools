@@ -14,9 +14,9 @@ from networkx import Graph, connected_components
 
 from libc.stdint cimport uint32_t
 
-from ..stats_tools import hamming_distance, levenshtein_distance
-from ..utils import SeqUtilsError
-from .umi_network import demultiplex_adj, demultiplex_directional
+from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
+from sequencing_tools.utils import SeqUtilsError
+from sequencing_tools.bam_tools.umi_network import demultiplex_adj, demultiplex_directional
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

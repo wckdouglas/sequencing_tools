@@ -1,15 +1,10 @@
-#!/usr/bin/env python
-
-import glob
 import logging
 import os
-import sys
 import time
-from functools import partial
 
 import pysam
 
-from ..bam_tools.bam_cluster import cluster_bam
+from sequencing_tools.bam_tools.bam_cluster import cluster_bam
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

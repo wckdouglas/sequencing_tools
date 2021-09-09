@@ -16,8 +16,8 @@ import seaborn as sns
 from matplotlib import use as mpl_use
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 
-from ..stats_tools import hamming_distance, levenshtein_distance
-from .read_cluster import readGroup
+from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
+from sequencing_tools.bam_tools.read_cluster import readGroup
 
 mpl_use('Agg')
 logging.basicConfig(level=logging.INFO)

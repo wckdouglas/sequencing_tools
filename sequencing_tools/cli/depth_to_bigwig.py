@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-
-import argparse
-
-from ..bam_tools.bigwig import parse_depth_bed
+from sequencing_tools.bam_tools.bigwig import parse_depth_bed
 
 
 def getopt(subparser):

@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-
 import pysam
 
-from ..bam_tools.split_bam_tools import split_N_bam
+from sequencing_tools.bam_tools.split_bam_tools import split_N_bam
 
 
 def getopt(subparsers):

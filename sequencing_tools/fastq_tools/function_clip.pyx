@@ -13,14 +13,14 @@ from multiprocessing import Pool
 
 import numpy as np
 
-from ..io_tools import xopen
-from ..stats_tools import hamming_distance
-from ._fastq_tools import readfq, reverse_complement
-from .cutadapt_align import locate
+from sequencing_tools.io_tools import xopen
+from sequencing_tools.fastq_tools.stats_tools import hamming_distance
+from sequencing_tools.fastq_tools._fastq_tools import readfq, reverse_complement
+from sequencing_tools.fastq_tools.cutadapt_align import locate
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 
 from libc.math cimport fmin
 cimport numpy as np
-from ._fastq_tools cimport fastqRecord
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

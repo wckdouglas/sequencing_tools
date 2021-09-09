@@ -1,8 +1,6 @@
-#!/usr/bin/env python
-
 import sys
 
-from ..bam_tools import poisson_umi_tools
+from sequencing_tools.bam_tools import poisson_umi_tools
 
 
 def getopt(subparsers):

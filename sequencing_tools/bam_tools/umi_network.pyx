@@ -4,7 +4,7 @@ from itertools import combinations
 import six
 from networkx import Graph, connected_components
 
-from ..stats_tools import hamming_distance, levenshtein_distance
+from sequencing_tools.stats_tools import hamming_distance, levenshtein_distance
 
 
 '''

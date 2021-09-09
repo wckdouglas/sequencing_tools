@@ -1,8 +1,4 @@
-#!/usr/bin/env python
-
-import sys
-
-from ..bam_tools.umi_tag import filter_umi
+from sequencing_tools.bam_tools.umi_tag import filter_umi
 
 
 def getopt(subparsers):

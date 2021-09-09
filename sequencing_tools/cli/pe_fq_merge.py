@@ -1,9 +1,7 @@
-#!/usr/bin/env python
-
 import sys
 
-from ..fastq_tools.pe_align import merge_interleaved
-from ..io_tools import xopen
+from sequencing_tools.fastq_tools.pe_align import merge_interleaved
+from sequencing_tools.io_tools import xopen
 
 
 def getopt(subparsers):

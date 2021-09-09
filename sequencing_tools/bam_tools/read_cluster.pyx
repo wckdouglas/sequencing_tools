@@ -13,9 +13,9 @@ from six.moves import xrange
 from libc.math cimport log10, exp, log
 from cpython cimport bool
 
-from ..consensus_tools import ErrorCorrection
-from ..fastq_tools import reverse_complement
-from ..utils import SeqUtilsError
+from sequencing_tools.consensus_tools import ErrorCorrection
+from sequencing_tools.fastq_tools import reverse_complement
+from sequencing_tools.utils import SeqUtilsError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

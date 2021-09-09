@@ -1,12 +1,7 @@
-#!/usr/bin/env python
-
 from __future__ import print_function
 
-import argparse
 import logging
 import os
-import re
-import string
 import sys
 from collections import defaultdict
 from functools import partial
@@ -16,8 +11,11 @@ import numpy as np
 import pysam
 import six
 
-from ..bam_tools.pileup_errors import (analyze_region, extract_bases,
-                                       make_regions)
+from sequencing_tools.bam_tools.pileup_errors import (
+    analyze_region,
+    extract_bases,
+    make_regions,
+)
 from ..io_tools import xopen
 
 logging.basicConfig(level=logging.INFO)

@@ -12,7 +12,6 @@ import pysam
 
 from pysam.libcalignmentfile cimport AlignedSegment
 from pysam.libctabix cimport TabixFile
-
 from libc.stdlib cimport rand
 
 

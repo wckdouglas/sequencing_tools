@@ -7,12 +7,12 @@ from functools import partial
 
 import numpy as np
 
-from ..consensus_tools import ErrorCorrection
-from ..io_tools import xopen
-from ._fastq_tools import read_interleaved, reverse_complement
-from .cutadapt_align import locate
+from sequencing_tools.consensus_tools import ErrorCorrection
+from sequencing_tools.io_tools import xopen
+from sequencing_tools.fastq_tools._fastq_tools import read_interleaved, reverse_complement
+from sequencing_tools.fastq_tools.cutadapt_align import locate
 
-from ._fastq_tools cimport fastqRecord
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
 from cpython cimport bool
 
 logging.basicConfig(level = logging.INFO)

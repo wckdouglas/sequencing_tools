@@ -1,12 +1,9 @@
-#!/usr/bin/env python
-
-import argparse
 import logging
 import os
 import sys
 
-from ..bam_tools.fragment_pairs import bam_to_bed
-from ..utils import SeqUtilsError
+from sequencing_tools.bam_tools.fragment_pairs import bam_to_bed
+from sequencing_tools.utils import SeqUtilsError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

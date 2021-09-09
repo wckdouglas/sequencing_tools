@@ -6,8 +6,8 @@ import logging
 import os
 import sys
 
-from ..fastq_tools import read_interleaved
-from ..io_tools import xopen
+from sequencing_tools.fastq_tools import read_interleaved
+from sequencing_tools.io_tools import xopen
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

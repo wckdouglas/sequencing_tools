@@ -10,8 +10,8 @@ from functools import partial
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 
-from ._bam_tools import split_cigar
-from .fragment_pairs import concordant_pairs, is_split_pair
+from sequencing_tools.bam_tools._bam_tools import split_cigar
+from sequencing_tools.bam_tools.fragment_pairs import concordant_pairs, is_split_pair
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

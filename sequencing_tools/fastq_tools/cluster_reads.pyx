@@ -14,11 +14,11 @@ import six
 import ujson
 from matplotlib import use as mpl_use
 
-from ..fastq_tools._fastq_tools cimport fastqRecord
-from ..consensus_tools import ErrorCorrection
-from ..fastq_tools import readfq
-from ..io_tools import xopen
-from ..stats_tools import cy_mean, hamming_distance
+from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
+from sequencing_tools.consensus_tools import ErrorCorrection
+from sequencing_tools.fastq_tools import readfq
+from sequencing_tools.io_tools import xopen
+from sequencing_tools.stats_tools import cy_mean, hamming_distance
 
 from cpython cimport bool
 

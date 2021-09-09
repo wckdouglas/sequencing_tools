@@ -6,7 +6,7 @@ import sys
 
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 
-from .fragment_pairs import concordant_pairs, is_split_pair
+from sequencing_tools.bam_tools.fragment_pairs import concordant_pairs, is_split_pair
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

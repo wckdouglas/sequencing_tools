@@ -13,7 +13,7 @@ import cython
 from libc.math cimport log, ceil, round
 from libc.stdint cimport uint32_t
 
-from .bed_dedup import fragment_coordinates
+from sequencing_tools.bam_tools.bed_dedup import fragment_coordinates
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

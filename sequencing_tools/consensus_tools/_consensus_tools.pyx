@@ -9,11 +9,11 @@ import pysam
 from scipy.special import logsumexp
 from six.moves import xrange
 
+from sequencing_tools.fastq_tools import reverse_complement
+from sequencing_tools.utils import SeqUtilsError
+
 from cpython cimport bool
 from libc.math cimport log10, exp, log
-
-from ..fastq_tools import reverse_complement
-from ..utils import SeqUtilsError
 
 cdef:
     double MIN_Q = 33.0

@@ -9,8 +9,8 @@ import pysam
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 from cpython cimport bool
 
-from ..utils import SeqUtilsError
-from ._bam_tools import (check_concordant, check_primary, concordant_pairs,
+from sequencing_tools.utils import SeqUtilsError
+from sequencing_tools.bam_tools._bam_tools import (check_concordant, check_primary, concordant_pairs,
                          fragment_ends, read_ends)
 
 logging.basicConfig(level=logging.INFO)

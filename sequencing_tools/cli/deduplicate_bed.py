@@ -1,11 +1,8 @@
-#!/usr/bin/env python
-
-import argparse
 import logging
 import os
 import sys
 
-from ..bam_tools.bed_dedup import dedup_bed
+from sequencing_tools.bam_tools.bed_dedup import dedup_bed
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(os.path.basename(__file__))

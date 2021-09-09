@@ -8,7 +8,7 @@ import six
 from pysam.libcalignmentfile cimport AlignmentFile, AlignedSegment
 
 
-from ..utils import SeqUtilsError
+from sequencing_tools.utils import SeqUtilsError
 
 numbers = re.compile(r'[0-9]+')
 strings = re.compile(r'[MIS]')
