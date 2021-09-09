@@ -6,9 +6,10 @@ Modeul for manipulating transcriptome annotation data
 import logging
 import sqlite3
 from collections import defaultdict
+from typing import Any, Dict, List, Tuple
 
+from more_itertools import first
 from pandas import read_csv, read_sql_query
-
 from sequencing_tools.utils import SeqUtilsError
 
 logging.basicConfig(level=logging.INFO)
@@ -27,7 +28,7 @@ class Exon:
 
     """
 
-    def __init__(self, start, end, exon_num, strand):
+    def __init__(self, start: int, end: int, exon_num: int, strand: str) -> None:
         self.start = int(start)  #: Exon start position on the chromosome
         self.end = int(end)  #: Exon end position on the chromosome
         self.exon_num = int(exon_num)  #: Exon rank
@@ -44,20 +45,23 @@ class Exon:
         self.transcript_start = None  #: the transcript position of the first exon base
         self.transcript_end = None  #: the transcript position of the last exon base
 
-    def add_cumulative_length(self, cumulative_transcript_length):
+    def add_cumulative_length(self, cumulative_transcript_length: int) -> None:
+        """
+        Add the cumulative transcript length to the exon object, to count how many "transcript" base have we passed
+        """
         self.cumulative_transcript_length = cumulative_transcript_length
         self.transcript_start = self.cumulative_transcript_length - self.length
         self.transcript_end = self.cumulative_transcript_length
 
-    def __ContainWholeCD__(self):
+    def __ContainWholeCD__(self) -> bool:
         """
-        The exon contain the whole coding sequence
+        does the exon contain the whole coding sequence?
         """
         return self.contain_cds and self.contain_cde
 
-    def __IsCodingExon__(self):
+    def __IsCodingExon__(self) -> bool:
         """
-        does the exon contains any coding bases
+        does the exon contains any coding bases?
         """
         return (
             self.contain_cde
@@ -65,7 +69,7 @@ class Exon:
             or (not self.after_cde and self.after_cds)
         )
 
-    def __contains__(self, transcript_position):
+    def __contains__(self, transcript_position: int) -> bool:
         """
         dose this exon contain a certain transcript position?
         """
@@ -75,12 +79,15 @@ class Exon:
             <= self.cumulative_transcript_length
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
+        """
+        return the exon size
+        """
         return self.length
 
 
 class Transcript:
-    def __init__(self, transcript):
+    def __init__(self, transcript: Dict[str, Any]) -> None:
         """
         Transcript object storing information of a transcript
 
@@ -136,7 +143,7 @@ class Transcript:
         )  #: dictionary with key as exon rank, values are :class:`sequencing_tools.gene_tools.transcriptome.Exon`
         self.__MakeTranscripts__()
 
-    def __MakeTranscripts__(self):
+    def __MakeTranscripts__(self) -> None:
         """
         populate the exon list
         """
@@ -210,7 +217,7 @@ class Transcript:
             self.exons[exon_num + 1] = exon
         self.transcript_length = cumulative_transcript_length
 
-    def blocks(self, tstart_pos: int, tend_pos: int):
+    def blocks(self, tstart_pos: int, tend_pos: int) -> List[Tuple[int, int]]:
         """
         given a start position and end position along the transcript,
         return the block starts and block sizes on the genome scale
@@ -309,7 +316,7 @@ class Transcript:
         assert sum(map(lambda x: x[1] - x[0], blocks)) == amplicon_size
         return blocks
 
-    def genomic_position(self, tpos):
+    def genomic_position(self, tpos: int) -> int:
         """
         translate transcriptome position to genomic position
 
@@ -333,8 +340,8 @@ class Transcript:
                 offset = tpos - exon.transcript_start
                 return exon.start - offset
 
-    def __FirstCodingExon__(self):
-        return list(filter(lambda ex: ex.contain_cds == 1, self.exons.values()))[0]
+    def __FirstCodingExon__(self) -> Exon:
+        return first(filter(lambda exon: exon.contain_cds == 1, self.exons.values()))
 
 
 class Transcriptome:
@@ -366,7 +373,7 @@ class Transcriptome:
 
     """
 
-    def __init__(self, refflat=None, sqldb=None, coding_only=True):
+    def __init__(self, refflat: str=None, sqldb: str=None, coding_only: bool=True) -> None:
         self.coding_only = coding_only  #: Only index coding genes (mRNA)?
         self.transcript_dict = defaultdict(
             lambda: defaultdict(Transcript)
@@ -383,7 +390,7 @@ class Transcriptome:
             )
             self.__MakeTranscriptomeFromRefFlat()
 
-    def __MakeTranscriptomeFromRefFlat(self):
+    def __MakeTranscriptomeFromRefFlat(self) -> None:
         """
         build transcriptome database, index by gene name
         """
@@ -415,7 +422,7 @@ class Transcriptome:
                         transcript["tid"]
                     ] = Transcript(transcript)
 
-    def __MakeTranscriptomeFromSqlite(self):
+    def __MakeTranscriptomeFromSqlite(self) -> None:
         """
         indexing from sqlite db
         """
@@ -485,7 +492,7 @@ class Transcriptome:
                     transcript["tid"]
                 ] = Transcript(transcript)
 
-    def get_gene(self, gene_name):
+    def get_gene(self, gene_name: str) -> Transcript:
         """
         Get transcripts from gene
 

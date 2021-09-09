@@ -48,7 +48,8 @@ jobs:
                 numpy=1.18.4 networkx=2.4 seaborn pandas=1.0.4 \
                 pyBigwig=0.3.17 six pysam=0.16.0.1 ujson pytest \
                 scipy=1.4.1 matplotlib \
-                samtools=1.9 future pytest-cov codecov
+                samtools=1.9 future pytest-cov codecov \
+                more_itertools
 
       - name: Install sequencing_tools
         run: |

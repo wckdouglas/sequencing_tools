@@ -11,3 +11,4 @@ pandas==1.0.4
 ujson
 pytest
 six
+more_itertools
