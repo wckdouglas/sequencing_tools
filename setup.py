@@ -1,5 +1,4 @@
 from setuptools import find_packages, setup, Extension
-import os
 
 # from distutils.core import setup, Extension
 import glob
