@@ -14,7 +14,7 @@ from multiprocessing import Pool
 import numpy as np
 
 from sequencing_tools.io_tools import xopen
-from sequencing_tools.fastq_tools.stats_tools import hamming_distance
+from sequencing_tools.stats_tools import hamming_distance
 from sequencing_tools.fastq_tools._fastq_tools import readfq, reverse_complement
 from sequencing_tools.fastq_tools.cutadapt_align import locate
 from sequencing_tools.fastq_tools._fastq_tools cimport fastqRecord
