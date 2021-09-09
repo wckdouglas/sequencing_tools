@@ -7,8 +7,8 @@ from itertools import product
 import numpy as np
 import six
 
-from ..stats_tools import levenshtein_distance
-from ..utils import SeqUtilsError
+from sequencing_tools.stats_tools import levenshtein_distance
+from sequencing_tools.utils import SeqUtilsError
 
 # define fastq record type
 cdef class fastqRecord():

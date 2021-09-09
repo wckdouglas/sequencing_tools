@@ -2,8 +2,8 @@ import logging
 
 import numpy as np
 
-from ..utils import SeqUtilsError
-from ._stats_tools import Bootstrap
+from sequencing_tools.utils import SeqUtilsError
+from sequencing_tools.stats_tools._stats_tools import Bootstrap
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Regression")
@@ -161,7 +161,7 @@ class GradientDescent:
         """
         if X.ndim != 2:
             # raise SeqUtilsError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
-            raise ValueError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
+            raise SeqUtilsError("X must be 2 dimentional: do X.reshape(-1,1) if it's 1-d")
 
         # set up variables and arrays for storing history of variables
         self.orig_X = X

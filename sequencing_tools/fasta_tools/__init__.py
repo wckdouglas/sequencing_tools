@@ -2,9 +2,8 @@ from itertools import product
 
 import numpy as np
 import pandas as pd
-from matplotlib.patches import Rectangle
 
-from ..stats_tools import hamming_distance
+from sequencing_tools.stats_tools import hamming_distance
 
 
 class IUPAC:

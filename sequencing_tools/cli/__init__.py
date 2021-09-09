@@ -1,1 +1,1 @@
-from . import *
+from sequencing_tools.cli import *

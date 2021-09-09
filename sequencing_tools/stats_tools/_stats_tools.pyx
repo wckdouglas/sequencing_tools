@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import binom
 
-from ..utils import SeqUtilsError
+from sequencing_tools.utils import SeqUtilsError
 
 cimport numpy as np
 logging.basicConfig(level = logging.INFO)

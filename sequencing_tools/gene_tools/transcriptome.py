@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Modeul for manipulating transcriptome annotation data
 
@@ -7,12 +5,11 @@ Modeul for manipulating transcriptome annotation data
 
 import logging
 import sqlite3
-import sys
 from collections import defaultdict
 
 from pandas import read_csv, read_sql_query
 
-from ..utils import SeqUtilsError
+from sequencing_tools.utils import SeqUtilsError
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("Transcriptome")

@@ -1,11 +1,10 @@
 import os
 from collections import defaultdict
-from operator import itemgetter
 
 import numpy as np
 import pysam
 
-from .transcriptome import Exon, Transcript
+from sequencing_tools.gene_tools.transcriptome import Transcript
 
 
 """

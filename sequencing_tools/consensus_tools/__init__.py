@@ -1,1 +1,1 @@
-from ._consensus_tools import *
+from sequencing_tools.consensus_tools._consensus_tools import *
