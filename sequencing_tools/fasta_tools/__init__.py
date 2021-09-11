@@ -1,8 +1,9 @@
 from itertools import product
+from typing import AnyStr, Generator, Set, IO, Tuple
 
+import matplotlib
 import numpy as np
 import pandas as pd
-
 from sequencing_tools.stats_tools import hamming_distance
 
 
@@ -19,7 +20,7 @@ class IUPAC:
         list(IUPAC().expand('ACTGY')) #['ACTGC', 'ACTGT']
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.IUPAC = {
             "R": ["A", "G"],
             "Y": ["C", "T"],
@@ -34,7 +35,7 @@ class IUPAC:
             "N": ["A", "C", "T", "G"],
         }
 
-    def check_degenerate(self, seq):
+    def check_degenerate(self, seq: str) -> Set[str]:
         """
         Args:
             seq (str): sequence with dengerate base
@@ -45,7 +46,7 @@ class IUPAC:
         bases = set(seq)
         return set(self.IUPAC.keys()).intersection(bases)
 
-    def expand(self, seq):
+    def expand(self, seq: str) -> Generator[str, None, None]:
         """
         output all possible sequence by looping over the dengerative base
 
@@ -65,7 +66,7 @@ class IUPAC:
             yield new_seq
 
 
-def readfa(file_handle):
+def readfa(file_handle:  IO[AnyStr]) -> Generator[Tuple[str, str], None, None]:
     """
     A fasta reader iterator
 
@@ -98,12 +99,12 @@ def readfa(file_handle):
 
 
 class MultiAlignments:
-    def __init__(self, fa_file, RNA=False):
+    def __init__(self, fa_file: str, RNA: bool=False) -> None:
         """
         Plotting multiple-alignment fasta, sequences must be of the same length
 
         Args:
-            fa_file (str): fasta file
+            fa_file (str): fasta file path
 
         Example::
 
@@ -216,13 +217,13 @@ class MultiAlignments:
 
     def plot(
         self,
-        ax,
-        min_pos=0,
-        max_pos=None,
-        fontsize=20,
-        labelsize=20,
-        sample_regex="[A-Za-z0-9_-]+",
-    ):
+        ax:  matplotlib.axes._subplots.AxesSubplot,
+        min_pos: float=0,
+        max_pos: float=None,
+        fontsize: float=20,
+        labelsize: float=20,
+        sample_regex: str="[A-Za-z0-9_-]+",
+    )->None:
         """
         Args:
             ax (plt.axes): matplotlib axes
@@ -262,7 +263,7 @@ class MultiAlignments:
         ax.yaxis.set_visible(False)
         ax.tick_params(axis=u"both", which=u"both", length=0)
 
-    def concensus(self):
+    def concensus(self)->Tuple[str, np.ndarray]:
         """
         compute a consensus sequence from highest frequency base at each position
 
@@ -288,7 +289,7 @@ class MultiAlignments:
             scores.append(score)
         return consensus_seq, scores
 
-    def PairMatrix(self):
+    def PairMatrix(self)->None:
         """
         Calculate the hamming distances between each sequence pair
         """
