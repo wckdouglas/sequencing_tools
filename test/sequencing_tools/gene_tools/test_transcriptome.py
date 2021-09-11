@@ -43,3 +43,15 @@ def test_Transcript_blocks(transcript, total_block_size, tstart):
         block_size += (block_end - block_start)
     assert block_size == total_block_size, "Didn't get correct block size"
 
+
+def test_Exon(transcript):
+    exon = transcript.exons[1]
+    assert exon.length == 55
+    assert exon.contain_cds == 0
+
+    assert transcript.exons[2].after_cds == 0
+    assert transcript.exons[3].contain_cds == 1
+    assert transcript.exons[4].after_cds == 1
+
+    assert transcript.exons[29].after_cde == 0
+    assert transcript.exons[30].contain_cde == 1
