@@ -12,3 +12,4 @@ ujson
 pytest
 six
 more_itertools
+hypothesis
