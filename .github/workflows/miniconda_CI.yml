@@ -58,7 +58,7 @@ jobs:
       - name: make test files
         run: |
           for SAM in ```find .  -name '*.sam'```; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
-          samtools index test/data/MT_TF.bam 
+          samtools index test/sequencing_tools/consensus_tools/data/MT_TF.bam 
           samtools faidx test/data/MT_TF.fa 
 
       - name: Test with pytest
