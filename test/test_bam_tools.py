@@ -1,14 +1,10 @@
 import os
 
-import numpy as np
 import pysam
 import pytest
 from pysam import AlignedRead
-from scipy.special import logsumexp
 
 from sequencing_tools.bam_tools import *
-from sequencing_tools.consensus_tools import (ErrorCorrection,
-                                              calculatePosterior)
 
 
 def artificial_read(flag=163):
@@ -122,35 +118,6 @@ def test_check_concordant(r1_flag, r2_flag):
 def test_check_primary():
     assert check_primary(artificial_read(flag=83), artificial_read(flag=163))
     assert check_primary(artificial_read(flag=339), artificial_read(flag=163)) == False
-
-
-def test_error_correction():
-    correction_mode = ErrorCorrection(mode="prob")
-    column_bases = np.array(list("CCAAAAAGT"))
-    column_qualities_str = np.array(list(")))A--A)A"))
-    column_qualities = np.array(list(map(ord, column_qualities_str))) - 33
-    possible_bases = np.unique(column_bases)
-    log_posteriors = [
-        calculatePosterior(column_bases, column_qualities, guess_base)
-        for guess_base in possible_bases
-    ]
-
-    pos_res = [
-        -17.593092907715462,
-        -39.35055643122346,
-        -42.118680221372976,
-        -36.420550581755265,
-    ]
-    assert np.all(np.isclose(log_posteriors, pos_res))
-
-    log_posterior_sum = logsumexp(pos_res)
-    loglik = np.array(log_posteriors) - log_posterior_sum
-
-    base, loglikelihood = correction_mode.__posteriorConcensus__(
-        (column_bases, column_qualities_str, "")
-    )
-    assert np.isclose(loglikelihood, np.exp(loglik).max())
-    assert base == "A"
 
 
 def test_read_pairs():
