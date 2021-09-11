@@ -1,7 +1,7 @@
 from itertools import product
-from typing import AnyStr, Generator, Set, IO, Tuple
+from typing import IO, AnyStr, Generator, Set, Tuple
 
-import matplotlib
+import matplotlib.axes._axes
 import numpy as np
 import pandas as pd
 from sequencing_tools.stats_tools import hamming_distance
@@ -66,7 +66,7 @@ class IUPAC:
             yield new_seq
 
 
-def readfa(file_handle:  IO[AnyStr]) -> Generator[Tuple[str, str], None, None]:
+def readfa(file_handle: IO[AnyStr]) -> Generator[Tuple[str, str], None, None]:
     """
     A fasta reader iterator
 
@@ -99,7 +99,7 @@ def readfa(file_handle:  IO[AnyStr]) -> Generator[Tuple[str, str], None, None]:
 
 
 class MultiAlignments:
-    def __init__(self, fa_file: str, RNA: bool=False) -> None:
+    def __init__(self, fa_file: str, RNA: bool = False) -> None:
         """
         Plotting multiple-alignment fasta, sequences must be of the same length
 
@@ -217,13 +217,13 @@ class MultiAlignments:
 
     def plot(
         self,
-        ax:  matplotlib.axes._subplots.AxesSubplot,
-        min_pos: float=0,
-        max_pos: float=None,
-        fontsize: float=20,
-        labelsize: float=20,
-        sample_regex: str="[A-Za-z0-9_-]+",
-    )->None:
+        ax: matplotlib.axes._axes.Axes,
+        min_pos: float = 0,
+        max_pos: float = None,
+        fontsize: float = 20,
+        labelsize: float = 20,
+        sample_regex: str = "[A-Za-z0-9_-]+",
+    ) -> None:
         """
         Args:
             ax (plt.axes): matplotlib axes
@@ -263,7 +263,7 @@ class MultiAlignments:
         ax.yaxis.set_visible(False)
         ax.tick_params(axis=u"both", which=u"both", length=0)
 
-    def concensus(self)->Tuple[str, np.ndarray]:
+    def concensus(self) -> Tuple[str, np.ndarray]:
         """
         compute a consensus sequence from highest frequency base at each position
 
@@ -289,7 +289,7 @@ class MultiAlignments:
             scores.append(score)
         return consensus_seq, scores
 
-    def PairMatrix(self)->None:
+    def PairMatrix(self) -> None:
         """
         Calculate the hamming distances between each sequence pair
         """
