@@ -57,7 +57,7 @@ jobs:
 
       - name: make test files
         run: |
-          for SAM in test/data/*sam; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
+          for SAM in ```find .  -name '*.sam'```; do samtools view -b $SAM > ${SAM%.sam}.bam; echo made ${SAM%.sam}.bam; done 
           samtools index test/data/MT_TF.bam 
           samtools faidx test/data/MT_TF.fa 
 
