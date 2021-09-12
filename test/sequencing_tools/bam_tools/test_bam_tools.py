@@ -1,10 +1,24 @@
 import os
+from pathlib import Path
 
 import pysam
 import pytest
 from pysam import AlignedRead
 
-from sequencing_tools.bam_tools import *
+from sequencing_tools.bam_tools import (
+    split_cigar,
+    read_ends,
+    fragment_ends,
+    concordant_pairs,
+    concordant_alignment,
+    make_regions,
+    make_cigar_seq,
+    cigar_to_str,
+    get_strand,
+    check_concordant,
+    check_primary,
+    paired_bam
+)
 
 
 def artificial_read(flag=163):
@@ -18,6 +32,16 @@ def artificial_read(flag=163):
     return aln
 
 
+@pytest.fixture(scope="module")
+def read1():
+    return artificial_read(flag=83)
+
+
+@pytest.fixture(scope="module")
+def read2():
+    return artificial_read(flag=163)
+
+
 @pytest.mark.parametrize(
     "cigar, result",
     [
@@ -29,36 +53,28 @@ def test_split_cigar(cigar, result):
     assert split_cigar(cigar) == result
 
 
-@pytest.mark.parametrize("function, result", [(read_ends, (1000000, 1000015))])
-def test_read_ends(function, result):
+def test_read_ends(read2):
     aln = artificial_read()
-    assert function(aln) == result
+    assert read_ends(aln) == (1000000, 1000015)
 
 
-@pytest.mark.parametrize(
-    "function, result",
-    [
-        (fragment_ends, (1000000, 1000036)),
-        (concordant_pairs, True),
-    ],
-)
-def test_fragment_ends(function, result):
-    read1 = artificial_read(flag=83)
-    read2 = artificial_read(flag=163)
-    assert function(read1, read2) == result
+def test_fragment_ends(read1, read2):
+    assert fragment_ends(read1, read2) == (1000000, 1000036)
 
 
-def test_concordant_pairs():
+def test_concordant_pairs(read1, read2):
+    assert concordant_pairs(read1, read2) == True
+
+
+def test_non_concordant_pairs(read2):
     read1 = artificial_read(flag=81)
-    read2 = artificial_read(flag=163)
     assert concordant_pairs(read1, read2) == False
 
 
-def test_concordant_alignment():
+def test_concordant_alignment(read2):
     read1 = artificial_read(flag=81)
-    read2 = artificial_read(flag=163)
     assert concordant_alignment(read1) == False
-    assert concordant_alignment(read2)
+    assert concordant_alignment(read2) == True
 
 
 @pytest.mark.parametrize(
@@ -115,14 +131,17 @@ def test_check_concordant(r1_flag, r2_flag):
     )
 
 
-def test_check_primary():
-    assert check_primary(artificial_read(flag=83), artificial_read(flag=163))
-    assert check_primary(artificial_read(flag=339), artificial_read(flag=163)) == False
+def test_check_primary(read1, read2):
+    assert check_primary(read1, read2) == True
 
 
-def test_read_pairs():
-    test_data_path = os.path.dirname(os.path.realpath(__file__)) + "/data"
-    bam = test_data_path + "/clipped.bam"
+def test_check_primary_false(read2):
+    assert check_primary(artificial_read(flag=339), read2) == False
+
+
+def test_paired_bam():
+    test_data_path = Path(__file__).parents[2] / "data"
+    bam = test_data_path / "clipped.bam"
     bam = pysam.Samfile(bam)
     pairs = 0
     for read1, read2 in paired_bam(bam):
