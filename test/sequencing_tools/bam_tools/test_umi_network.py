@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import time
 from collections import Counter
 
 from sequencing_tools.bam_tools import umi_network
