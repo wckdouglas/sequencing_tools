@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import numpy as np
 from pandas import Series
+from sequencing_tools.utils import SeqUtilsError
 
 
 def douglas_palette():
@@ -210,17 +211,17 @@ def cor_plot(plot_df, fig, diagonal_line=True, method="pearson", **kwargs):
 
 
 def assert_color_vector(categorical_vector, color_vector):
-    categories = sorted(categorical_vector.unique())
-    assert len(categories) <= len(
-        color_vector
-    ), "Not enough colors!! %i colors for %i categories" % (
-        len(color_vector),
-        len(categories),
-    )
-    return set(categories)
+    categories = categorical_vector.unique()
+    if len(categories) > len(color_vector):
+        raise SeqUtilsError(
+            "Not enough colors!! {} colors for {} categories".format(
+                len(color_vector), len(categories)
+            )
+        )
+    return categories.tolist()
 
 
-class color_encoder:
+class ColorEncoder:
     """
     color-encoding a categoric vector
 
@@ -270,10 +271,11 @@ class color_encoder:
         if not self.encoder:
             raise ValueError("Call color_encoder.fit() first!!")
 
-        if not self.categories.union(set(xs)) == self.categories:
-            unseen = self.categories.union(set(xs)) - self.categories
+        union_set = set(self.categories).union(set(xs))
+        if len(union_set) != len(self.categories):
+            unseen = union_set - set(self.categories)
             unseen = ", ".join(list(unseen))
-            raise ValueError("Contain unseen data!!: %s" % unseen)
+            raise SeqUtilsError("Contain unseen data!!: %s" % unseen)
 
         return Series(xs).map(self.encoder)
 
@@ -300,6 +302,9 @@ class color_encoder:
         ]
         lgd = ax.legend(handles=pat, **kwargs)
         return lgd
+
+
+color_encoder = ColorEncoder  # back compatibility
 
 
 def mixed_sort(list_of_elements):
