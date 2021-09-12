@@ -47,6 +47,30 @@ cpdef long correct_umi_count(int number_of_unique_umi, int umi_nt = 6):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cpdef parse_dedup(infile, outfile, int umi_nt, str read_prefix):
+    """
+    parsing dedup-ed file and write a poisson-adjusted bed file output, 
+    implemented the function from: Counting individual DNA molecules by the stochastic attachment of diverse labels.
+    https://www.ncbi.nlm.nih.gov/pubmed/21562209
+
+    Basically taking in how many unique UMI being seen at one position, and using the complexity (number of UMI bases) to check for
+    if UMI complexity is lower than what we actually need. Because UMI count would be inflated.
+
+    An example input file looks like:
+
+        chr1	10000	20000	ACG_1_members	10000	+
+        chr1	10000	20000	GGG_2_members	10000	+
+        chr1	10000	20000	ACT_3_members	10000	+
+    
+    The output file looks like:
+
+        '{chrom}\t{start}\t{end}\t{read_prefix}:UMI_{distinct_umi}_{frag_num}\t0\t{strand}'
+
+    :param IO[AnyStr] infile: input file handle 
+    :param IO[AnyStr] outfile: output file handle 
+    :param int umi_nt: number of nucleotides in the UMI
+    :param str read_prefix: prefix of the read name
+
+    """
     cdef:
         str line, chrom, start, end, umi, strand
         uint32_t fragment_count
